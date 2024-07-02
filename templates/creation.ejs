@@ -1,0 +1,36 @@
+<%- include('./shared/header.ejs', {title: 'Création d un évènement' })%>
+
+<h1> Création d'un évènement</h1>
+<div class="card mt-2 px-2">
+    <form action="" method="post">
+        <div class="form-group">
+            <label for="nom">Nom de l'évènement</label>
+            <input type="text" class="form-control" name="nom" id="nom">
+        </div>
+        <div class="form-group">
+            <label for="lieu">Lieu</label>
+            <input type="text" class="form-control" name="lieu" id="lieu">
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <input type="text" class="form-control" name="description" id="description">
+        </div>
+        <div class="form-group">
+            <label for="mots_cles">Mots clés associés à l'évènement</label>
+            <select name="mots_cles" id="mots_cles">
+                <option> Sélectionner des mots clés</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="dateFinal">Date finale d'inscription</label>
+            <input type="date" class="form-control" name="dateFinal" id="dateFinal">
+        </div>
+        <div class="form-group">
+            <label for="dateEvenement">Date de l'évènement</label>
+            <input type="date" class="form-control" name="dateEvenement" id="dateEvenement">
+        </div>
+        <button class="mt-3 btn btn-primary"> Valider les informations</button>
+    </form>
+</div>
+</div>
+<%- include('./shared/footer.ejs')%>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/style.css" rel="stylesheet">
+
+    <title>Document</title>
+</head>
+
+<body>
+    <nav>
+        <a href="/register">Création de compte</a>
+        <a href="/">Accueil</a>
+        <a href="/login">Connexion</a>
+        <a href="/motsCles">Ajouter des mots clés</a>
+        <% if (locals.user) {%>
+            <a href="/creation">Ajouter un évènement</a>
+            <a href="/profil/<%=user.id %>">Votre profil</a>
+            <a href="/logout">Déconnexion</a>
+
+            <% } %>
+    </nav>
