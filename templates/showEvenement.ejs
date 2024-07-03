@@ -1,14 +1,12 @@
 <%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
 
-<h1> Liste des évènements</h1>
+<h1> 2vènement zr^pij</h1>
 <div class="container">
     <div class="row row-cols-2 mx-1 ">
-        <% for (const evenement of evenements) { %>
+        
             <div class="col mb-3">
                 <%- include('./shared/evenement.ejs', {evenement}) %>
-                <a href="/evenement/<%= evenement.id %>" class="btn btn-secondary">Voir l'évènement</a>
             </div>
-            <% } %>
     </div>  
 </div>
 <%- include('./shared/footer.ejs')%>

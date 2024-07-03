@@ -1,0 +1,12 @@
+<nav>
+    <a href="/register">Création de compte</a>
+    <a href="/">Accueil</a>
+    <a href="/login">Connexion</a>
+    <a href="/motsCles">Ajouter des mots clés</a>
+    <% if (locals.user) {%>
+        <a href="/creation">Ajouter un évènement</a>
+        <a href="/profil/<%=user.id %>">Votre profil</a>
+        <a href="/logout">Déconnexion</a>
+
+        <% } %>
+</nav>

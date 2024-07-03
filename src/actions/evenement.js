@@ -6,47 +6,107 @@ const formatDate = (dateString) => {
     const mois = (dateObj.getMonth() + 1).toString().padStart(2, '0');
     const annee = dateObj.getFullYear();
 
-    return `${jour}-${mois}-${annee}`;
+    return `${annee}-${mois}-${jour}`;
 };
 const idKeyWords = async (id) => {
     const [mots_cles_id] = await connection.promise().query('SELECT mot_cle_id FROM evenement_mots_cles WHERE evenement_id = ?', [id]); // Récupère tout les id des mots clés de la table de jointure en fonction de l'id de l'évènement
     return mots_cles_id.map(row => row.mot_cle_id); // Permet de transformer le tableau d'objet en seulement un tableau contenant les id
 }
-
-export const listeEvent = async (req, res) => {
-    // Récupérer tous les événements
-    const [evenements] = await connection.promise().query('SELECT * FROM evenement');
-
+const makeEventTab = async (Events, motsCles) => {
     // Récupérer tous les utilisateurs et les mots clés en une seule requête
     const [utilisateurs] = await connection.promise().query('SELECT id, nom, prenom FROM user');
-    const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
     // Créer des maps pour un accès rapide par ID
     const utilisateursMap = new Map(utilisateurs.map(user => [user.id, user]));
-    const motsClesMap = new Map(motsCles.map(motsCles => [motsCles.id, motsCles]));
-    // Mapper les événements avec les détails
+    const motsClesMap = new Map(motsCles.map(mot => [mot.id, mot]));
 
-    const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
+    if (Events.length > 1) { // Si il y a plusieurs évènements à modifier
+        console.log('je suis dans le cas où il y a plusieurs évènements à modifier ! ')
+        // Mapper les événements avec les détails
+        const evenementsAvecDetails = await Promise.all(Events.map(async evenement => {
+            const motsClesIds = await idKeyWords(evenement.id);
+            return {
+                ...evenement,
+                motsCles: motsClesIds.map(id => motsClesMap.get(id)),
+                date_final_inscription: formatDate(evenement.date_final_inscription),
+                date_evenement: formatDate(evenement.date_evenement),
+                organisateur: utilisateursMap.get(evenement.organisateur_id),
+            };
+        }));
+        return evenementsAvecDetails;
+    }
+
+    if (Events.length === 1) { // Si il n'y a qu'un évènement à modifier
+        console.log('je suis dans le cas où il y a un évènement seulement')
+        const evenement = Events[0];
         const motsClesIds = await idKeyWords(evenement.id);
-        return {
+        // Mapper l'événement avec les détails
+        const evenementAvecDetails = {
             ...evenement,
-            motsCles: motsClesIds.map(id => motsClesMap.get(id)), // Permet de récupérer le nom dans le tableau de mot clé pour créer un tableau [1, {id: 1, nom: 'Sport'}]
+            motsCles: motsClesIds.map(id => motsClesMap.get(id)),
             date_final_inscription: formatDate(evenement.date_final_inscription),
             date_evenement: formatDate(evenement.date_evenement),
             organisateur: utilisateursMap.get(evenement.organisateur_id),
         };
-    }));
-    return res.view('/templates/index.ejs', {
-        evenements: evenementsAvecDetails,
-        user: req.session.get('user')
-    });
+        return [evenementAvecDetails]; // Retourner un tableau contenant l'événement avec détails
+    }
+
+    return []; // Si Events est vide ou non défini, retourner un tableau vide ou gérer en conséquence
+};
+
+
+export const listeEvent = async (req, res) => {
+    try {
+        // Récupérer tous les événements
+        const [evenements] = await connection.promise().query('SELECT * FROM evenement');
+        const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
+
+        // Appeler la fonction pour obtenir les détails des événements
+        const evenementsAvecDetails = await makeEventTab(evenements, motsCles);
+        console.log(evenementsAvecDetails)
+
+        return res.view('/templates/index.ejs', {
+            evenements: evenementsAvecDetails || [], // Assurez-vous de gérer le cas où evenementsAvecDetails est undefined
+            user: req.session.get('user')
+        });
+    } catch (error) {
+        console.error('Erreur lors de la récupération des événements :', error);
+        return res.status(500).send('Erreur interne du serveur');
+    }
 }
 
 export const showEvent = async (req, res) => {
     const eventId = req.params.id
-const evenement = await connection.promise().query('SELECT * FROM evenement WHERE evenement.id =?', [eventId])
-    return res.view('templates/modifierEvenement.ejs')
+    const [evenement] = await connection.promise().query('SELECT * FROM evenement WHERE id =?', [eventId])
+    const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
+    const evenementsAvecDetails = await makeEventTab(evenement, motsCles)
+    console.log(evenementsAvecDetails)
+    return res.view('templates/showEvenement.ejs', {
+        evenement: evenementsAvecDetails[0],
+        motsCles: motsCles,
+        user: req.session.get('user')
+    })
 }
+export const modifierEvenement = async (req, res) => {
+    const eventId = req.params.id
+    if(req.method === 'GET'){
+    const [evenement] = await connection.promise().query('SELECT * FROM evenement WHERE id =?', [eventId])
+    const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
+    const evenementsAvecDetails = await makeEventTab(evenement, motsCles)
+    console.log(evenementsAvecDetails)
+    return res.view('templates/modifierEvenement.ejs', {
+        evenement: evenementsAvecDetails[0],
+        motsCles: motsCles,
+        user: req.session.get('user')
+    })
+    }
+    if(req.method === 'POST'){
+        const { titre, lieu, description, dateFinal, dateEvenement } = req.body;
 
+        await connection.promise().query('UPDATE evenement SET titre = ?, lieu = ?, description = ?, date_final_inscription = ?, date_evenement = ? WHERE id = ?', [titre, lieu, description, dateFinal, dateEvenement,eventId])
+        console.log('l évènement a été modifié')
+        res.redirect('/')
+    }
+}
 export const showProfil = async (req, res) => {
     const postId = req.params.id;
 
