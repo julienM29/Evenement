@@ -2,6 +2,11 @@
 
 <h1> Ajout des mots clés</h1>
 <div class="card mt-2 px-2">
+    <% if (error) { %>
+        <div class="alert alert-danger" role="alert">
+            <%= error %>
+        </div>
+    <% } %>
     <form action="" method="post">
         <div class="form-group">
             <label for="nom">Nom du mot clés</label>

@@ -32,16 +32,25 @@ app.register(fastifySecureSession, {
         path: '/'
     }
 })
-
+// Accueil
 app.get('/', listeEvent);
+// Création d'un compte
 app.get('/register', createAccount);
 app.post('/register', createAccount);
+// Connexion
 app.get('/login', loginAction);
 app.post('/login', loginAction);
+// Déconnexion
 app.get('/logout', logoutAction);
+// Création d'un évènement
 app.get('/creation', createEvent);
+app.post('/creation', createEvent);
+// Création d'un mot clé
 app.get('/motsCles', createKeyWords);
+app.post('/motsCles', createKeyWords);
+// Page d'un évènement
 app.get('/evenement/:id', showEvent);
+// Profil de l'utilisateur
 app.get('/profil/:id', showProfil);
 
 
