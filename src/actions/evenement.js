@@ -19,11 +19,13 @@ const formatDate = (dateString) => {
 
     return `${annee}-${mois}-${jour}`;
 };
+
 // Fonction pour récupérer les mots clés et leurs id
 const idKeyWords = async (id) => {
     const [mots_cles_id] = await connection.promise().query('SELECT mot_cle_id FROM evenement_mots_cles WHERE evenement_id = ?', [id]); // Récupère tout les id des mots clés de la table de jointure en fonction de l'id de l'évènement
     return mots_cles_id.map(row => row.mot_cle_id); // Permet de transformer le tableau d'objet en seulement un tableau contenant les id
 }
+
 // Fonction pour récréer le tableau d'information des évènements
 const makeEventTab = async (Events, motsCles) => {
     // Récupérer tous les utilisateurs et les mots clés en une seule requête
@@ -41,7 +43,8 @@ const makeEventTab = async (Events, motsCles) => {
                 ...evenement,
                 motsCles: motsClesIds.map(id => motsClesMap.get(id)),
                 date_final_inscription: formatDate(evenement.date_final_inscription),
-                date_evenement: formatDate(evenement.date_evenement),
+                date_debut_evenement: formatDate(evenement.date_debut_evenement),
+                date_fin_evenement: formatDate(evenement.date_fin_evenement),
                 organisateur: utilisateursMap.get(evenement.organisateur_id),
             };
         }));
@@ -57,7 +60,8 @@ const makeEventTab = async (Events, motsCles) => {
             ...evenement,
             motsCles: motsClesIds.map(id => motsClesMap.get(id)),
             date_final_inscription: formatDate(evenement.date_final_inscription),
-            date_evenement: formatDate(evenement.date_evenement),
+            date_debut_evenement: formatDate(evenement.date_debut_evenement),
+            date_fin_evenement: formatDate(evenement.date_fin_evenement),
             organisateur: utilisateursMap.get(evenement.organisateur_id),
         };
         return [evenementAvecDetails]; // Retourner un tableau contenant l'événement avec détails
@@ -74,7 +78,9 @@ const addOrModifyEvent = async (parts,userId, modify, eventId) => {
         for await (const part of parts) {
             if (part.file) { // Si la partie est un fichier
                 if (part.fieldname === 'photo') { // Si c'est une photo
+                    console.log('il y a une photo')
                     const filename = `${part.filename}`; // Nom du fichier
+                    console.log(filename)
                     const saveTo = join(imagesDir, filename); // Route pour la sauvegarde du fichier
                     await pipeline(part.file, fs.createWriteStream(saveTo));// Utilise pipeline pour copier le fichier dans le dossier images
                     photoFileName = filename; // Stocke le nom de la photo dans une variable pour l'insertion en base de donnée
@@ -87,13 +93,13 @@ const addOrModifyEvent = async (parts,userId, modify, eventId) => {
                 }
             }
         }
-        const { titre, lieu, description, dateFinal, dateEvenement } = fields; // Déstructuration pour récupérer les valeurs du formulaire
-
+        const { titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants } = fields; // Déstructuration pour récupérer les valeurs du formulaire
         if (!modify) { // Cas d'une insertion
+            console.log('création')
             // Insertion de l'événement dans la table evenement
             const [event] = await connection.promise().query(
-                'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_evenement, organisateur_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                [titre, lieu, description, photoFileName, dateFinal, dateEvenement, userId]
+                'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement,date_fin_evenement, nb_participants_max, places_dispo, statut, organisateur_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants,nbParticipants, 0, userId]
             );
 
             eventId = event.insertId;
@@ -102,9 +108,9 @@ const addOrModifyEvent = async (parts,userId, modify, eventId) => {
 
         }
         if (modify) { // Cas d'une modification
-            await connection.promise().query('UPDATE evenement SET titre = ?, lieu = ?, description = ?,photo = ?, date_final_inscription = ?, date_evenement = ? WHERE id = ?',
-                [titre, lieu, description, photoFileName, dateFinal, dateEvenement, eventId]
-
+            console.log('modification' + photoFileName)
+            await connection.promise().query('UPDATE evenement SET titre = ?, lieu = ?, description = ?,photo = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement =?, nb_participants_max = ?, statut =?  WHERE id = ?',
+                [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants,nbParticipants, eventId]
             )
             await connection.promise().query('DELETE FROM evenement.evenement_mots_cles WHERE evenement_id=?', [eventId])
 

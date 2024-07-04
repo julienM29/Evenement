@@ -48,16 +48,29 @@
                                 <% } %>
                             </select>
                         </div>
-                        
+                        <div class="form-group mb-2">
+                            <label class="mb-2" for="photo">Photo illustrant l'évènement</label>
+                            <input type="file" class="form-control" name="photo" id="photo" >
+                        </div>
                         <div class="form-group mb-2">
                             <label class="mb-2" for="dateFinal">Date finale d'inscription</label>
                             <input type="date" class="form-control" name="dateFinal" id="dateFinal"
                                 value="<%= evenement.date_final_inscription %>">
                         </div>
                         <div class="form-group mb-2 ">
-                            <label class="mb-2" for="dateEvenement">Date de l'évènement</label>
-                            <input type="date" class="form-control" name="dateEvenement" id="dateEvenement"
-                                value="<%= evenement.date_evenement %>">
+                            <label class="mb-2" for="dateDebut">Date de début de l'évènement</label>
+                            <input type="date" class="form-control" name="dateDebut" id="dateDebut"
+                            value="<%= evenement.date_debut_evenement %>">
+                        </div>
+                        <div class="form-group mb-2 ">
+                            <label class="mb-2" for="dateFin">Date de fin de l'évènement</label>
+                            <input type="date" class="form-control" name="dateFin" id="dateFin"
+                            value="<%= evenement.date_fin_evenement %>">
+                        </div>
+                        <div class="form-group mb-2 ">
+                            <label class="mb-2" for="nbParticipants">Nombres de participants maximum</label>
+                            <input type="number" class="form-control" name="nbParticipants" id="nbParticipants"
+                            value="<%= evenement.nb_participants_max %>">
                         </div>
                         <div class="w-100 d-flex justify-content-center">
                             <button class=" mt-3 btn btn-primary mb-3"> Créer l'évènement</button>

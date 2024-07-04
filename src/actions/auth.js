@@ -30,7 +30,8 @@ export const loginAction = async (req,res)=>{
         if (await argon2.verify(user[0].password, motDePasse)) {
             req.session.set('user',{
                 id: user[0].id,
-                username: user[0].username
+                nom: user[0].nom,
+                prenom: user[0].prenom
             })
             return res.redirect('/')
         }

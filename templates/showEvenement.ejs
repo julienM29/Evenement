@@ -5,7 +5,52 @@
     <div class="row row-cols-2 mx-1 ">
         
             <div class="col mb-3">
-                <%- include('./shared/evenement.ejs', {evenement}) %>
+                <div class="card border-0">
+    <div class="card-body">
+
+        <img src="images/<%= evenement.photo %>" class="w-100 rounded">
+
+        <h5 class="card-title mt-2">
+            <%= evenement.titre %>
+        </h5>
+        <p class="card-text">
+            <%= evenement.description.split("\n\n")[0].substring(0, 150)%>...
+        </p>
+        <p class="card-text">
+
+        </p>
+        <div class="w-100 d-flex justify-content-between mb-2">
+            <div>Lieu : <%= evenement.lieu %>
+            </div>
+            <div> Organisateur : <%= evenement.organisateur.nom %>
+                    <%= evenement.organisateur.prenom %>
+            </div>
+
+        </div>
+        <div class="w-100 d-flex justify-content-between mb-2 ">
+            <div>Date limite d'inscription : <%= evenement.date_final_inscription %>
+            </div>
+            <div>Date de l'évènement : <%= evenement.date_evenement %>
+            </div>
+
+        </div>
+
+        <div class="w-100 mb-2">
+            <% evenement.motsCles.forEach((motCle, index)=> { %>
+                <%= motCle.nom %>
+                    <% if (index < evenement.motsCles.length - 1) { %>,<% } %>
+                            <% }) %>
+        </div>
+        <div class="w-100 d-flex justify-content-between">
+            <div>
+                <a href="/evenement/<%= evenement.id %>" class="btn btn-secondary">Voir l'évènement</a>
+            </div>
+            <div>
+                <a href="/modifierEvenement/<%= evenement.id %>" class="btn btn-secondary">Modifier votre évènement</a>
+            </div>
+        </div>
+    </div>
+</div>
             </div>
     </div>  
 </div>

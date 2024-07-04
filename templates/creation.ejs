@@ -23,7 +23,7 @@
         <% if (locals.user) {%>
             <form action="" method="post" enctype="multipart/form-data">
                 <div class="form-group mb-2">
-                    <label class="mb-2" for="titre">Nom de l'évènement</label>
+                    <label class="mb-2" for="titre">Titre de l'évènement</label>
                     <input type="text" class="form-control" name="titre" id="titre">
                 </div>
                 <div class="form-group mb-2">
@@ -50,12 +50,20 @@
                     <input type="file" class="form-control" name="photo" id="photo">
                 </div>
                 <div class="form-group mb-2">
-                    <label class="mb-2" for="dateFinal">Date finale d'inscription</label>
-                    <input type="date" class="form-control" name="dateFinal" id="dateFinal">
+                    <label class="mb-2" for="dateInscription">Date finale d'inscription</label>
+                    <input type="date" class="form-control" name="dateInscription" id="dateInscription">
                 </div>
                 <div class="form-group mb-2 ">
-                    <label class="mb-2" for="dateEvenement">Date de l'évènement</label>
-                    <input type="date" class="form-control" name="dateEvenement" id="dateEvenement">
+                    <label class="mb-2" for="dateDebut">Date de début de l'évènement</label>
+                    <input type="date" class="form-control" name="dateDebut" id="dateDebut">
+                </div>
+                <div class="form-group mb-2 ">
+                    <label class="mb-2" for="dateFin">Date de fin de l'évènement</label>
+                    <input type="date" class="form-control" name="dateFin" id="dateFin">
+                </div>
+                <div class="form-group mb-2 ">
+                    <label class="mb-2" for="nbParticipants">Nombres de participants maximum</label>
+                    <input type="number" class="form-control" name="nbParticipants" id="nbParticipants">
                 </div>
                 <div class="w-100 d-flex justify-content-center">
                     <button class=" mt-3 btn btn-primary mb-3"> Créer l'évènement</button>

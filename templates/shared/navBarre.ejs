@@ -1,12 +1,58 @@
 <nav>
-    <a href="/register">Création de compte</a>
-    <a href="/">Accueil</a>
-    <a href="/login">Connexion</a>
-    <a href="/motsCles">Ajouter des mots clés</a>
-    <% if (locals.user) {%>
-        <a href="/creation">Ajouter un évènement</a>
-        <a href="/profil/<%=user.id %>">Votre profil</a>
-        <a href="/logout">Déconnexion</a>
+    <div class="navbar navbar-light bg-secondary navbar-expand-md px-3">
+        <a href="#" class="navbar-brand">
+            <img src="/images/Event1.png" alt="" width="270px" height="70px" />
+        </a>
+        <div class="w-25">
+            <div class="input-icons position-relative">
+                <i
+                    class="fa-solid fa-magnifying-glass position-absolute translate-bottom mt-2 ms-2 ps-1  text-secondary"></i>
+                <input class="form-control" id="searchInput" type="text" />
+            </div>
+        </div>
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse" id="menu">
+            <ul class="navbar-nav ms-auto" style="list-style:none;">
+                <li class="nav-item mx-3">
+                    <a href="/" class="nav-link fs-5 text-white">Accueil</a>
+                </li>
+                <% if (!locals.user) {%>
+                    <li class="nav-item mx-3">
+                        <a href="/register" class="nav-link fs-5 text-white">Création de compte</a>
+                    </li>
+                    <li class="nav-item mx-3">
+                        <a href="/login" class="nav-link fs-5 text-white">Connexion</a>
+                    </li>
+                    <% } %>
+                        <% if (locals.user) {%>
+                            <li class="nav-item mx-3">
+                                <a href="/logout" class="nav-link fs-5 text-white">Déconnexion</a>
+                            </li>
+                            <li class="nav-item mx-3">
+                                <a href="/creation" class="nav-link fs-5 text-white">Ajouter un évènement</a>
+                            </li>
+                            <li class="nav-item mx-3">
+                                <a href="/profil/<%=user.id %>" class="nav-link fs-5 text-white">
+                                    <%=user.nom %>
+                                        <%=user.prenom %>
+                                </a>
+                            </li>
+                            <li class="nav-item mx-3">
+                                <a href="/motsCles" class="nav-link fs-5">Ajouter un mot clé</a>
+                            </li>
 
-        <% } %>
+                            <% } %>
+                                <li class="nav-item mx-3">
+                                    <a class="nav-link position-relative"><i
+                                            class="fa-solid fa-comment-dots fs-3"></i><span id="chatNotif"
+                                            class="position-absolute top-0 start-100 translate-bottom badge rounded-pill bg-danger">9<sup>+</sup></span></a>
+                                </li>
+                                <li class="nav-item mx-3">
+                                    <a class="nav-link"><i class="fa-solid fa-ellipsis fs-4"></i></a>
+                                </li>
+            </ul>
+        </div>
+    </div>
 </nav>
