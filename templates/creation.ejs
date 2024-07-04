@@ -14,13 +14,14 @@
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
-
+<%- include('./shared/navBarre.ejs')%>
+<body>
 <h1> Création d'un évènement</h1>
 <div class="w-100 d-flex justify-content-center">
 
     <div class="card mt-2 px-2 w-50">
         <% if (locals.user) {%>
-            <form action="" method="post">
+            <form action="" method="post" enctype="multipart/form-data">
                 <div class="form-group mb-2">
                     <label class="mb-2" for="titre">Nom de l'évènement</label>
                     <input type="text" class="form-control" name="titre" id="titre">
@@ -43,6 +44,10 @@
                             </option>
                             <% } %>
                     </select>
+                </div>
+                <div class="form-group mb-2">
+                    <label class="mb-2" for="photo">Photo illustrant l'évènement</label>
+                    <input type="file" class="form-control" name="photo" id="photo">
                 </div>
                 <div class="form-group mb-2">
                     <label class="mb-2" for="dateFinal">Date finale d'inscription</label>
