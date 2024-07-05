@@ -11,7 +11,7 @@ import formbody from '@fastify/formbody';
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyMultipart from '@fastify/multipart';
 
-import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement } from "./actions/evenement.js";
+import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest } from "./actions/evenement.js";
 import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
 import { showProfil } from "./actions/profil.js";
 
@@ -66,6 +66,8 @@ app.post('/modifierEvenement/:id', modifierEvenement);
 // Profil de l'utilisateur
 app.get('/profil/:id', showProfil);
 
+// Page test
+app.get('/test', getTest)
 // Lancement du serveur avec le port choisi etc localhost:3000
 const start = async () => {
     try {

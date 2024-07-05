@@ -244,3 +244,10 @@ export const createKeyWords = async (req, res) => {
 
     }
 }
+
+export const getTest = (req,res)=>{
+    return res.view('templates/test.ejs',{
+        user: req.session.get('user')
+    })
+}
+
