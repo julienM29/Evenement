@@ -11,7 +11,7 @@ import formbody from '@fastify/formbody';
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyMultipart from '@fastify/multipart';
 
-import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest } from "./actions/evenement.js";
+import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent } from "./actions/evenement.js";
 import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
 import { showProfil } from "./actions/profil.js";
 
@@ -60,6 +60,9 @@ app.get('/motsCles', createKeyWords);
 app.post('/motsCles', createKeyWords);
 // Page d'un évènement
 app.get('/evenement/:id', showEvent);
+app.post('/evenement/:id', participyEvent);
+
+// Page de modification d'un evenement
 app.get('/modifierEvenement/:id', modifierEvenement);
 app.post('/modifierEvenement/:id', modifierEvenement);
 

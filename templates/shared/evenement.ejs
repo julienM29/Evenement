@@ -1,8 +1,8 @@
 
-<div class="card border-0 cardEvents ">
+<div class="card border-0 cardEvents bg-transparent">
     <div class="hover-zoom-bg">
         <div class="w-100 position-relative overflow-hidden hover-zoom-bg image-container">
-            <img src="images/<%= evenement.photo %>" class="img-fluid rounded hover-zoom" style="max-height: 271px;">
+            <img src="images/<%= evenement.photo %>" class=" hover-zoom" style="max-height: 271px;">
         </div>
         
         
@@ -26,14 +26,15 @@
 
         </div>
         <div class="w-100 d-flex justify-content-center">
-            <button type="button" class="mt-2 mb-3 btn btn-primary d-flex align-items-center justify-content-center w-50">
-                <a href="/evenement/<%= evenement.id %>" class="fs-5 fw-bold text-white text-decoration-none d-flex align-items-center">
+            <button type="button" class="mt-2 mb-3  d-flex align-items-center justify-content-center p-1 border rounded-pill border-dashed-inscription bg-white" style="width:40%;">
+                <a href="/evenement/<%= evenement.id %>" class="fs-5 fw-bold text-dark text-decoration-none d-flex align-items-center">
                    Inscription
-                    <svg class="ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10" width="45" height="25">
+                    <svg class="ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10" width="40" height="20">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
                     </svg>
                 </a>
             </button>
+            
         </div>
         
 

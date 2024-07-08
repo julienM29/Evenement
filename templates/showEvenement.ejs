@@ -1,57 +1,106 @@
 <%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
+    <div class="mt-3 w-100 d-flex justify-content-center" style="background-color: rgb(242, 243, 243);">
 
-<h1> 2vènement zr^pij</h1>
-<div class="container">
-    <div class="row row-cols-2 mx-1 ">
-        
+        <div class="container mt-5" style="width:40%;">
             <div class="col mb-3">
                 <div class="card border-0">
-    <div class="card-body">
+                    <div class="card-body">
 
-        <img src="images/<%= evenement.photo %>" class="w-100 rounded">
+                        <div class="w-100 position-relative overflow-hidden hover-zoom-bg image-container">
+                            <img src="http://localhost:3000/images/<%= evenement.photo %>" class=" hover-zoom"
+                                style="max-height: 471px;">
+                        </div>
 
-        <h5 class="card-title mt-2">
-            <%= evenement.titre %>
-        </h5>
-        <p class="card-text">
-            <%= evenement.description.split("\n\n")[0].substring(0, 150)%>...
-        </p>
-        <p class="card-text">
+                        <h5 class="fs-2 card-title mt-2 mb-3 text-center">
+                            <%= evenement.titre %>
+                        </h5>
+                        <div class="w-100 mb-3 d-flex ">
+                            <% evenement.motsCles.forEach((motCle, index)=> { %>
+                                <div class="fw-bolder mr-2 px-3 rounded-pill border border-dashed-motCles">
+                                    <%= motCle.nom %>
+                                </div>
+                                <% }) %>
+                        </div>
+                        <p class="fs-4 card-text">
+                            <%= evenement.description%>
+                        </p>
+                        <p class="card-text">
 
-        </p>
-        <div class="w-100 d-flex justify-content-between mb-2">
-            <div>Lieu : <%= evenement.lieu %>
-            </div>
-            <div> Organisateur : <%= evenement.organisateur.nom %>
-                    <%= evenement.organisateur.prenom %>
-            </div>
+                        </p>
+                        <div class="w-100 d-flex justify-content-between mb-2">
+                            <div>Lieu : <%= evenement.lieu %>
+                            </div>
 
-        </div>
-        <div class="w-100 d-flex justify-content-between mb-2 ">
-            <div>Date limite d'inscription : <%= evenement.date_final_inscription %>
-            </div>
-            <div>Date de l'évènement : <%= evenement.date_evenement %>
-            </div>
+                        </div>
+                        <div class="w-100 mb-2 ">
+                            <div>L'évènement se déroulera du <%= evenement.date_debut_evenement %>
+                                    au <%= evenement.date_fin_evenement %>
+                            </div>
+                        </div>
+                        <div class="w-100 d-flex justify-content-between mb-2 ">
+                            <div>Date limite d'inscription : <%= evenement.date_final_inscription %>
+                            </div>
+                        </div>
 
-        </div>
+                        <div> Organisateur : <%= evenement.organisateur.nom %>
+                                <%= evenement.organisateur.prenom %>
+                        </div>
+                        <div class="w-100 d-flex justify-content-between mb-2 ">
+                            <div> Nombres de participants maximum : <%= evenement.nb_participants_max %>
+                            </div>
+                            <div> Places disponibles : <%= evenement.places_dispo %>
+                            </div>
+                        </div>
+                        <% if (locals.user.id===evenement.organisateur.id) { %>
+                            <div class="w-100 d-flex justify-content-center">
+                                <button type="button"
+                                    class="mt-2 mb-3  d-flex align-items-center justify-content-center p-1 border rounded-pill border-dashed-inscription bg-white"
+                                    style="width:40%;">
+                                    <a href="/modifierEvenement/<%= evenement.id %>"
+                                        class="fs-5 fw-bold text-dark text-decoration-none d-flex align-items-center">
+                                        Modifier l'évènement
+                                        <svg class="ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                            fill="none" viewBox="0 0 14 10" width="40" height="20">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                                stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
+                                        </svg>
+                                    </a>
+                                </button>
+                            </div>
+                            <% } %>
+                                <% if (locals.user.id !==evenement.organisateur.id) { %>
 
-        <div class="w-100 mb-2">
-            <% evenement.motsCles.forEach((motCle, index)=> { %>
-                <%= motCle.nom %>
-                    <% if (index < evenement.motsCles.length - 1) { %>,<% } %>
-                            <% }) %>
-        </div>
-        <div class="w-100 d-flex justify-content-between">
-            <div>
-                <a href="/evenement/<%= evenement.id %>" class="btn btn-secondary">Voir l'évènement</a>
-            </div>
-            <div>
-                <a href="/modifierEvenement/<%= evenement.id %>" class="btn btn-secondary">Modifier votre évènement</a>
+                                    <div class="w-100 d-flex justify-content-center">
+                                        <% if (participation===false) {%>
+                                            <form action="/evenement/<%= evenement.id %>" method="POST"
+                                                class="mt-2 mb-3 d-flex align-items-center justify-content-center"
+                                                style="width: 60%;">
+                                                <button type="submit"
+                                                    class="p-1 border rounded-pill border-dashed-inscription bg-white w-50 d-flex justify-content-center">
+                                                    <span class="fs-5 fw-bold text-dark d-flex align-items-center">
+                                                        Inscription
+                                                        <svg class="ms-2" aria-hidden="true"
+                                                            xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                            viewBox="0 0 14 10" width="40" height="20">
+                                                            <path stroke="currentColor" stroke-linecap="round"
+                                                                stroke-linejoin="round" stroke-width="2"
+                                                                d="M1 5h12m0 0L9 1m4 4L9 9" />
+                                                        </svg>
+                                                    </span>
+                                                </button>
+                                            </form>
+                                    </div>
+                                    <% } %>
+                                        <% if (participation===true) {%>
+                                                <span class="mt-3 mb-2 p-2 border rounded-pill border-dashed-inscription bg-white fs-5 fw-bold text-dark d-flex align-items-center">
+                                                    Vous participez déjà à l'évènement
+                                                </span>
+                                            <% } %>
+                                        <% } %>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-            </div>
-    </div>  
-</div>
-<%- include('./shared/footer.ejs')%>
+    </div>
+    <%- include('./shared/footer.ejs')%>

@@ -3,6 +3,7 @@
     transition: background-color 0.3s ease; /* Smooth transition for background color */
     overflow: hidden; /* Hide overflow to keep image contained */
     position: relative; /* Needed for absolute positioning of child elements if needed */
+    border-radius : 30px;
 }
 
 /* Add zoom effect on hover */
@@ -10,7 +11,9 @@
     transition: transform 0.3s ease; /* Smooth transition for zoom */
     max-height: 300px; /* Set your desired max height */
     width: 100%; /* Ensure the width is 100% to keep the aspect ratio */
-    object-fit: cover; /* Ensure the image covers the area without distortion */
+    object-fit: cover;
+    object-position: 50% 30%;;
+        border-radius: 30px;
 }
 
 /* Apply zoom on hover */
@@ -20,10 +23,9 @@
 
 /* Change background color on hover */
 .hover-zoom-bg:hover {
-    background-color: #f0f0f0; /* Darker grey on hover */
+    background-color: #ffffff; /* Darker grey on hover */
 }
 .image-container {
-    background-color: grey; /* Set the background color to grey */
     overflow: hidden; /* Hide overflow to keep image contained */
     position: relative; /* Needed for absolute positioning of child elements if needed */
     max-height: 300px; /* Set your desired max height for the container */
@@ -35,7 +37,7 @@ Style pour la sideBar
 
 
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 
 .nav-pills > li > a {
@@ -178,5 +180,14 @@ NavBarre
 .border-dashed-profil{
     border: 3px solid  #000000; /* Couleur de bordure verte */
     background-color: #944f0e;
+    color : white;
+}
+.border-dashed-inscription:hover {
+    background-color: #5ae4e9;
+}
+
+.border-dashed-motCles{
+    background-color: #49dde2 ;
+    
     color : white;
 }

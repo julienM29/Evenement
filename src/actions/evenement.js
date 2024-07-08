@@ -16,10 +16,21 @@ const formatDate = (dateString) => {
     const jour = dateObj.getDate().toString().padStart(2, '0');
     const mois = (dateObj.getMonth() + 1).toString().padStart(2, '0');
     const annee = dateObj.getFullYear();
+    const heures = dateObj.getHours().toString().padStart(2, '0');
+    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
 
-    return `${annee}-${mois}-${jour}`;
+    return `${jour}-${mois}-${annee} ${heures}:${minutes}`;
 };
+const formatDateInput = (dateString) => {
+    const dateObj = new Date(dateString);
+    const jour = dateObj.getDate().toString().padStart(2, '0');
+    const mois = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const annee = dateObj.getFullYear();
+    const heures = dateObj.getHours().toString().padStart(2, '0');
+    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
 
+    return `${annee}-${mois}-${jour}T${heures}:${minutes}`;
+};
 // Fonction pour récupérer les mots clés et leurs id
 const idKeyWords = async (id) => {
     const [mots_cles_id] = await connection.promise().query('SELECT mot_cle_id FROM evenement_mots_cles WHERE evenement_id = ?', [id]); // Récupère tout les id des mots clés de la table de jointure en fonction de l'id de l'évènement
@@ -27,14 +38,15 @@ const idKeyWords = async (id) => {
 }
 
 // Fonction pour récréer le tableau d'information des évènements
-const makeEventTab = async (Events, motsCles) => {
+const makeEventTab = async (Events, motsCles, modify) => {
+    console.log(modify)
     // Récupérer tous les utilisateurs et les mots clés en une seule requête
     const [utilisateurs] = await connection.promise().query('SELECT id, nom, prenom FROM user');
     // Créer des maps pour un accès rapide par ID
     const utilisateursMap = new Map(utilisateurs.map(user => [user.id, user]));
     const motsClesMap = new Map(motsCles.map(mot => [mot.id, mot]));
 
-    if (Events.length > 1) { // Si il y a plusieurs évènements à modifier
+    if (Events.length > 1 || (Events.length === 1 && modify === false)) { // Si il y a plusieurs évènements à modifier
         console.log('je suis dans le cas où il y a plusieurs évènements à modifier ! ')
         // Mapper les événements avec les détails
         const evenementsAvecDetails = await Promise.all(Events.map(async evenement => {
@@ -51,7 +63,7 @@ const makeEventTab = async (Events, motsCles) => {
         return evenementsAvecDetails;
     }
 
-    if (Events.length === 1) { // Si il n'y a qu'un évènement à modifier
+    if (Events.length === 1 && modify === true) { // Si il n'y a qu'un évènement à modifier
         console.log('je suis dans le cas où il y a un évènement seulement')
         const evenement = Events[0];
         const motsClesIds = await idKeyWords(evenement.id);
@@ -59,71 +71,82 @@ const makeEventTab = async (Events, motsCles) => {
         const evenementAvecDetails = {
             ...evenement,
             motsCles: motsClesIds.map(id => motsClesMap.get(id)),
-            date_final_inscription: formatDate(evenement.date_final_inscription),
-            date_debut_evenement: formatDate(evenement.date_debut_evenement),
-            date_fin_evenement: formatDate(evenement.date_fin_evenement),
+            date_final_inscription: formatDateInput(evenement.date_final_inscription),
+            date_debut_evenement: formatDateInput(evenement.date_debut_evenement),
+            date_fin_evenement: formatDateInput(evenement.date_fin_evenement),
             organisateur: utilisateursMap.get(evenement.organisateur_id),
         };
         return [evenementAvecDetails]; // Retourner un tableau contenant l'événement avec détails
     }
 
+
     return []; // Si Events est vide ou non défini, retourner un tableau vide ou gérer en conséquence
 };
 
-const addOrModifyEvent = async (parts,userId, modify, eventId) => {
+const addOrModifyEvent = async (parts, userId, modify, eventId) => {
 
-        let fields = {}; // Permet de contenir les champs textes
-        let photoFileName = null; // Stcok le nom de la photo
-        let motsClesIds = []; // Tableau pour stocker les IDs des mots clés
-        for await (const part of parts) {
-            if (part.file) { // Si la partie est un fichier
-                if (part.fieldname === 'photo') { // Si c'est une photo
-                    console.log('il y a une photo')
-                    const filename = `${part.filename}`; // Nom du fichier
-                    console.log(filename)
+    let fields = {}; // Permet de contenir les champs textes
+    let photoFileName = null; // Stcok le nom de la photo
+    let motsClesIds = []; // Tableau pour stocker les IDs des mots clés
+    for await (const part of parts) {
+        if (part.file) { // Si la partie est un fichier
+            if (part.fieldname === 'photo') { // Si c'est une photo
+                console.log('il y a une photo')
+                const filename = `${part.filename}`; // Nom du fichier
+                console.log(filename)
+                if (filename) {
                     const saveTo = join(imagesDir, filename); // Route pour la sauvegarde du fichier
                     await pipeline(part.file, fs.createWriteStream(saveTo));// Utilise pipeline pour copier le fichier dans le dossier images
-                    photoFileName = filename; // Stocke le nom de la photo dans une variable pour l'insertion en base de donnée
+                    photoFileName = filename; // Stocke le nom de la photo dans une variable pour l'insertion en base de donnée   
                 }
+
+            }
+        } else {
+            if (part.fieldname === 'motsCles[]') {
+                motsClesIds.push(parseInt(part.value)); // Ajouter l'ID du mot clé au tableau
             } else {
-                if (part.fieldname === 'motsCles[]') {
-                    motsClesIds.push(parseInt(part.value)); // Ajouter l'ID du mot clé au tableau
-                } else {
-                    fields[part.fieldname] = part.value;
-                }
+                fields[part.fieldname] = part.value;
             }
         }
-        const { titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants } = fields; // Déstructuration pour récupérer les valeurs du formulaire
-        if (!modify) { // Cas d'une insertion
-            console.log('création')
-            // Insertion de l'événement dans la table evenement
-            const [event] = await connection.promise().query(
-                'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement,date_fin_evenement, nb_participants_max, places_dispo, statut, organisateur_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants,nbParticipants, 0, userId]
-            );
+    }
+    const { titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants } = fields; // Déstructuration pour récupérer les valeurs du formulaire
+    if (!modify) { // Cas d'une insertion
+        console.log('création')
+        // Insertion de l'événement dans la table evenement
+        const [event] = await connection.promise().query(
+            'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement,date_fin_evenement, nb_participants_max, places_dispo, statut, organisateur_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, nbParticipants, 0, userId]
+        );
 
-            eventId = event.insertId;
-            console.log('Événement créé avec succès. ID :', eventId);
+        eventId = event.insertId;
+        console.log('Événement créé avec succès. ID :', eventId);
 
 
-        }
-        if (modify) { // Cas d'une modification
-            console.log('modification' + photoFileName)
-            await connection.promise().query('UPDATE evenement SET titre = ?, lieu = ?, description = ?,photo = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement =?, nb_participants_max = ?, statut =?  WHERE id = ?',
-                [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants,nbParticipants, eventId]
+    }
+    if (modify) { // Cas d'une modification
+        console.log('modification' + photoFileName)
+        if (photoFileName === null || photoFileName === undefined) {
+            await connection.promise().query('UPDATE evenement SET titre = ?, lieu = ?, description = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement =?, nb_participants_max = ?, places_dispo =?  WHERE id = ?',
+                [titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants, nbParticipants, eventId]
             )
-            await connection.promise().query('DELETE FROM evenement.evenement_mots_cles WHERE evenement_id=?', [eventId])
+        } else {
+            await connection.promise().query('UPDATE evenement SET titre = ?, lieu = ?, description = ?,photo = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement =?, nb_participants_max = ?, places_dispo =?  WHERE id = ?',
+                [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, nbParticipants, eventId]
+            )
+        }
 
+        await connection.promise().query('DELETE FROM evenement.evenement_mots_cles WHERE evenement_id=?', [eventId])
+
+    }
+    // Insertion des relations dans la table evenement_mots_cles
+    if (motsClesIds && motsClesIds.length > 0) {
+        for (const motCleId of motsClesIds) {
+            await connection.promise().query(
+                'INSERT INTO evenement_mots_cles (evenement_id, mot_cle_id) VALUES (?, ?)',
+                [eventId, motCleId]
+            );
         }
-        // Insertion des relations dans la table evenement_mots_cles
-        if (motsClesIds && motsClesIds.length > 0) {
-            for (const motCleId of motsClesIds) {
-                await connection.promise().query(
-                    'INSERT INTO evenement_mots_cles (evenement_id, mot_cle_id) VALUES (?, ?)',
-                    [eventId, motCleId]
-                );
-            }
-        }
+    }
 }
 ///////////////////////////////////////////////////// FIN DES FONCTIONS POUR LES EVENEMENTS ///////////////////////////////////////////////////////////////////////////
 
@@ -135,9 +158,9 @@ export const listeEvent = async (req, res) => {
         // Récupérer tous les événements
         const [evenements] = await connection.promise().query('SELECT * FROM evenement');
         const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
-
+        const modify = false
         // Appeler la fonction pour obtenir les détails des événements
-        const evenementsAvecDetails = await makeEventTab(evenements, motsCles);
+        const evenementsAvecDetails = await makeEventTab(evenements, motsCles, modify);
 
         return res.view('/templates/index.ejs', { // Appel du fichier ejs
             evenements: evenementsAvecDetails || [],
@@ -151,21 +174,52 @@ export const listeEvent = async (req, res) => {
 // Permet d'afficher un évènement
 export const showEvent = async (req, res) => {
     const eventId = req.params.id
+    const user = req.session.get('user')
+    const userId = user.id
     const [evenement] = await connection.promise().query('SELECT * FROM evenement WHERE id =?', [eventId])
     const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
-    const evenementsAvecDetails = await makeEventTab(evenement, motsCles)
+    const [search] = await connection.promise().query('SELECT * FROM participation WHERE evenement_id =? AND user_id =?', [eventId,userId])
+    let participation = false
+    if (search.length > 0) {
+        participation = true
+    }
+    const modify = false
+    const evenementsAvecDetails = await makeEventTab(evenement, motsCles, modify)
     return res.view('templates/showEvenement.ejs', {
         evenement: evenementsAvecDetails[0],
-        motsCles: motsCles,
-        user: req.session.get('user')
+        user: user,
+        participation: participation
+        
     })
 }
+export const participyEvent = async (req, res) => {
 
+    if (req.method === 'POST') {
+        try {
+            const eventId = req.params.id
+            const user = req.session.get('user');
+            const userId = user.id
+            if (!user) {
+                return res.status(401).send('Utilisateur non authentifié');
+            }
+
+            await connection.promise().query(
+                'INSERT INTO participation (evenement_id, user_id) VALUES (?, ?)',
+                [eventId, user.id]
+            );
+
+            res.redirect('/'); // Redirection après la création de l'événement
+        } catch (error) {
+            console.error('Erreur lors de la création de l\'événement :', error);
+            return res.status(500).send('Erreur interne du serveur');
+        }
+    }
+}
 ////////// CREATION ET MODIFICATION /////////
 
 // Page de création d'un évènement
 export const createEvent = async (req, res) => {
-    const eventId =null
+    const eventId = null
     if (req.method === 'GET') {
         try {
             const [motsCles] = await connection.promise().query('SELECT * FROM mots_cles');
@@ -189,7 +243,7 @@ export const createEvent = async (req, res) => {
 
             const parts = req.parts(); // Récupère les parties du formulaire utilisant multipart fastify
             const modify = false
-            await addOrModifyEvent(parts,userId, modify,eventId) // Appel de la fonction qui envoie en base de donnée
+            await addOrModifyEvent(parts, userId, modify, eventId) // Appel de la fonction qui envoie en base de donnée
 
             res.redirect('/'); // Redirection après la création de l'événement
         } catch (error) {
@@ -205,7 +259,8 @@ export const modifierEvenement = async (req, res) => {
     if (req.method === 'GET') { // Requete GET affichage de la page
         const [evenement] = await connection.promise().query('SELECT * FROM evenement WHERE id =?', [eventId])
         const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
-        const evenementsAvecDetails = await makeEventTab(evenement, motsCles)
+        const modify = true
+        const evenementsAvecDetails = await makeEventTab(evenement, motsCles, modify)
         return res.view('templates/modifierEvenement.ejs', {
             evenement: evenementsAvecDetails[0],
             motsCles: motsCles,
@@ -217,7 +272,7 @@ export const modifierEvenement = async (req, res) => {
         const userId = user.id;
         const parts = req.parts(); // Récupère les parties du formulaire utilisant multipart fastify
         const modify = true
-        await addOrModifyEvent(parts,userId, modify,eventId)
+        await addOrModifyEvent(parts, userId, modify, eventId)
         console.log('l évènement a été modifié')
         res.redirect('/')
     }
@@ -245,8 +300,8 @@ export const createKeyWords = async (req, res) => {
     }
 }
 
-export const getTest = (req,res)=>{
-    return res.view('templates/test.ejs',{
+export const getTest = (req, res) => {
+    return res.view('templates/test.ejs', {
         user: req.session.get('user')
     })
 }
