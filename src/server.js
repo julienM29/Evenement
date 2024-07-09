@@ -14,10 +14,13 @@ import fastifyMultipart from '@fastify/multipart';
 import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent } from "./actions/evenement.js";
 import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
 import { showProfil } from "./actions/profil.js";
+import { apiEvent, showParticipations } from "./actions/participation.js";
+import connection from "./database.js";
 
 
 const app = fastify() // Création d'une instance fastify
 const rootDir = dirname(dirname(fileURLToPath(import.meta.url))) // Route du projet dans les fichiers de l'ordinateur
+console.log(rootDir)
 // Paramètre de la vue utilisé par fastify
 app.register(fastifyView, {
     engine: {
@@ -25,7 +28,11 @@ app.register(fastifyView, {
     }
 })
 app.register(fastifyStatic, {
-    root: join(rootDir, 'public')
+    root: [
+        join(rootDir, 'public'), // Pour servir les fichiers statiques depuis 'public'
+        join(rootDir, 'src'),
+        join(rootDir, 'node_modules')     // Pour servir les fichiers statiques depuis 'src'
+    ]
 })
 app.register(formbody); // Permet l'utilisation de formulaire par fastify
 
@@ -66,9 +73,39 @@ app.post('/evenement/:id', participyEvent);
 app.get('/modifierEvenement/:id', modifierEvenement);
 app.post('/modifierEvenement/:id', modifierEvenement);
 
+// Page des participations
+app.get('/participations/:id', showParticipations)
 // Profil de l'utilisateur
 app.get('/profil/:id', showProfil);
 
+
+// Page API Event
+app.get('/api/events/:id', async (req, res) => {
+    const userId = req.params.id;
+    console.log(userId)
+    try {
+        const [result] = await connection.promise().query('SELECT * FROM participation INNER JOIN evenement ON participation.evenement_id = evenement.id WHERE participation.user_id = ?', [userId]);
+        
+        if (result && result.length > 0) {
+            console.log('Result:', result);
+
+            const tabEventJSON = result.map(event => ({
+                title: event.titre,
+                start: event.date_debut_evenement.toISOString(), // Convertir les dates en chaînes de caractères
+                end: event.date_fin_evenement.toISOString()
+            }));
+
+            console.log('Events JSON:', tabEventJSON);
+
+            res.send(tabEventJSON);
+        } else {
+            console.log('No events found for user');
+            res.json([]); // Retourner un tableau vide si aucun événement n'est trouvé
+        }
+    }catch (error) {
+        res.status(500).send('Erreur serveur');
+    }
+});
 // Page test
 app.get('/test', getTest)
 // Lancement du serveur avec le port choisi etc localhost:3000

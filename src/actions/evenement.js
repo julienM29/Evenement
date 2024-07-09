@@ -3,6 +3,7 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import fs from "node:fs";
 import { pipeline } from "stream/promises"; // Utilisation de pipeline pour la copie du fichier
+import  {Calendar}  from '@fullcalendar/core'; // Import principal de FullCalendar
 
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))

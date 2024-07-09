@@ -14,17 +14,23 @@
             <%= evenement.description.split("\n\n")[0].substring(0, 150)%>...
         </div>
         <div class="w-100 mb-1 text-center">
-            <div>
+            <div class="d-flex align-items-center justify-content-center">
+                <img src="images/espace-reserve.png" width="24" height="24">
+            
                 <%= evenement.lieu %>
             </div>
         </div>
-        <div class="w-100 mb-1 text-center mb-2">
-            <div>
-                <%= evenement.date_debut_evenement %>
-                    - <%= evenement.date_fin_evenement %>
+        <div class="w-100 mb-1 text-center">
+            <div class="d-flex align-items-center justify-content-center">
+                <img src="images/time-and-calendar.png" width="24" height="24" class="mr-2">
+            <div class="ml-2">
+                 <%= evenement.date_debut_evenement %>
+                - <%= evenement.date_fin_evenement %>   
             </div>
-
+                        
+            </div>
         </div>
+    
         <div class="w-100 d-flex justify-content-center">
             <button type="button" class="mt-2 mb-3  d-flex align-items-center justify-content-center p-1 border rounded-pill border-dashed-inscription bg-white" style="width:40%;">
                 <a href="/evenement/<%= evenement.id %>" class="fs-5 fw-bold text-dark text-decoration-none d-flex align-items-center">

@@ -191,3 +191,23 @@ NavBarre
     
     color : white;
 }
+.fc-scrollgrid-sync-inner{
+    background-color: #ffffff;
+}
+.fc-col-header-cell-cushion {
+    text-decoration: none; /* Enlever le soulignement */
+    color: #333; /* Changer la couleur du texte */
+  }
+  .fc-daygrid-day-number{
+    text-decoration: none; /* Enlever le soulignement */
+    font-weight: bold;
+  }
+  #fc-dom-1{
+    font-size: 2.50rem;
+  }
+  .fc-toolbar-chunk{
+    font-size : 1.25em;
+  }
+  .fc table{
+    font-size : 1.10em;
+  }
