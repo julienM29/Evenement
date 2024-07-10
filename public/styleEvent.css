@@ -140,3 +140,38 @@ NavBarre
   .fc table{
     font-size : 1.10em;
   }
+
+  .custom-shadow{
+    box-shadow: 0 0 10px 2px currentColor;
+    border-color: inherit;
+    transition: filter 0.3s ease;
+  }
+  .overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.containerImg:hover .custom-shadow{
+    filter: blur(2px);
+}
+.containerImg:hover .overlay {
+    opacity: 1;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+.dateForm {
+    border: 1px solid #cccccc; /* Définit un border initialement */
+}
+.dateForm:hover{
+    background-color: #9dfcff;
+    border-color: #3a50ca;
+}

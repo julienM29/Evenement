@@ -14,12 +14,23 @@ const imagesDir = join(rootDir, 'public', 'images');
 const formatDate = (dateString) => {
     const dateObj = new Date(dateString);
     const jour = dateObj.getDate().toString().padStart(2, '0');
+    const moisNoms = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+    const moisNom = moisNoms[(dateObj.getMonth())];
+
     const mois = (dateObj.getMonth() + 1).toString().padStart(2, '0');
     const annee = dateObj.getFullYear();
     const heures = dateObj.getHours().toString().padStart(2, '0');
     const minutes = dateObj.getMinutes().toString().padStart(2, '0');
 
-    return `${jour}-${mois}-${annee} ${heures}:${minutes}`;
+    return {
+        jour,
+        mois,
+        annee,
+        moisNom,
+        heures,
+        minutes,
+        dateFormatee: `${jour}-${mois}-${annee} ${heures}:${minutes}`
+    };
 };
 const formatDateInput = (dateString) => {
     const dateObj = new Date(dateString);
@@ -355,9 +366,39 @@ export const createKeyWords = async (req, res) => {
 }
 
 // Page pour effectuer des tests
-export const getTest = (req, res) => {
-    return res.view('templates/test.ejs', {
-        user: req.session.get('user')
-    })
+export const getTest = async (req, res) => {
+    const eventId = req.params.id
+    if (req.method === 'GET') { // Requete GET affichage de la page
+        const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
+        const [evenements] = await connection.promise().query(
+            `SELECT evenement.*, 
+                 GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
+                 user.prenom AS organisateurPrenom, user.nom AS organisateurNom
+                 FROM evenement 
+                 INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
+                 INNER JOIN mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
+                 INNER JOIN user ON user.id = evenement.organisateur_id
+                 WHERE evenement.id = ? 
+                 GROUP BY evenement.id`, [eventId]
+        );
+        const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
+            const dateFinalInscription = formatDate(evenement.date_final_inscription);
+            const dateDebutEvenement = formatDate(evenement.date_debut_evenement);
+            const dateFinEvenement = formatDate(evenement.date_fin_evenement);
+            const motsClesArray = evenement.motsCles.split(',');
+            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
+                ...evenement,
+                date_final_inscription: dateFinalInscription,
+                date_debut_evenement: dateDebutEvenement,
+                date_fin_evenement: dateFinEvenement,
+                motsCles: motsClesArray.map(mot => mot.trim())
+            };
+        }));
+        return res.view('templates/test.ejs', {
+            evenement: evenementsAvecDetails[0],
+            user: req.session.get('user')
+        })
+    }
+
 }
 
