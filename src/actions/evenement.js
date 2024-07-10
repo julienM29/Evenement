@@ -3,7 +3,6 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import fs from "node:fs";
 import { pipeline } from "stream/promises"; // Utilisation de pipeline pour la copie du fichier
-import  {Calendar}  from '@fullcalendar/core'; // Import principal de FullCalendar
 
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
@@ -32,54 +31,7 @@ const formatDateInput = (dateString) => {
 
     return `${annee}-${mois}-${jour}T${heures}:${minutes}`;
 };
-// Fonction pour récupérer les mots clés et leurs id
-const idKeyWords = async (id) => {
-    const [mots_cles_id] = await connection.promise().query('SELECT mot_cle_id FROM evenement_mots_cles WHERE evenement_id = ?', [id]); // Récupère tout les id des mots clés de la table de jointure en fonction de l'id de l'évènement
-    return mots_cles_id.map(row => row.mot_cle_id); // Permet de transformer le tableau d'objet en seulement un tableau contenant les id
-}
 
-// Fonction pour récréer le tableau d'information des évènements
-const makeEventTab = async (Events, motsCles, modify) => {
-    // Récupérer tous les utilisateurs et les mots clés en une seule requête
-    const [utilisateurs] = await connection.promise().query('SELECT id, nom, prenom FROM user');
-    // Créer des maps pour un accès rapide par ID
-    const utilisateursMap = new Map(utilisateurs.map(user => [user.id, user]));
-    const motsClesMap = new Map(motsCles.map(mot => [mot.id, mot]));
-
-    if (Events.length > 1 || (Events.length === 1 && modify === false)) { // Si il y a plusieurs évènements à modifier
-        // Mapper les événements avec les détails
-        const evenementsAvecDetails = await Promise.all(Events.map(async evenement => {
-            const motsClesIds = await idKeyWords(evenement.id);
-            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
-                ...evenement,
-                motsCles: motsClesIds.map(id => motsClesMap.get(id)),
-                date_final_inscription: formatDate(evenement.date_final_inscription),
-                date_debut_evenement: formatDate(evenement.date_debut_evenement),
-                date_fin_evenement: formatDate(evenement.date_fin_evenement),
-                organisateur: utilisateursMap.get(evenement.organisateur_id),
-            };
-        }));
-        return evenementsAvecDetails;
-    }
-
-    if (Events.length === 1 && modify === true) { // Si il n'y a qu'un évènement à modifier
-        const evenement = Events[0];
-        const motsClesIds = await idKeyWords(evenement.id);
-        // Mapper l'événement avec les détails
-        const evenementAvecDetails = {
-            ...evenement,
-            motsCles: motsClesIds.map(id => motsClesMap.get(id)),
-            date_final_inscription: formatDateInput(evenement.date_final_inscription),
-            date_debut_evenement: formatDateInput(evenement.date_debut_evenement),
-            date_fin_evenement: formatDateInput(evenement.date_fin_evenement),
-            organisateur: utilisateursMap.get(evenement.organisateur_id),
-        };
-        return [evenementAvecDetails]; // Retourner un tableau contenant l'événement avec détails
-    }
-
-
-    return []; // Si Events est vide ou non défini, retourner un tableau vide ou gérer en conséquence
-};
 
 const addOrModifyEvent = async (parts, userId, modify, eventId) => {
 
@@ -89,9 +41,7 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
     for await (const part of parts) {
         if (part.file) { // Si la partie est un fichier
             if (part.fieldname === 'photo') { // Si c'est une photo
-                console.log('il y a une photo')
                 const filename = `${part.filename}`; // Nom du fichier
-                console.log(filename)
                 if (filename) {
                     const saveTo = join(imagesDir, filename); // Route pour la sauvegarde du fichier
                     await pipeline(part.file, fs.createWriteStream(saveTo));// Utilise pipeline pour copier le fichier dans le dossier images
@@ -109,7 +59,6 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
     }
     const { titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants } = fields; // Déstructuration pour récupérer les valeurs du formulaire
     if (!modify) { // Cas d'une insertion
-        console.log('création')
         // Insertion de l'événement dans la table evenement
         const [event] = await connection.promise().query(
             'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement,date_fin_evenement, nb_participants_max, places_dispo, statut, organisateur_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -122,7 +71,6 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
 
     }
     if (modify) { // Cas d'une modification
-        console.log('modification' + photoFileName)
         if (photoFileName === null || photoFileName === undefined) {
             await connection.promise().query('UPDATE evenement SET titre = ?, lieu = ?, description = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement =?, nb_participants_max = ?, places_dispo =?  WHERE id = ?',
                 [titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants, nbParticipants, eventId]
@@ -154,12 +102,19 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
 export const listeEvent = async (req, res) => {
     try {
         // Récupérer tous les événements
-        const [evenements] = await connection.promise().query('SELECT * FROM evenement');
-        const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
-        const modify = false
-        // Appeler la fonction pour obtenir les détails des événements
-        const evenementsAvecDetails = await makeEventTab(evenements, motsCles, modify);
-
+        const [evenements] = await connection.promise().query(
+            `SELECT * 
+             FROM evenement
+             WHERE evenement.statut = 0
+            `)
+        const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
+            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
+                ...evenement,
+                date_final_inscription: formatDate(evenement.date_final_inscription),
+                date_debut_evenement: formatDate(evenement.date_debut_evenement),
+                date_fin_evenement: formatDate(evenement.date_fin_evenement),
+            };
+        }));
         return res.view('/templates/index.ejs', { // Appel du fichier ejs
             evenements: evenementsAvecDetails || [],
             user: req.session.get('user')
@@ -174,22 +129,83 @@ export const showEvent = async (req, res) => {
     const eventId = req.params.id
     const user = req.session.get('user')
     const userId = user.id
-    const [evenement] = await connection.promise().query('SELECT * FROM evenement WHERE id =?', [eventId])
-    const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
-    const [search] = await connection.promise().query('SELECT * FROM participation WHERE evenement_id =? AND user_id =?', [eventId,userId])
-    let participation = false // Permet d'afficher ou d'enlever le bouton de participation à l'évènement
-    if (search.length > 0) {
-        participation = true
+    try {
+        const [evenements] = await connection.promise().query(
+        `SELECT evenement.*, 
+             GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles 
+             FROM evenement.evenement 
+             INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
+             INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
+             WHERE evenement.id = ? 
+             GROUP BY evenement.id`, [eventId]
+    );
+        const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
+            const motsClesArray = evenement.motsCles.split(',');
+            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
+                ...evenement,
+                date_final_inscription: formatDate(evenement.date_final_inscription),
+                date_debut_evenement: formatDate(evenement.date_debut_evenement),
+                date_fin_evenement: formatDate(evenement.date_fin_evenement),
+                motsCles: motsClesArray.map(mot => mot.trim())
+            };
+        }));
+        const [search] = await connection.promise().query('SELECT * FROM participation WHERE evenement_id =? AND user_id =?', [eventId, userId])
+
+        let participation = false // Permet d'afficher ou d'enlever le bouton de participation à l'évènement
+        if (search.length > 0) {
+            participation = true
+        }
+        return res.view('templates/showEvenement.ejs', {
+            evenement: evenementsAvecDetails[0],
+            user: user,
+            participation: participation
+    
+        })
+    } catch (error) {
+        console.error('Erreur lors de la récupération des événements :', error);
+        return res.status(500).send('Erreur interne du serveur');
     }
-    const modify = false
-    const evenementsAvecDetails = await makeEventTab(evenement, motsCles, modify)
-    return res.view('templates/showEvenement.ejs', {
-        evenement: evenementsAvecDetails[0],
-        user: user,
-        participation: participation
-        
-    })
+   
+    
 }
+//Page affichant ces évènements actifs
+export const showMyEventActive = async (req, res) => {
+    const user = req.session.get('user')
+    const userId = req.params.id
+    try {
+        const [evenements] = await connection.promise().query(
+            `SELECT evenement.*, 
+             GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles 
+             FROM evenement.evenement 
+             INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
+             INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
+             WHERE evenement.organisateur_id = ? AND evenement.statut = 0
+             GROUP BY evenement.id`, [userId])
+        const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
+            const motsClesArray = evenement.motsCles.split(',');
+            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
+                ...evenement,
+                date_final_inscription: formatDate(evenement.date_final_inscription),
+                date_debut_evenement: formatDate(evenement.date_debut_evenement),
+                date_fin_evenement: formatDate(evenement.date_fin_evenement),
+                motsCles: motsClesArray.map(mot => mot.trim())
+            };
+        }));
+        return res.view('templates/showMyActiveEvent.ejs',
+            {
+                user: user,
+                evenements: evenementsAvecDetails
+            }
+        )
+    } catch (error) {
+        console.error('Erreur lors de la récupération des événements :', error);
+        return res.status(500).send('Erreur interne du serveur');
+    }
+}
+
+
+//////////////////////////////////////////////////////////// PARTICIPATION A UN EVENT ////////////////////////////////////////////
+
 // Lorsque l'utilisateur appuye sur le bouton pour valider sa participation sur la page showEvent
 export const participyEvent = async (req, res) => {
 
@@ -215,6 +231,30 @@ export const participyEvent = async (req, res) => {
     }
 }
 
+//////////////////////////////////////////////////////////// SE DESINSCRIRE A UN EVENT ////////////////////////////////////////////
+
+// Lorsque l'utilisateur appuye sur le bouton pour valider sa participation sur la page showEvent
+export const unsubscribeEvent = async (req, res) => {
+
+        try {
+            const eventId = req.params.id
+            const user = req.session.get('user');
+            const userId = user.id
+            if (!user) {
+                return res.status(401).send('Utilisateur non authentifié');
+            }
+
+            await connection.promise().query(
+                'DELETE FROM participation WHERE evenement_id =? AND user_id = ?',
+                [eventId, userId]
+            );
+
+            res.redirect('/'); // Redirection après la création de l'événement
+        } catch (error) {
+            console.error('Erreur lors de la suppression de la participation :', error);
+            return res.status(500).send('Erreur interne du serveur');
+        }
+}
 /////////////////////////////////////////////////////// CREATION ET MODIFICATION //////////////////////////////////////////////////////
 
 // Page de création d'un évènement
@@ -257,10 +297,26 @@ export const createEvent = async (req, res) => {
 export const modifierEvenement = async (req, res) => {
     const eventId = req.params.id
     if (req.method === 'GET') { // Requete GET affichage de la page
-        const [evenement] = await connection.promise().query('SELECT * FROM evenement WHERE id =?', [eventId])
         const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
-        const modify = true
-        const evenementsAvecDetails = await makeEventTab(evenement, motsCles, modify)
+        const [evenements] = await connection.promise().query(
+            `SELECT evenement.*, 
+                 GROUP_CONCAT(mots_cles.id SEPARATOR ',') AS motsCles 
+                 FROM evenement.evenement 
+                 INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
+                 INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
+                 WHERE evenement.id = ? 
+                 GROUP BY evenement.id`, [eventId]
+        );
+        const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
+            const motsClesArray = evenement.motsCles.split(',');
+            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
+                ...evenement,
+                date_final_inscription: formatDateInput(evenement.date_final_inscription),
+                date_debut_evenement: formatDateInput(evenement.date_debut_evenement),
+                date_fin_evenement: formatDateInput(evenement.date_fin_evenement),
+                motsCles: motsClesArray.map(mot => mot.trim())
+            };
+        }));
         return res.view('templates/modifierEvenement.ejs', {
             evenement: evenementsAvecDetails[0],
             motsCles: motsCles,
@@ -273,7 +329,6 @@ export const modifierEvenement = async (req, res) => {
         const parts = req.parts(); // Récupère les parties du formulaire utilisant multipart fastify
         const modify = true
         await addOrModifyEvent(parts, userId, modify, eventId)
-        console.log('l évènement a été modifié')
         res.redirect('/')
     }
 }
@@ -290,7 +345,6 @@ export const createKeyWords = async (req, res) => {
         const [result] = await connection.promise().query('SELECT * FROM mots_cles WHERE nom =? ', [nom]);
         if (result.length === 0) { // Si le mot clé n'existe pas
             await connection.promise().query('INSERT INTO mots_cles (nom) VALUES (?)', [nom]);
-            console.log('mot clé créé avec succès');
             res.redirect('/motsCles'); // Redirigez l'utilisateur après la création du compte
         } else { // Si le mot clé existe déjà -> redirection 
             console.log('mot clé existe déjà en base de donnée');

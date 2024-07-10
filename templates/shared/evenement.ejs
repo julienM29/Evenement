@@ -2,7 +2,7 @@
 <div class="card border-0 cardEvents bg-transparent">
     <div class="hover-zoom-bg">
         <div class="w-100 position-relative overflow-hidden hover-zoom-bg image-container">
-            <img src="images/<%= evenement.photo %>" class=" hover-zoom" style="max-height: 271px;">
+            <img src="http://localhost:3000/images/<%= evenement.photo %>" class=" hover-zoom" style="max-height: 271px;">
         </div>
         
         
@@ -15,14 +15,14 @@
         </div>
         <div class="w-100 mb-1 text-center">
             <div class="d-flex align-items-center justify-content-center">
-                <img src="images/espace-reserve.png" width="24" height="24">
+                <img src="http://localhost:3000/images/espace-reserve.png" width="24" height="24">
             
                 <%= evenement.lieu %>
             </div>
         </div>
         <div class="w-100 mb-1 text-center">
             <div class="d-flex align-items-center justify-content-center">
-                <img src="images/time-and-calendar.png" width="24" height="24" class="mr-2">
+                <img src="http://localhost:3000/images/time-and-calendar.png" width="24" height="24" class="mr-2">
             <div class="ml-2">
                  <%= evenement.date_debut_evenement %>
                 - <%= evenement.date_fin_evenement %>   
@@ -34,7 +34,7 @@
         <div class="w-100 d-flex justify-content-center">
             <button type="button" class="mt-2 mb-3  d-flex align-items-center justify-content-center p-1 border rounded-pill border-dashed-inscription bg-white" style="width:40%;">
                 <a href="/evenement/<%= evenement.id %>" class="fs-5 fw-bold text-dark text-decoration-none d-flex align-items-center">
-                   Inscription
+                   Évènement
                     <svg class="ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10" width="40" height="20">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
                     </svg>
