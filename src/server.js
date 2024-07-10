@@ -13,14 +13,14 @@ import fastifyMultipart from '@fastify/multipart';
 
 import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent } from "./actions/evenement.js";
 import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
-import { showProfil } from "./actions/profil.js";
-import { apiEvent, showParticipations } from "./actions/participation.js";
+import { modifyProfil, showProfil } from "./actions/profil.js";
+import {  showParticipations } from "./actions/participation.js";
 import connection from "./database.js";
 
 
 const app = fastify() // Création d'une instance fastify
 const rootDir = dirname(dirname(fileURLToPath(import.meta.url))) // Route du projet dans les fichiers de l'ordinateur
-console.log(rootDir)
+
 // Paramètre de la vue utilisé par fastify
 app.register(fastifyView, {
     engine: {
@@ -45,10 +45,11 @@ app.register(fastifyMultipart, { // Permet d'utiliser des input type file et de 
 app.register(fastifySecureSession, { // Ajoute la fonction de session pour l'utilisateur avec les cookies etc
     cookieName: 'session',
     key: readFileSync(join(rootDir, 'secret-key')),
-    cookie: {
+    cookie: { // Précise sur toutes les pages pour l'activité du cookie
         path: '/'
     }
 })
+
 // Accueil
 app.get('/', listeEvent);
 // Création d'un compte
@@ -77,30 +78,26 @@ app.post('/modifierEvenement/:id', modifierEvenement);
 app.get('/participations/:id', showParticipations)
 // Profil de l'utilisateur
 app.get('/profil/:id', showProfil);
-
+// Page de modification de profil
+app.get('/modification/profil/:id', modifyProfil)
+app.post('/modification/profil/:id', modifyProfil)
 
 // Page API Event
-app.get('/api/events/:id', async (req, res) => {
-    const userId = req.params.id;
-    console.log(userId)
+app.get('/api/events/:id', async (req, res) => { 
+    const userId = req.params.id; // Id user dans l'url
     try {
         const [result] = await connection.promise().query('SELECT * FROM participation INNER JOIN evenement ON participation.evenement_id = evenement.id WHERE participation.user_id = ?', [userId]);
         
-        if (result && result.length > 0) {
-            console.log('Result:', result);
-
-            const tabEventJSON = result.map(event => ({
+        if (result && result.length > 0) { // On parcout toutes les participations
+            const tabEventJSON = result.map(event => ({ // On les met sous un format compréhensible par le calendrier
                 title: event.titre,
                 start: event.date_debut_evenement.toISOString(), // Convertir les dates en chaînes de caractères
-                end: event.date_fin_evenement.toISOString()
+                end: event.date_fin_evenement.toISOString() // Convertir les dates en chaînes de caractères
             }));
-
-            console.log('Events JSON:', tabEventJSON);
-
             res.send(tabEventJSON);
         } else {
             console.log('No events found for user');
-            res.json([]); // Retourner un tableau vide si aucun événement n'est trouvé
+            res.json([]); // Retourner un tableau vide si aucune participation n'est trouvée
         }
     }catch (error) {
         res.status(500).send('Erreur serveur');

@@ -40,7 +40,6 @@ const idKeyWords = async (id) => {
 
 // Fonction pour récréer le tableau d'information des évènements
 const makeEventTab = async (Events, motsCles, modify) => {
-    console.log(modify)
     // Récupérer tous les utilisateurs et les mots clés en une seule requête
     const [utilisateurs] = await connection.promise().query('SELECT id, nom, prenom FROM user');
     // Créer des maps pour un accès rapide par ID
@@ -48,11 +47,10 @@ const makeEventTab = async (Events, motsCles, modify) => {
     const motsClesMap = new Map(motsCles.map(mot => [mot.id, mot]));
 
     if (Events.length > 1 || (Events.length === 1 && modify === false)) { // Si il y a plusieurs évènements à modifier
-        console.log('je suis dans le cas où il y a plusieurs évènements à modifier ! ')
         // Mapper les événements avec les détails
         const evenementsAvecDetails = await Promise.all(Events.map(async evenement => {
             const motsClesIds = await idKeyWords(evenement.id);
-            return {
+            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
                 ...evenement,
                 motsCles: motsClesIds.map(id => motsClesMap.get(id)),
                 date_final_inscription: formatDate(evenement.date_final_inscription),
@@ -65,7 +63,6 @@ const makeEventTab = async (Events, motsCles, modify) => {
     }
 
     if (Events.length === 1 && modify === true) { // Si il n'y a qu'un évènement à modifier
-        console.log('je suis dans le cas où il y a un évènement seulement')
         const evenement = Events[0];
         const motsClesIds = await idKeyWords(evenement.id);
         // Mapper l'événement avec les détails
@@ -151,7 +148,7 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
 }
 ///////////////////////////////////////////////////// FIN DES FONCTIONS POUR LES EVENEMENTS ///////////////////////////////////////////////////////////////////////////
 
-////////// AFFICHAGE /////////
+/////////////////////////////////////////////////////// AFFICHAGE ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 // Page d'accueil listant les évènements
 export const listeEvent = async (req, res) => {
@@ -180,7 +177,7 @@ export const showEvent = async (req, res) => {
     const [evenement] = await connection.promise().query('SELECT * FROM evenement WHERE id =?', [eventId])
     const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
     const [search] = await connection.promise().query('SELECT * FROM participation WHERE evenement_id =? AND user_id =?', [eventId,userId])
-    let participation = false
+    let participation = false // Permet d'afficher ou d'enlever le bouton de participation à l'évènement
     if (search.length > 0) {
         participation = true
     }
@@ -193,6 +190,7 @@ export const showEvent = async (req, res) => {
         
     })
 }
+// Lorsque l'utilisateur appuye sur le bouton pour valider sa participation sur la page showEvent
 export const participyEvent = async (req, res) => {
 
     if (req.method === 'POST') {
@@ -216,12 +214,13 @@ export const participyEvent = async (req, res) => {
         }
     }
 }
-////////// CREATION ET MODIFICATION /////////
+
+/////////////////////////////////////////////////////// CREATION ET MODIFICATION //////////////////////////////////////////////////////
 
 // Page de création d'un évènement
 export const createEvent = async (req, res) => {
     const eventId = null
-    if (req.method === 'GET') {
+    if (req.method === 'GET') { // Affichage formulaire
         try {
             const [motsCles] = await connection.promise().query('SELECT * FROM mots_cles');
             return res.view('templates/creation.ejs', {
@@ -234,7 +233,7 @@ export const createEvent = async (req, res) => {
         }
     }
 
-    if (req.method === 'POST') {
+    if (req.method === 'POST') { // Soumission du formulaire
         try {
             const user = req.session.get('user');
             const userId = user.id
@@ -301,6 +300,7 @@ export const createKeyWords = async (req, res) => {
     }
 }
 
+// Page pour effectuer des tests
 export const getTest = (req, res) => {
     return res.view('templates/test.ejs', {
         user: req.session.get('user')

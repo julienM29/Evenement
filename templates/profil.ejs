@@ -1,21 +1,21 @@
 <%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
 
 
-    <div class="w-100 d-flex flex-column justify-content-center">
-        <h1 class="d-flex justify-content-center mb-4"> Profil de <%=user.nom %> <%=user.prenom %></h1>
+<div class=" w-100 d-flex flex-column justify-content-center" style="background-color: rgb(242, 243, 243);">
+    <h1 class="d-flex justify-content-center mb-4"> Profil de <%=userProfil.nom %> <%=userProfil.prenom %></h1>
         <div class="container d-flex justify-content-center my-4">
             <div>
                 <div style="width: 200px; height:200px">
-                    <img src="/images/<%=user.photo %>" class="img-fluid">
+                    <img src="/images/<%=userProfil.photo %>" class="img-fluid">
                 </div>
                 <div>
-                    <%=user.nom %>
+                    <%=userProfil.nom %>
                 </div>
                 <div>
-                    <%=user.prenom %>
+                    <%=userProfil.prenom %>
                 </div>
                 <div>
-                    <%=user.email %>
+                    <%=userProfil.email %>
                 </div>
             </div>
 

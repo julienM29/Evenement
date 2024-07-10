@@ -1,3 +1,12 @@
 </body>
-
+<script>
+    $(document).ready(function() {
+                $('.sidebar-nav > li > a').click(function(event) {
+                    event.preventDefault(); // Empêcher le comportement par défaut du lien
+                    var $submenu = $(this).next('ul');
+                    $('.sidebar-nav ul').not($submenu).hide(); // Fermer les autres sous-menus
+                    $submenu.slideToggle(); // Bascule l'affichage du sous-menu actuel
+                });
+            });
+    </script>
 </html>

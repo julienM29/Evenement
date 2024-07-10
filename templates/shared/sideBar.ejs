@@ -1,5 +1,5 @@
 <div class="w-100 min-vh-100 d-flex">
-    <div class="sidebar d-flex flex-column shadow" style="width:12%; ">
+    <!-- <div class="sidebar d-flex flex-column shadow" style="width:14%; ">
         <ul class="sidebar-nav nav-pills nav-stacked border-bottom" id="menu">
             <li class="active mt-4">
                 <a href="/" class="fs-5 "><span class="fa-stack fa-lg pull-left"><i
@@ -11,9 +11,10 @@
                                 class="fa fa-user fa-stack-1x "></i></span> Profil</a>
                     <ul class="nav-pills nav-stacked d-flex flex-column justify-content-center"
                         style="list-style-type:none;">
-                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                        <li><a href="/profil/<%=user.id  %>" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
                                         class="fa-solid fa-eye fa-stack-1x "></i></span>Afficher le profil</a></li>
-                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                        <li><a href="/modification/profil/<%=user.id  %>" class="fs-6"><span
+                                    class="fa-stack fa-lg pull-left"><i
                                         class="fa-regular fa-pen-to-square fa-stack-1x "></i></span>Modifier le profil
                             </a></li>
                     </ul>
@@ -22,32 +23,48 @@
         </ul>
         <ul class="sidebar-nav nav-pills nav-stacked border-bottom pb-2" id="menu">
 
-
-            <li>
-                <a href="#" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                            class="fa fa-flag fa-stack-1x "></i></span>Mes évènements</a>
-                <ul class="nav-pills nav-stacked" style="list-style-type:none;">
-                    <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
-                                    class="fa fa-flag fa-stack-1x "></i></span>link1</a></li>
-                    <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
-                                    class="fa fa-flag fa-stack-1x "></i></span>link2</a></li>
-                </ul>
-            </li>
             <% if (locals.user) {%>
-            <li>
-                <a href="/participations/<%= user.id %>" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                            class="fa fa-flag fa-stack-1x "></i></span>Mes participations</a>
-            </li>
-            <% } %>
-            <li>
-                <a href="#" class="fs-5"> <span class="fa-stack fa-lg pull-left"><i
-                            class="fa fa-cart-plus fa-stack-1x "></i></span>Events</a>
+                <li>
+                    <a href="#" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-flag fa-stack-1x "></i></span>Mes évènements</a>
+                    <ul class="nav-pills nav-stacked" style="list-style-type:none;">
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Évènements actifs </a></li>
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Évènements passés</a></li>
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Évaluations</a></li>
+                    </ul>
                 </li>
+                <li>
+                    <a href="#" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-flag fa-stack-1x "></i></span>Mes participations</a>
+                    <ul class="nav-pills nav-stacked" style="list-style-type:none;">
+                        <li><a href="/participations/<%= user.id %>" class="fs-6"><span
+                                    class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Participations à venir</a></li>
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Participations passés</a></li>
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Mes évaluations</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/participations/<%= user.id %>" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-flag fa-stack-1x "></i></span>Mes participations</a>
+                </li>
+                <li>
+                    <a href="#" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-flag fa-stack-1x "></i></span>Mes notifications</a>
+                    <ul class="nav-pills nav-stacked" style="list-style-type:none;">
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Invitations</a></li>
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span></a></li>
+                    </ul>
+                </li>
+                <% } %>
 
-            <li>
-                <a href="#" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                            class="fa fa-server fa-stack-1x "></i></span>Contact</a>
-            </li>
         </ul>
         <ul class="sidebar-nav nav-pills nav-stacked " id="menu">
             <% if (locals.user) {%>
@@ -62,5 +79,82 @@
                                         class="fa-solid fa-right-from-bracket fa-stack-1x "></i></span>Connexion</a>
                         </li>
                         <% } %>
+        </ul>
+    </div> -->
+    <div class="sidebar d-flex flex-column shadow" style="width:14%;">
+        <ul class="sidebar-nav nav-pills nav-stacked border-bottom" id="menu">
+            <li class="active mt-4">
+                <a href="/" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                            class="fa fa-home fa-stack-1x "></i></span> Accueil</a>
+            </li>
+            <% if (locals.user) { %>
+                <li class="active">
+                    <a href="#" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-user fa-stack-1x "></i></span> Profil</a>
+                    <ul class="nav-pills nav-stacked d-flex flex-column justify-content-center" style="list-style-type:none;">
+                        <li><a href="/profil/<%= user.id %>" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa-solid fa-eye fa-stack-1x "></i></span>Afficher le profil</a></li>
+                        <li><a href="/modification/profil/<%= user.id %>" class="fs-6"><span
+                                    class="fa-stack fa-lg pull-left"><i
+                                        class="fa-regular fa-pen-to-square fa-stack-1x "></i></span>Modifier le profil</a></li>
+                    </ul>
+                </li>
+            <% } %>
+        </ul>
+        <ul class="sidebar-nav nav-pills nav-stacked border-bottom pb-2" id="menu">
+            <% if (locals.user) { %>
+                <li>
+                    <a href="#" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-flag fa-stack-1x "></i></span>Mes évènements</a>
+                    <ul class="nav-pills nav-stacked" style="list-style-type:none;">
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Évènements actifs </a></li>
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Évènements passés</a></li>
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Évaluations</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-flag fa-stack-1x "></i></span>Mes participations</a>
+                    <ul class="nav-pills nav-stacked" style="list-style-type:none;">
+                        <li><a href="/participations/<%= user.id %>" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                    class="fa fa-flag fa-stack-1x "></i></span>Participations à venir</a></li>
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Participations passés</a></li>
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Mes évaluations</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/participations/<%= user.id %>" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-flag fa-stack-1x "></i></span>Mes participations</a>
+                </li>
+                <li>
+                    <a href="#" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa fa-flag fa-stack-1x "></i></span>Mes notifications</a>
+                    <ul class="nav-pills nav-stacked" style="list-style-type:none;">
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span>Invitations</a></li>
+                        <li><a href="#" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa fa-flag fa-stack-1x "></i></span></a></li>
+                    </ul>
+                </li>
+            <% } %>
+        </ul>
+        <ul class="sidebar-nav nav-pills nav-stacked" id="menu">
+            <% if (locals.user) { %>
+                <li>
+                    <a href="/logout" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa-solid fa-right-from-bracket fa-stack-1x "></i></span>Déconnexion</a>
+                </li>
+            <% } %>
+            <% if (!locals.user) { %>
+                <li>
+                    <a href="/login" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa-solid fa-right-from-bracket fa-stack-1x "></i></span>Connexion</a>
+                </li>
+            <% } %>
         </ul>
     </div>
