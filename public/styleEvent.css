@@ -1,6 +1,6 @@
 /* Ensure the container handles overflow */
 .hover-zoom-bg {
-    transition: background-color 0.3s ease; /* Smooth transition for background color */
+    transition: background-color 0.3s ease, border-radius 0.3s ease; /* Smooth transition for background color */
     overflow: hidden; /* Hide overflow to keep image contained */
     position: relative; /* Needed for absolute positioning of child elements if needed */
     border-radius : 30px;
@@ -8,17 +8,17 @@
 
 /* Add zoom effect on hover */
 .hover-zoom {
-    transition: transform 0.3s ease; /* Smooth transition for zoom */
+    transition: transform 0.3s ease, border-radius 0.3s ease; /* Smooth transition for zoom */
     max-height: 300px; /* Set your desired max height */
     width: 100%; /* Ensure the width is 100% to keep the aspect ratio */
     object-fit: cover;
     object-position: 50% 30%;;
-        border-radius: 30px;
 }
 
 /* Apply zoom on hover */
 .hover-zoom-bg:hover .hover-zoom {
     transform: scale(1.1); /* Zoom effect */
+    
 }
 
 /* Change background color on hover */
@@ -176,4 +176,11 @@ NavBarre
     background-color: #9dfcff;
     border-color: #3a50ca;
 }
-
+.boutonShowEvent{
+    border : 1px solid #cccccc;
+    background-color: #ffffff;
+}
+.boutonShowEvent:hover{
+    border : 1px solid #6259da;
+    background-color: #d5feff;
+}

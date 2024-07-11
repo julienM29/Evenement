@@ -72,8 +72,8 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
     if (!modify) { // Cas d'une insertion
         // Insertion de l'événement dans la table evenement
         const [event] = await connection.promise().query(
-            'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement,date_fin_evenement, nb_participants_max, places_dispo, statut, organisateur_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, nbParticipants, 0, userId]
+            'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement,date_fin_evenement, nb_participants_max, nbParticipants, statut, organisateur_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, 0, 0, userId]
         );
 
         eventId = event.insertId;
@@ -227,7 +227,40 @@ export const showMyEventActive = async (req, res) => {
         return res.status(500).send('Erreur interne du serveur');
     }
 }
-
+//Page affichant ces évènements passes
+export const showMyEventPasted = async (req, res) => {
+    const user = req.session.get('user')
+    const userId = req.params.id
+    try {
+        const [evenements] = await connection.promise().query(
+            `SELECT evenement.*, 
+             GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles 
+             FROM evenement.evenement 
+             INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
+             INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
+             WHERE evenement.organisateur_id = ? AND evenement.statut = 1
+             GROUP BY evenement.id`, [userId])
+        const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
+            const motsClesArray = evenement.motsCles.split(',');
+            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
+                ...evenement,
+                date_final_inscription: formatDate(evenement.date_final_inscription),
+                date_debut_evenement: formatDate(evenement.date_debut_evenement),
+                date_fin_evenement: formatDate(evenement.date_fin_evenement),
+                motsCles: motsClesArray.map(mot => mot.trim())
+            };
+        }));
+        return res.view('templates/showMyActiveEvent.ejs',
+            {
+                user: user,
+                evenements: evenementsAvecDetails
+            }
+        )
+    } catch (error) {
+        console.error('Erreur lors de la récupération des événements :', error);
+        return res.status(500).send('Erreur interne du serveur');
+    }
+}
 
 //////////////////////////////////////////////////////////// PARTICIPATION A UN EVENT ////////////////////////////////////////////
 
@@ -247,7 +280,9 @@ export const participyEvent = async (req, res) => {
                 'INSERT INTO participation (evenement_id, user_id) VALUES (?, ?)',
                 [eventId, user.id]
             );
-
+            await connection.promise().query('UPDATE evenement SET places_dispo = places_dispo - 1  WHERE id = ?',
+                [ eventId]
+            )
             res.redirect('/'); // Redirection après la création de l'événement
         } catch (error) {
             console.error('Erreur lors de la création de l\'événement :', error);
@@ -273,7 +308,9 @@ export const unsubscribeEvent = async (req, res) => {
                 'DELETE FROM participation WHERE evenement_id =? AND user_id = ?',
                 [eventId, userId]
             );
-
+            await connection.promise().query('UPDATE evenement SET places_dispo = places_dispo + 1  WHERE id = ?',
+                [ eventId]
+            )
             res.redirect('/'); // Redirection après la création de l'événement
         } catch (error) {
             console.error('Erreur lors de la suppression de la participation :', error);
@@ -357,7 +394,60 @@ export const modifierEvenement = async (req, res) => {
         res.redirect('/')
     }
 }
+export const cancelEvent = async (req,res)=>{
+    try {
+        const eventId = req.params.id
+        const user = req.session.get('user');
+        const userId = user.id
+        if (!user) {
+            return res.status(401).send('Utilisateur non authentifié');
+        }
 
+        await connection.promise().query('UPDATE evenement SET statut =  1  WHERE id = ?',
+            [ eventId]
+        )
+        res.redirect('/'); // Redirection après la création de l'événement
+    } catch (error) {
+        console.error('Erreur lors de la suppression de la participation :', error);
+        return res.status(500).send('Erreur interne du serveur');
+    }
+}
+export const activateEvent = async (req,res)=>{
+    try {
+        const eventId = req.params.id
+        const user = req.session.get('user');
+        const userId = user.id
+        if (!user) {
+            return res.status(401).send('Utilisateur non authentifié');
+        }
+
+        await connection.promise().query('UPDATE evenement SET statut =  0  WHERE id = ?',
+            [ eventId]
+        )
+        res.redirect('/'); // Redirection après la création de l'événement
+    } catch (error) {
+        console.error('Erreur lors de la suppression de la participation :', error);
+        return res.status(500).send('Erreur interne du serveur');
+    }
+}
+export const deleteEvent = async (req,res)=>{
+    try {
+        const eventId = req.params.id
+        const user = req.session.get('user');
+        const userId = user.id
+        if (!user) {
+            return res.status(401).send('Utilisateur non authentifié');
+        }
+
+        await connection.promise().query('UPDATE evenement SET statut =  2  WHERE id = ?',
+            [ eventId]
+        )
+        res.redirect('/'); // Redirection après la création de l'événement
+    } catch (error) {
+        console.error('Erreur lors de la suppression de la participation :', error);
+        return res.status(500).send('Erreur interne du serveur');
+    }
+}
 ///////////////////////////// MOTS CLES  /////////////////////////////
 
 // Page de création de mots clés

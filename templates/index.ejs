@@ -4,7 +4,7 @@
             <div class="row row-cols-3 mx-1 ">
                 <% for (const evenement of evenements) { %>
                     
-                        <div class="col mb-3 hover-overlay position-relative rounded">
+                        <div class="col mb-5 hover-overlay position-relative rounded">
                             <a  href="/evenement/<%= evenement.id %>" class="text-decoration-none text-black">
                             <%- include('./shared/evenement.ejs', {evenement}) %>
                         </a>
