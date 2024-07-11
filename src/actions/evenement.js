@@ -83,12 +83,12 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
     }
     if (modify) { // Cas d'une modification
         if (photoFileName === null || photoFileName === undefined) {
-            await connection.promise().query('UPDATE evenement SET titre = ?, lieu = ?, description = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement =?, nb_participants_max = ?, places_dispo =?  WHERE id = ?',
-                [titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants, nbParticipants, eventId]
+            await connection.promise().query('UPDATE evenement SET titre = ?, lieu = ?, description = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement =?, nb_participants_max = ?  WHERE id = ?',
+                [titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants, eventId]
             )
         } else {
-            await connection.promise().query('UPDATE evenement SET titre = ?, lieu = ?, description = ?,photo = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement =?, nb_participants_max = ?, places_dispo =?  WHERE id = ?',
-                [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, nbParticipants, eventId]
+            await connection.promise().query('UPDATE evenement SET titre = ?, lieu = ?, description = ?,photo = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement =?, nb_participants_max = ?  WHERE id = ?',
+                [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, eventId]
             )
         }
 
@@ -186,6 +186,7 @@ export const showEvent = async (req, res) => {
         })
     }
     if(req.method === 'POST'){
+        console.log('post show event')
         const parts = req.parts(); // Récupère les parties du formulaire utilisant multipart fastify
         const modify = true
         await addOrModifyEvent(parts, userId, modify, eventId)
@@ -266,8 +267,8 @@ export const showMyEventPasted = async (req, res) => {
 
 // Lorsque l'utilisateur appuye sur le bouton pour valider sa participation sur la page showEvent
 export const participyEvent = async (req, res) => {
-
-    if (req.method === 'POST') {
+console.log('jarrive ici')
+    if (req.method === 'GET') {
         try {
             const eventId = req.params.id
             const user = req.session.get('user');
@@ -280,7 +281,7 @@ export const participyEvent = async (req, res) => {
                 'INSERT INTO participation (evenement_id, user_id) VALUES (?, ?)',
                 [eventId, user.id]
             );
-            await connection.promise().query('UPDATE evenement SET places_dispo = places_dispo - 1  WHERE id = ?',
+            await connection.promise().query('UPDATE evenement SET nbParticipants = nbParticipants - 1  WHERE id = ?',
                 [ eventId]
             )
             res.redirect('/'); // Redirection après la création de l'événement
@@ -308,7 +309,7 @@ export const unsubscribeEvent = async (req, res) => {
                 'DELETE FROM participation WHERE evenement_id =? AND user_id = ?',
                 [eventId, userId]
             );
-            await connection.promise().query('UPDATE evenement SET places_dispo = places_dispo + 1  WHERE id = ?',
+            await connection.promise().query('UPDATE evenement SET nbParticipants = nbParticipants + 1  WHERE id = ?',
                 [ eventId]
             )
             res.redirect('/'); // Redirection après la création de l'événement

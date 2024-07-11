@@ -1,6 +1,5 @@
 // Fonction servant pour la page de modification d'un évènement
 function initAccueil() {
-    console.log('bonjour')
     // Input file
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('imgToInputFile').addEventListener('click', function () {

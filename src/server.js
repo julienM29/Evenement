@@ -68,7 +68,7 @@ app.get('/motsCles', createKeyWords);
 app.post('/motsCles', createKeyWords);
 // Page d'un évènement
 app.get('/evenement/:id', showEvent);
-app.post('/evenement/:id', participyEvent);
+app.post('/evenement/:id', showEvent);
 
 // Page de modification d'un evenement
 app.get('/modifierEvenement/:id', modifierEvenement);
@@ -81,6 +81,8 @@ app.get('/mesEvenements/passes/:id', showMyEventPasted)
 
 // Page des participations
 app.get('/participations/:id', showParticipations)
+// Inscription à un évènement
+app.get('/participation/:id', participyEvent)
 // Désinscription d'une participation
 app.get('/desinscription/:id',unsubscribeEvent)
 

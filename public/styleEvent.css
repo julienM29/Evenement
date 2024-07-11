@@ -184,3 +184,11 @@ NavBarre
     border : 1px solid #6259da;
     background-color: #d5feff;
 }
+.optionEventForm{
+    border : 1px solid #cccccc;
+    background-color: #ffffff;
+}
+.optionEventForm:hover{
+    border : 1px solid #6259da;
+    background-color: #d5feff;
+}
