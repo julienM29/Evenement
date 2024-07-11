@@ -135,28 +135,40 @@ export const listeEvent = async (req, res) => {
         return res.status(500).send('Erreur interne du serveur');
     }
 }
-// Permet d'afficher un évènement
+// Permet d'afficher un évènement et de le modifier si tu es organisateur
 export const showEvent = async (req, res) => {
     const eventId = req.params.id
     const user = req.session.get('user')
-    const userId = user.id
-    try {
+    const userId = user.id;
+    if (req.method === 'GET') { // Requete GET affichage de la page
+        const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
         const [evenements] = await connection.promise().query(
-        `SELECT evenement.*, 
-             GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles 
-             FROM evenement.evenement 
-             INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
-             INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
-             WHERE evenement.id = ? 
-             GROUP BY evenement.id`, [eventId]
-    );
+            `SELECT evenement.*, 
+                 GROUP_CONCAT(mots_cles.id SEPARATOR ',') AS motsCles,
+                 user.prenom AS organisateurPrenom, user.nom AS organisateurNom
+                 FROM evenement 
+                 INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
+                 INNER JOIN mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
+                 INNER JOIN user ON user.id = evenement.organisateur_id
+                 WHERE evenement.id = ? 
+                 GROUP BY evenement.id`, [eventId]
+        );
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
+            const dateFinalInscription = formatDate(evenement.date_final_inscription);
+            const dateDebutEvenement = formatDate(evenement.date_debut_evenement);
+            const dateFinEvenement = formatDate(evenement.date_fin_evenement);
+            const dateFinalInscriptionInput = formatDateInput(evenement.date_final_inscription);
+            const dateDebutEvenementInput = formatDateInput(evenement.date_debut_evenement);
+            const dateFinEvenementInput = formatDateInput(evenement.date_fin_evenement);
             const motsClesArray = evenement.motsCles.split(',');
             return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
                 ...evenement,
-                date_final_inscription: formatDate(evenement.date_final_inscription),
-                date_debut_evenement: formatDate(evenement.date_debut_evenement),
-                date_fin_evenement: formatDate(evenement.date_fin_evenement),
+                date_final_inscription: dateFinalInscription,
+                date_debut_evenement: dateDebutEvenement,
+                date_fin_evenement: dateFinEvenement,
+                dateDebutEvenementInput: dateDebutEvenementInput,
+                dateFinalInscriptionInput: dateFinalInscriptionInput,
+                dateFinEvenementInput: dateFinEvenementInput,
                 motsCles: motsClesArray.map(mot => mot.trim())
             };
         }));
@@ -168,15 +180,17 @@ export const showEvent = async (req, res) => {
         }
         return res.view('templates/showEvenement.ejs', {
             evenement: evenementsAvecDetails[0],
-            user: user,
-            participation: participation
-    
+            motsCles: motsCles,
+            participation: participation,
+            user: req.session.get('user')
         })
-    } catch (error) {
-        console.error('Erreur lors de la récupération des événements :', error);
-        return res.status(500).send('Erreur interne du serveur');
     }
-   
+    if(req.method === 'POST'){
+        const parts = req.parts(); // Récupère les parties du formulaire utilisant multipart fastify
+        const modify = true
+        await addOrModifyEvent(parts, userId, modify, eventId)
+        res.redirect('/')
+    }
     
 }
 //Page affichant ces évènements actifs
@@ -368,11 +382,13 @@ export const createKeyWords = async (req, res) => {
 // Page pour effectuer des tests
 export const getTest = async (req, res) => {
     const eventId = req.params.id
+    const user = req.session.get('user')
+    const userId = user.id;
     if (req.method === 'GET') { // Requete GET affichage de la page
         const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
-                 GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
+                 GROUP_CONCAT(mots_cles.id SEPARATOR ',') AS motsCles,
                  user.prenom AS organisateurPrenom, user.nom AS organisateurNom
                  FROM evenement 
                  INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
@@ -385,20 +401,39 @@ export const getTest = async (req, res) => {
             const dateFinalInscription = formatDate(evenement.date_final_inscription);
             const dateDebutEvenement = formatDate(evenement.date_debut_evenement);
             const dateFinEvenement = formatDate(evenement.date_fin_evenement);
+            const dateFinalInscriptionInput = formatDateInput(evenement.date_final_inscription);
+            const dateDebutEvenementInput = formatDateInput(evenement.date_debut_evenement);
+            const dateFinEvenementInput = formatDateInput(evenement.date_fin_evenement);
             const motsClesArray = evenement.motsCles.split(',');
             return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
                 ...evenement,
                 date_final_inscription: dateFinalInscription,
                 date_debut_evenement: dateDebutEvenement,
                 date_fin_evenement: dateFinEvenement,
+                dateDebutEvenementInput: dateDebutEvenementInput,
+                dateFinalInscriptionInput: dateFinalInscriptionInput,
+                dateFinEvenementInput: dateFinEvenementInput,
                 motsCles: motsClesArray.map(mot => mot.trim())
             };
         }));
+        const [search] = await connection.promise().query('SELECT * FROM participation WHERE evenement_id =? AND user_id =?', [eventId, userId])
+
+        let participation = false // Permet d'afficher ou d'enlever le bouton de participation à l'évènement
+        if (search.length > 0) {
+            participation = true
+        }
         return res.view('templates/test.ejs', {
             evenement: evenementsAvecDetails[0],
+            motsCles: motsCles,
+            participation: participation,
             user: req.session.get('user')
         })
     }
-
+    if(req.method === 'POST'){
+        const parts = req.parts(); // Récupère les parties du formulaire utilisant multipart fastify
+        const modify = true
+        await addOrModifyEvent(parts, userId, modify, eventId)
+        res.redirect('/')
+    }
 }
 

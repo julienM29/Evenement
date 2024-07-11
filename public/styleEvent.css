@@ -152,6 +152,7 @@ NavBarre
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
+    background-color: #999;
     font-size: 24px;
     font-weight: bold;
     text-align: center;
@@ -175,3 +176,4 @@ NavBarre
     background-color: #9dfcff;
     border-color: #3a50ca;
 }
+

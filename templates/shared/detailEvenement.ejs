@@ -1,100 +1,4 @@
-<!-- <div class="container mt-5" style="width:40%;">
-    <div class="col mb-3">
-        <div class="card border-0">
-            <div class="card-body">
-
-                <div class="w-100 position-relative overflow-hidden hover-zoom-bg image-container">
-                    <img src="http://localhost:3000/images/<%= evenement.photo %>" class=" hover-zoom"
-                        style="max-height: 471px;">
-                </div>
-
-                <h5 class="fs-2 card-title mt-2 mb-3 text-center">
-                    <%= evenement.titre %>
-                </h5>
-                
-                <p class="fs-4 card-text">
-                    <%= evenement.description%>
-                </p>
-                <p class="card-text">
-
-                </p>
-                <div class="w-100 d-flex justify-content-between mb-2">
-                    <div>Lieu : <%= evenement.lieu %>
-                    </div>
-
-                </div>
-                <div class="w-100 mb-2 ">
-                    <div>L'évènement se déroulera du <%= evenement.date_debut_evenement %>
-                            au <%= evenement.date_fin_evenement %>
-                    </div>
-                </div>
-                <div class="w-100 d-flex justify-content-between mb-2 ">
-                    <div>Date limite d'inscription : <%= evenement.date_final_inscription %>
-                    </div>
-                </div>
-
-                <div> Organisateur : <%= evenement.organisateurNom %>
-                        <%= evenement.organisateurPrenom %>
-                </div>
-                <div class="w-100 d-flex justify-content-between mb-2 ">
-                    <div> Nombres de participants maximum : <%= evenement.nb_participants_max %>
-                    </div>
-                    <div> Places disponibles : <%= evenement.places_dispo %>
-                    </div>
-                </div>
-                <% if (locals.user.id===evenement.organisateur_id) { %>
-                    <div class="w-100 d-flex justify-content-center">
-                        <button type="button"
-                            class="mt-2 mb-3  d-flex align-items-center justify-content-center p-1 border rounded-pill border-dashed-inscription bg-white"
-                            style="width:40%;">
-                            <a href="/modifierEvenement/<%= evenement.id %>"
-                                class="fs-5 fw-bold text-dark text-decoration-none d-flex align-items-center">
-                                Modifier l'évènement
-                                <svg class="ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                                    fill="none" viewBox="0 0 14 10" width="40" height="20">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
-                                </svg>
-                            </a>
-                        </button>
-                    </div>
-                    <% } %>
-                        <% if (locals.user.id !==evenement.organisateur_id) { %>
-
-                            <div class="w-100 d-flex justify-content-center">
-                                <% if (participation===false) {%>
-                                    <form action="/evenement/<%= evenement.id %>" method="POST"
-                                        class="mt-2 mb-3 d-flex align-items-center justify-content-center"
-                                        style="width: 60%;">
-                                        <button type="submit"
-                                            class="p-1 border rounded-pill border-dashed-inscription bg-white w-50 d-flex justify-content-center">
-                                            <span class="fs-5 fw-bold text-dark d-flex align-items-center">
-                                                Inscription
-                                                <svg class="ms-2" aria-hidden="true"
-                                                    xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                    viewBox="0 0 14 10" width="40" height="20">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                        stroke-linejoin="round" stroke-width="2"
-                                                        d="M1 5h12m0 0L9 1m4 4L9 9" />
-                                                </svg>
-                                            </span>
-                                        </button>
-                                    </form>
-                            </div>
-                            <% } %>
-                                <% if (participation===true) {%>
-                                    <a href="/desinscription/<%= evenement.id %>" class="text-decoration-none mt-3 mb-2 px-3 py-2 border rounded-pill border-dashed-inscription bg-white fs-5 fw-bold text-dark d-flex align-items-center">
-                                        Se désinscrire
-                                    </a>
-                                       
-                                    <% } %>
-                                <% } %>
-            </div>
-        </div>
-    </div>
-</div> -->
-
-<div class=" w-100 d-flex justify-content-center" style="background-color: rgb(242, 243, 243);">
+<!-- <div class=" w-100 d-flex justify-content-center" style="background-color: rgb(242, 243, 243);">
 
     <div class=" d-flex flex-column mt-4" style="width : 45%;">
         <div class="d-flex mb-2" style="height:440px">
@@ -219,10 +123,10 @@
                 <div class="w-50">
 
                     <div class="mb-2 px-1 fs-5 fw-bold">
-                        Places maximum :
+                        Places disponibles :
                     </div>
-                    <div class="w-75 mx-1 p-1 border d-flex ">
-                        <%= evenement.nb_participants_max %>
+                    <div class="w-75 mx-1 p-1  fs-1">
+                        <%= evenement.places_dispo %>
                     </div>
                 </div>
 
@@ -230,7 +134,7 @@
             <div class="d-flex justify-content-center w-100 bg-white  border-top mt-4">
                 <% if (locals.user.id===evenement.organisateur_id) { %>
                     <button type="button"
-                        class="mt-2 mb-3  d-flex align-items-center justify-content-center p-1 border rounded-pill border-dashed-inscription bg-white"
+                        class="mt-3 mb-3  d-flex align-items-center justify-content-center p-1 border rounded-pill border-dashed-inscription bg-white"
                         style="width:40%;">
                         <a href="/modifierEvenement/<%= evenement.id %>"
                             class="fs-5 fw-bold text-dark text-decoration-none d-flex align-items-center">
@@ -274,4 +178,252 @@
         </div>
 
 
-    </div>
+    </div> -->
+
+<div class=" d-flex flex-column mt-4" style="width : 45%;">
+    <% if (locals.user.id===evenement.organisateur_id) { %> <!-- Si il est l'organisateur-->
+
+        <form action="" method="post" enctype="multipart/form-data" id="modifyForm">
+            <% } %>
+                <div class="d-flex mb-2" style="height:440px">
+                    <div class=" h-100 d-flex flex-column mr-1" style="width : 30%;">
+                        <div
+                            class="h-50 bg-white rounded border mr-1 mb-1 d-flex justify-content-center align-items-center">
+                            <div class="w-75">
+                                <div class="w-100 text-center mb-2 h-25 d-flex justify-content-around ">
+                                    <img src="/images/organisateur.png" width="45" height="45">
+                                    <div class="fw-bold fs-4 d-flex align-items-center">Organisateur</div>
+                                </div>
+                                <div
+                                    class="text-center h-75 d-flex align-items-center justify-content-center fst-italic fs-5">
+                                    <%= evenement.organisateurNom %>
+                                        <%= evenement.organisateurPrenom %>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div
+                            class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-around fs-5">
+                            <!-- <% evenement.motsCles.forEach(mot=> { %>
+                       <div class="">
+                          <%= mot %>
+                       </div>
+                       <% }); %> -->
+                        </div>
+                    </div>
+                    <% if (locals.user.id===evenement.organisateur_id) { %> <!-- Si il est l'organisateur-->
+                        <div class="position-relative containerImg cursor-pointer" style="width:70%; height:100%;"
+                            id="imgToInputFile">
+                            <% } else { %> <!-- Si il n'est pas l'organisateur-->
+                                <div class="position-relative " style="width:70%; height:100%;">
+                                    <% } %>
+                                        <img src="/images/<%= evenement.photo %>"
+                                            class="w-100 h-100 rounded border mx-1 custom-shadow">
+                                        <div class="overlay border p-2 border-white">Changer la photo de l'évènement
+                                        </div>
+                                </div>
+
+
+                        </div>
+                        <% if (locals.user.id===evenement.organisateur_id) { %> <!-- Si il est l'organisateur-->
+                            <input type="text" class="mb-2 w-100 bg-white rounded border px-2 py-3 fw-bold fs-5"
+                                name="titre" id="titre" value="<%= evenement.titre %>">
+                            <input type="text" class="mb-2 w-100 bg-white rounded border px-2 py-3 fs-5" name="lieu"
+                                id="lieu" value="<%= evenement.lieu %>">
+                            <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
+                                <label class="border-b mb-2 fw-bold fs-5" for="motsCles">Mots clés associés à
+                                    l'évènement
+                                    :</label>
+                                <select class="form-select form-select-solid" id="motsCles" name="motsCles[]"
+                                    multiple="multiple" style="width: 100%" data-hide-search="true">
+                                    <% motsCles.forEach(mot=> { %>
+                                        <% const isSelected=evenement.motsCles.includes(String(mot.id)); %>
+                                            <option value="<%= mot.id %>" <%=isSelected ? 'selected' : '' %>><%= mot.nom
+                                                    %>
+                                            </option>
+                                            <% }); %>
+                                </select>
+
+                            </div>
+                            <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
+                                <label class="border-b mb-2 fw-bold fs-5" for="description">Description de
+                                    l'évènement</label>
+                                <textarea class="p-3 rounded border fs-6" name="description" id="description"><%= evenement.description%>
+                          </textarea>
+                            </div>
+                            <% } else { %>
+                                <div class="mb-2 w-100 bg-white rounded border px-2 py-3 fw-bold fs-5">
+                                    <%= evenement.titre %>
+                                </div>
+                                <div class="mb-2 w-100 bg-white rounded border px-2 py-3 fs-5">
+                                    <%= evenement.lieu %>
+                                </div>
+                                <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
+                                    <label class="border-b mb-2 fw-bold fs-5" for="description">Description de
+                                        l'évènement</label>
+                                    <div class="p-3 rounded border fs-6">
+                                        <%= evenement.description %>
+                                    </div>
+                                </div>
+                                <% } %>
+                                    <div
+                                        class="d-flex justify-content-center mb-2 w-100 bg-white rounded border px-2 py-3">
+                                        <div class="w-50 ">
+
+                                            <div class="mb-2 px-1 fs-5 fw-bold">
+                                                Début de l'évènement :
+                                            </div>
+                                            <div class="w-75 mx-1 p-1  d-flex justify-content-between <% if (locals.user.id===evenement.organisateur_id) { %> cursor-pointer dateForm <% } else { %> border<% } %>"
+                                                id="dateDebutDiv">
+                                                <div class="w-25 d-flex justify-content-center align-items-center fs-1 fw-bold "
+                                                    id="debutEvenementJour">
+                                                    <%= evenement.date_debut_evenement.jour %>
+                                                </div>
+                                                <div class="w-50 d-flex flex-column justify-content-center ">
+                                                    <div class="fw-bold" id="debutEvenementMois">
+                                                        <%= evenement.date_debut_evenement.moisNom %>
+                                                            <%= evenement.date_final_inscription.annee %>
+                                                    </div>
+                                                    <div id="debutEvenementHeure">
+                                                        <%= evenement.date_debut_evenement.heures %>:<%=
+                                                                evenement.date_debut_evenement.minutes %>
+                                                    </div>
+                                                </div>
+                                                <div class="w-25 d-flex  justify-content-center align-items-center">
+                                                    <img src="/images/plus.png" width="40" height="40">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="w-50">
+
+                                            <div class="mb-2 px-1 fs-5 fw-bold">
+                                                Fin de l'évènement :
+                                            </div>
+                                            <div class="w-75 mx-1 p-1  d-flex justify-content-between <% if (locals.user.id===evenement.organisateur_id) { %> cursor-pointer dateForm <% } else { %> border<% } %>"
+                                                id="dateFinalDiv">
+
+                                                <div class="w-25 d-flex justify-content-center align-items-center fs-1 fw-bold "
+                                                    id="finEvenementJour">
+                                                    <%= evenement.date_fin_evenement.jour %>
+                                                </div>
+                                                <div class="w-50 d-flex flex-column justify-content-center ">
+                                                    <div class="fw-bold" id="finEvenementMois">
+                                                        <%= evenement.date_fin_evenement.moisNom %>
+                                                            <%= evenement.date_final_inscription.annee %>
+                                                    </div>
+                                                    <div id="finEvenementHeure">
+                                                        <%= evenement.date_fin_evenement.heures %>:<%=
+                                                                evenement.date_fin_evenement.minutes %>
+                                                    </div>
+
+                                                </div>
+                                                <div class="w-25 d-flex  justify-content-center align-items-center">
+                                                    <img src="/images/plus.png" width="40" height="40">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="d-flex flex-column justify-content-center mb-2 w-100 bg-white rounded border px-2 py-3 mb-1">
+                                        <div class="w-100 d-flex">
+                                            <div class="w-50 ">
+                                                <div class="mb-2 px-1 fs-5 fw-bold">
+                                                    Date limite d'inscription :
+                                                </div>
+                                                <div class="w-75 mx-1 p-1 d-flex justify-content-between <% if (locals.user.id===evenement.organisateur_id) { %> cursor-pointer dateForm <% } else { %> border<% } %>"
+                                                    id="dateInscriptionDiv">
+
+                                                    <div class="w-25 d-flex justify-content-center align-items-center fs-1 fw-bold "
+                                                        id="inscriptionEvenementJour">
+                                                        <%= evenement.date_final_inscription.jour %>
+                                                    </div>
+                                                    <div class="w-50 d-flex flex-column justify-content-center ">
+                                                        <div class="fw-bold" id="inscriptionEvenementMois">
+                                                            <%= evenement.date_final_inscription.moisNom %>
+                                                                <%= evenement.date_final_inscription.annee %>
+                                                        </div>
+                                                        <div id="inscriptionEvenementHeure">
+                                                            <%= evenement.date_final_inscription.heures %>:<%=
+                                                                    evenement.date_final_inscription.minutes %>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="w-25 d-flex  justify-content-center align-items-center">
+                                                        <img src="/images/plus.png" width="40" height="40">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="w-50">
+
+                                                <div class="mb-2 px-1 fs-5 fw-bold">
+                                                    Places maximum :
+                                                </div>
+                                                <% if (locals.user.id===evenement.organisateur_id) { %>
+                                                    <input type="number" class="w-75 mx-1 p-1  fs-1"
+                                                        name="nbParticipants" id="nbParticipants"
+                                                        value="<%= evenement.nb_participants_max %>">
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-center w-100 bg-white  border-top mt-4">
+                                            <button class="w-50 mt-3 btn btn-primary mb-3 fs-4 "> Modifier
+                                                l'évènement</button>
+
+                                        </div>
+                                        <% } else { %>
+                                            <div class="w-75 mx-1 p-1 border d-flex fs-1">
+                                                <%= evenement.nb_participants_max %>
+                                            </div>
+                                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center w-100 bg-white  border-top mt-4">
+                    <% if (participation===false) {%>
+                        <form action="/evenement/<%= evenement.id %>" method="POST"
+                            class="mt-2 mb-3 d-flex align-items-center justify-content-center" style="width: 60%;">
+                            <button type="submit"
+                                class="p-1 border rounded-pill border-dashed-inscription bg-white w-50 d-flex justify-content-center">
+                                <span class="fs-5 fw-bold text-dark d-flex align-items-center">
+                                    Inscription
+                                    <svg class="ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                        viewBox="0 0 14 10" width="40" height="20">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9" />
+                                    </svg>
+                                </span>
+                            </button>
+                        </form>
+
+                        <% } %>
+                            <% if (participation===true) {%>
+                                <a href="/desinscription/<%= evenement.id %>"
+                                    class="text-decoration-none mt-3 mb-2 px-3 py-2 border rounded-pill border-dashed-inscription bg-white fs-5 fw-bold text-dark d-flex align-items-center">
+                                    Se désinscrire
+                                </a>
+                                <% } %>
+                </div>
+                <% } %>
+</div>
+<input type="file" id="fileInput" name="photo" style="display: none;">
+
+<input type="datetime-local" id="dateDebutInput" name="dateDebut" class="invisible"
+    value="<%= evenement.dateDebutEvenementInput %>">
+<input type="datetime-local" id="dateFinalInput" name="dateFin" class="invisible"
+    value="<%= evenement.dateFinEvenementInput %>">
+<input type="datetime-local" id="dateInscriptionInput" name="dateInscription" class="invisible"
+    value="<%= evenement.dateFinalInscriptionInput %>">
+
+<% if (locals.user.id===evenement.organisateur_id) { %> <!-- Si il est l'organisateur-->
+    </form>
+    <script>
+        document.getElementById('modifyForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+        })
+        $(document).ready(function () {
+            $('#motsCles').select2({
+                placeholder: "Selectionner des mots clés",
+                allowClear: true
+            });
+        });
+    </script>
+    <script src="/accueil.js" onload="initAccueil()"></script>
+    <% } %>

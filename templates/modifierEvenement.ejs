@@ -7,10 +7,11 @@
     <link href="/style.css" rel="stylesheet">
 
     <title>Document</title>
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <!-- jQuery (nécessaire pour Select2) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
@@ -40,38 +41,39 @@
                                 value="<%= evenement.description%>">
                         </div>
                         <div class="form-group mb-2">
-                            <label class="mb-2" for="motsCles">Mots clés associés à l'évènement</label>
-                            <select class="form-select form-select-solid" id="motsCles" name="motsCles[]" multiple="multiple" style="width: 100%" data-hide-search="true">
-                                <% motsCles.forEach(mot => { %>
-                                    <% const isSelected = evenement.motsCles.includes(String(mot.id)); %>
-                                    <option value="<%= mot.id %>" <%= isSelected ? 'selected' : '' %>><%= mot.nom %></option>
-                                <% }); %>
+                            <label class="mb-2" for="motsCles">Mots clés associés à l'évènement :</label>
+                            <select class="form-select form-select-solid" id="motsCles" name="motsCles[]"
+                                multiple="multiple" style="width: 100%" data-hide-search="true">
+                                <% motsCles.forEach(mot=> { %>
+                                    <% const isSelected=evenement.motsCles.includes(String(mot.id)); %>
+                                        <option value="<%= mot.id %>" <%=isSelected ? 'selected' : '' %>><%= mot.nom %>
+                                        </option>
+                                        <% }); %>
                             </select>
-                            
                         </div>
                         <div class="form-group mb-2">
                             <label class="mb-2" for="photo">Photo illustrant l'évènement</label>
-                            <input type="file" class="form-control" name="photo" id="photo" >
+                            <input type="file" class="form-control" name="photo" id="photo">
                         </div>
                         <div class="form-group mb-2">
                             <label class="mb-2" for="dateInscription">Date finale d'inscription</label>
-                            <input type="datetime-local" class="form-control" name="dateInscription" id="dateInscription"
-                                value="<%= evenement.date_final_inscription %>">
+                            <input type="datetime-local" class="form-control" name="dateInscription"
+                                id="dateInscription" value="<%= evenement.date_final_inscription %>">
                         </div>
                         <div class="form-group mb-2 ">
                             <label class="mb-2" for="dateDebut">Date de début de l'évènement</label>
                             <input type="datetime-local" class="form-control" name="dateDebut" id="dateDebut"
-                            value="<%= evenement.date_debut_evenement %>">
+                                value="<%= evenement.date_debut_evenement %>">
                         </div>
                         <div class="form-group mb-2 ">
                             <label class="mb-2" for="dateFin">Date de fin de l'évènement</label>
                             <input type="datetime-local" class="form-control" name="dateFin" id="dateFin"
-                            value="<%= evenement.date_fin_evenement %>">
+                                value="<%= evenement.date_fin_evenement %>">
                         </div>
                         <div class="form-group mb-2 ">
                             <label class="mb-2" for="nbParticipants">Nombres de participants maximum</label>
                             <input type="number" class="form-control" name="nbParticipants" id="nbParticipants"
-                            value="<%= evenement.nb_participants_max %>">
+                                value="<%= evenement.nb_participants_max %>">
                         </div>
                         <div class="w-100 d-flex justify-content-center">
                             <button class=" mt-3 btn btn-primary mb-3"> Modifier l'évènement</button>

@@ -112,6 +112,7 @@ app.get('/api/events/:id', async (req, res) => {
 });
 // Page test
 app.get('/test/:id', getTest)
+app.post('/test/:id', getTest)
 // Lancement du serveur avec le port choisi etc localhost:3000
 const start = async () => {
     try {
