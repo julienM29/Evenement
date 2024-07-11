@@ -452,8 +452,12 @@ export const deleteEvent = async (req,res)=>{
 
 // Page de création de mots clés
 export const createKeyWords = async (req, res) => {
+    const user = req.session.get('user')
     if (req.method === 'GET') { // Affichage
-        return res.view('templates/motsCles.ejs', { error: null });
+        return res.view('templates/motsCles.ejs', 
+             { user:user,
+                error: null 
+            });
     }
     if (req.method === 'POST') { // Soumission du formulaire
         const nom = req.body.nom

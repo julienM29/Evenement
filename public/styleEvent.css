@@ -140,7 +140,7 @@ NavBarre
   .fc table{
     font-size : 1.10em;
   }
-
+/* Show Event*/
   .custom-shadow{
     box-shadow: 0 0 10px 2px currentColor;
     border-color: inherit;

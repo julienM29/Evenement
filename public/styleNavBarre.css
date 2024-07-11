@@ -1,0 +1,110 @@
+
+/*   
+Style pour la sideBar
+*/
+
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+
+.sidebar-nav {
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar-nav li {
+    padding: 10px;
+    text-indent: 15px;
+}
+
+.sidebar-nav li a {
+    color: #999;
+    text-decoration: none;
+    display: block;
+}
+
+.sidebar-nav li a:hover {
+    color: #fff;
+    background: rgba(92, 67, 67, 0.2);
+    border-left: 2px solid red;
+}
+
+.sidebar-nav li a:focus {
+    text-decoration: none;
+}
+.sidebar-nav li ul {
+    display: none;
+}
+
+/* Montrer les sous-liens lorsque l'élément parent est survolé */
+.sidebar-nav li a:hover  {
+    display: block;
+}
+
+/* 
+NavBarre
+*/
+.border-dashed-success {
+    border: 1px dashed #28a745; /* Couleur de bordure verte */
+}
+
+.border-dashed-success:hover{
+    background-color: #28a745 ;
+    border: 2px dashed #000000;
+    color : white;
+}
+
+.border-dashed-danger {
+    border: 1px dashed #ce4141; /* Couleur de bordure verte */
+}
+.border-dashed-danger:hover{
+    background-color: #ce4141 ;
+    border: 2px dashed #000000;
+    color : white;
+}
+
+.border-dashed-create{
+    border: 1px dashed #49dde2; /* Couleur de bordure verte */
+}
+.border-dashed-create:hover{
+    background-color: #49dde2 ;
+    border: 2px dashed #000000;
+    color : white;
+}
+
+.border-dashed-profil{
+    border: 3px solid  #000000; /* Couleur de bordure verte */
+    background-color: #944f0e;
+    color : white;
+}
+.border-dashed-inscription:hover {
+    background-color: #5ae4e9;
+}
+
+.border-dashed-motCles{
+    background-color: #49dde2 ;
+    
+    color : white;
+}
+.fc-scrollgrid-sync-inner{
+    background-color: #ffffff;
+}
+.fc-col-header-cell-cushion {
+    text-decoration: none; /* Enlever le soulignement */
+    color: #333; /* Changer la couleur du texte */
+  }
+  .fc-daygrid-day-number{
+    text-decoration: none; /* Enlever le soulignement */
+    font-weight: bold;
+  }
+  #fc-dom-1{
+    font-size: 2.50rem;
+  }
+  .fc-toolbar-chunk{
+    font-size : 1.25em;
+  }
+  .fc table{
+    font-size : 1.10em;
+  }
