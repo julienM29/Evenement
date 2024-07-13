@@ -21,7 +21,7 @@
                         <div
                             class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-center fs-5 flex-column">
                             <% if (locals.user.id===evenement.organisateur_id) { %>
-                                <% if (evenement.statut === 0 ) { %>
+                                <% if (evenement.statut===0 ) { %>
 
                                     <a href="/cancel/<%= evenement.id %>"
                                         class="optionEventForm text-decoration-none  mb-2 px-3 py-2  rounded-pill border-dashed-inscription  fs-5 fw-bold text-dark d-flex align-items-center">
@@ -39,7 +39,12 @@
                                                 Supprimer l'évènement
                                             </a>
                                             <% } else { %>
-                                                <% } %>
+                                                <% evenement.motsCles.forEach(mot=> { %>
+                                                    <div class="">
+                                                        <%= motsCles[mot].nom %>
+                                                    </div>
+                                                    <% }); %>
+                                                        <% } %>
                         </div>
                     </div>
                     <% if (locals.user.id===evenement.organisateur_id) { %> <!-- Si il est l'organisateur-->

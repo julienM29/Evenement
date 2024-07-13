@@ -72,7 +72,7 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
     if (!modify) { // Cas d'une insertion
         // Insertion de l'événement dans la table evenement
         const [event] = await connection.promise().query(
-            'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement,date_fin_evenement, nb_participants_max, nbParticipants, statut, organisateur_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement,date_fin_evenement, nb_participants_max, nbParticipants, statut_id, organisateur_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, 0, 0, userId]
         );
 
@@ -116,7 +116,7 @@ export const listeEvent = async (req, res) => {
         const [evenements] = await connection.promise().query(
             `SELECT * 
              FROM evenement
-             WHERE evenement.statut = 0
+             WHERE evenement.statut_id = 1
             `)
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
             return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
@@ -205,7 +205,7 @@ export const showMyEventActive = async (req, res) => {
              FROM evenement.evenement 
              INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
              INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
-             WHERE evenement.organisateur_id = ? AND evenement.statut = 0
+             WHERE evenement.organisateur_id = ? AND evenement.statut_id = 1
              GROUP BY evenement.id`, [userId])
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
             const motsClesArray = evenement.motsCles.split(',');
@@ -239,7 +239,7 @@ export const showMyEventPasted = async (req, res) => {
              FROM evenement.evenement 
              INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
              INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
-             WHERE evenement.organisateur_id = ? AND evenement.statut = 1
+             WHERE evenement.organisateur_id = ? AND evenement.statut_id = 2
              GROUP BY evenement.id`, [userId])
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
             const motsClesArray = evenement.motsCles.split(',');
@@ -404,7 +404,7 @@ export const cancelEvent = async (req,res)=>{
             return res.status(401).send('Utilisateur non authentifié');
         }
 
-        await connection.promise().query('UPDATE evenement SET statut =  1  WHERE id = ?',
+        await connection.promise().query('UPDATE evenement SET statut_id =  3  WHERE id = ?',
             [ eventId]
         )
         res.redirect('/'); // Redirection après la création de l'événement
@@ -422,7 +422,7 @@ export const activateEvent = async (req,res)=>{
             return res.status(401).send('Utilisateur non authentifié');
         }
 
-        await connection.promise().query('UPDATE evenement SET statut =  0  WHERE id = ?',
+        await connection.promise().query('UPDATE evenement SET statut_id =  1  WHERE id = ?',
             [ eventId]
         )
         res.redirect('/'); // Redirection après la création de l'événement
@@ -440,7 +440,7 @@ export const deleteEvent = async (req,res)=>{
             return res.status(401).send('Utilisateur non authentifié');
         }
 
-        await connection.promise().query('UPDATE evenement SET statut =  2  WHERE id = ?',
+        await connection.promise().query('UPDATE evenement SET statut_id =  4  WHERE id = ?',
             [ eventId]
         )
         res.redirect('/'); // Redirection après la création de l'événement

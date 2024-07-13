@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="/style.css" rel="stylesheet">
+    <link href="/styleEvent.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Document</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/dd5559ee21.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <style>
+        input.form-control {
+            outline: none;
+            box-shadow: none !important
+        }
+
+        #chatNotif {
+            margin-left: -18px;
+        }
+
+        #searchInput {
+            padding-left: 32px;
+        }
+    </style>
+
+
+
+</head>
+<%- include('./shared/navBarre.ejs')%>
+    <%- include('./shared/sideBar.ejs')%>
+
+        <body>
+
+
+            <div class=" w-100 d-flex justify-content-center" style="background-color: rgb(242, 243, 243);">
+                <div class=" mt-5 d-flex flex-column" style="width : 40%;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div><a href="#" class="fs-4"><span class="fa-stack fa-lg pull-left"><i
+                                        class="fa-solid fa-bars fa-stack-1x "></i></span></a></span></div>
+                        <div class="fw-bold fs-2">Discussion</div>
+
+                        <button type="button" id="btnModalMessage" class="btn border-0 fs-4" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal" disabled>
+                            <span class="fa-stack fa-lg">
+                                <i class="fa-solid fa-pen-to-square fa-stack-1x"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="mb-2 w-100 d-flex justify-content-center">
+                        <select class="form-select form-select-solid fs-5" id="usersSelect" name="users"
+                            multiple="multiple" style="width: 90%" data-hide-search="true">
+                            <% for (const user of users) {%>
+                                <option value="<%= user.id %>">
+                                    <%=user.nom %>
+                                        <%=user.prenom %>
+                                </option>
+                                <% } %>
+                        </select>
+                    </div>
+                    <div class="mb-2 w-100 d-flex justify-content-center " id="alertSelect">
+                        <div id="selectionStatus" class="text-muted mb-2" style="width: 90%;">Sélectionnez au moins un
+                            utilisateur pour pouvoir écrire un message</div>
+                    </div>
+                    <div class="mb-2 d-flex w-100 mb-5 mt-5" style="height: 10%;">
+                        <% if(locals.user) {%> <!-- Changer pour si il y a juste 2 utilisateurs-->
+                            <div class="d-flex justify-content-center" style="width: 10%;">
+                                <img class="rounded-circle border border-secondary p-1" src="/images/homme.png"
+                                    width="70" height="70">
+                            </div>
+                            <% } else { %> <!-- Changer pour si il y a 2 ou + utilisateur-->
+                                <div class="d-flex position-relative" style="width: 10%;">
+                                    <img src="/images/homme.png"
+                                        class="position-relative top-0 start-0 rounded-circle border border-secondary p-1"
+                                        alt="Image 1" width="60" height="60" style="z-index: 1;">
+                                    <img src="/images/homme.png"
+                                        class="position-absolute bottom-0 end-0 rounded-circle border border-secondary p-1 bg-white"
+                                        alt="Image 2" width="60" height="60" style="z-index: 50;">
+                                </div>
+                                <% } %>
+                                    <div class=" d-flex flex-column justify-content-around p-2" style="width: 90%;">
+                                        <div class="fw-bold fs-5">Mr Blabla Blabla</div>
+                                        <div class="d-flex w-100">
+                                            <div class="me-3 fs-5">Mr X : Bla bla bla bla bla .....</div>
+                                            <div class="fs-5"> envoyé le jeudi à 8:30</div>
+                                        </div>
+                                    </div>
+                    </div>
+                    <!-- Pour chaque discussion -->
+                    <% discussions.forEach(discussion=> { %> 
+                        <div>
+                            <div> Discussion : <%= discussion.id  %></div>
+                            <div>
+                            <% discussion.participants.forEach(participant=> {%>
+                                <%= participant.nom %> <%= participant.prenom %>
+                                <% }) %>
+                            </div>
+                            <!-- Afficher les messages -->
+        <div>
+            <% discussion.messages.forEach(message => { %>
+                <div class="d-flex">
+                    <strong class="me-2"><%= message.nom %> <%= message.prenom %> :</strong>
+                    <p class="me-2"><%= message.message_text %></p>
+                    <small><%= new Date(message.sent_at).toLocaleString() %></small>
+                </div>
+            <% }); %>
+        </div>
+                        </div>
+                    <% }); %>
+     
+                            <!-- Modal -->
+                            <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content" style="height: 240px;">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel"></h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body h-100">
+                                            <form id="messageForm" action="" method="post">
+                                                <input type="hidden" name="selectedUserIds" id="selectedUserIds">
+                                                <textarea class="form-control " name="message"
+                                                    placeholder="Écrivez votre message..." required></textarea>
+
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary">Envoyer le
+                                                        message</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+            </div>
+            <script>
+                $(document).ready(function () {
+                    // Initialiser Select2 sur le sélecteur #usersSelect
+                    $(' #usersSelect').select2({ placeholder: "Rechercher un utilisateur...", allowClear: true }); 
+                                   // Cacher ou afficher le message d'alerte en fonction de la sélection
+                    $('#usersSelect').on('change', function () {
+                        if ($(this).val() &&
+                            $(this).val().length > 0) {
+                            $('#selectionStatus').hide();
+                            $('#btnModalMessage').removeAttr('disabled');
+                            var selectedOptions = $('#usersSelect').select2('data');
+
+                            // Mettre à jour la div avec les options sélectionnées
+                            var displayText = 'Envoyer un message à : ';
+                            let displayIds = [];
+                            selectedOptions.forEach(function (option, index) {
+                                displayIds.push(option.id)
+                                displayText += option.text;
+                                if (index < selectedOptions.length - 1) { displayText += ', '; }
+                            }); // Afficher le texte dans la div $('#exampleModalLabel').text(displayText);
+                                        
+                            $('#selectedUserIds').val(displayIds.join(','));
+                        } else {
+                            $('#selectionStatus').show(); $('#btnModalMessage').attr('disabled', true);
+                        }
+                    }); // Ouvrir le modal lorsque le bouton est cliqué
+                    $('#btnModalMessage').on('click', function () {
+                        if
+                            (!$(this).hasClass('disabled')) { $('#exampleModal').modal('show'); }
+                    });
+                });
+            </script>
+
+                                        <%- include('./shared/footer.ejs')%>

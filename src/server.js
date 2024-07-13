@@ -16,6 +16,7 @@ import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
 import { modifyProfil, showProfil } from "./actions/profil.js";
 import { showParticipations } from "./actions/participation.js";
 import connection from "./database.js";
+import { showMessage } from "./discussion.js";
 
 
 const app = fastify() // Création d'une instance fastify
@@ -98,6 +99,11 @@ app.get('/profil/:id', showProfil);
 // Page de modification de profil
 app.get('/modification/profil/:id', modifyProfil)
 app.post('/modification/profil/:id', modifyProfil)
+
+//Page de messagerie
+app.get('/messagerie/:id', showMessage)
+app.post('/messagerie/:id', showMessage)
+
 
 // Page API Event
 app.get('/api/events/:id', async (req, res) => { 
