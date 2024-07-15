@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/style.css" rel="stylesheet">
-    <link href="/styleEvent.css" rel="stylesheet">
+
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <title>Document</title>
@@ -18,6 +18,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="/styleEvent.css" rel="stylesheet">
     <style>
         input.form-control {
             outline: none;
@@ -31,12 +32,13 @@
         #searchInput {
             padding-left: 32px;
         }
-        
+
         .image-containerTest {
             width: 75px;
             height: 75px;
             position: relative;
         }
+
         .image-containerTest img {
 
             border-radius: 50%;
@@ -44,7 +46,6 @@
             padding: 5px;
             background-color: white;
         }
-        
     </style>
 
 
@@ -63,8 +64,8 @@
                                         class="fa-solid fa-bars fa-stack-1x "></i></span></a></span></div>
                         <div class="fw-bold fs-2">Discussion</div>
 
-                        <button type="button" id="btnModalMessage" class="btn border-0 fs-4" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal" disabled>
+                        <button type="button" id="btnModalMessage" class="btn border-0 fs-4 text-primary"
+                            data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>
                             <span class="fa-stack fa-lg">
                                 <i class="fa-solid fa-pen-to-square fa-stack-1x"></i>
                             </span>
@@ -87,33 +88,34 @@
                     </div>
 
                     <% discussions.forEach(discussion=> { %>
-                        <a href="/discussion/<%= discussion.id %>" class="text-black text-decoration-none">
-                        <div class="mb-2 d-flex w-100 mb-3 mt-5">
+                        <a href="/discussion/<%= discussion.id %>"
+                            class="mb-2 d-flex w-100 mb-3 mt-5 lienDiscussion  text-black text-decoration-none">
                             <% if(discussion.participants.length===2 ) {%>
                                 <% discussion.participants.forEach(participant=> {%>
                                     <% if(participant.id !==user.id ){ %>
-                                        <!-- Changer pour si il y a juste 2 utilisateurs-->
                                         <div class="d-flex image-containerTest">
                                             <img class="rounded-circle border border-secondary p-1"
                                                 src="/images/<%=participant.photo  %>" width="70" height="70">
                                         </div>
                                         <% } %>
                                             <% }) %>
-                                                <% } %> <!-- Changer pour si il y a 2 ou + utilisateur-->
+                                                <% } %>
                                                     <% if(discussion.participants.length> 2 ) {%>
                                                         <% let displayedCount=0; %>
-                                                        <div class="d-flex image-containerTest">
+                                                            <div class="d-flex image-containerTest">
                                                                 <% discussion.participants.forEach(participant=> {%>
                                                                     <% if(participant.id !==user.id && displayedCount <
                                                                         2){ %>
                                                                         <% if(displayedCount===0){ %>
                                                                             <img src="/images/<%=participant.photo  %>"
-                                                                            class="position-relative top-0 start-0 rounded-circle border border-secondary p-1"
-                                                                            alt="Image 1" width="50" height="50" style="z-index: 1;">
+                                                                                class="position-relative top-0 start-0 rounded-circle border border-secondary p-1"
+                                                                                alt="Image 1" width="50" height="50"
+                                                                                style="z-index: 1;">
                                                                             <% } else { %>
                                                                                 <img src="/images/<%=participant.photo  %>"
-                                                                                class="position-absolute bottom-0 end-0 rounded-circle border border-secondary p-1 bg-white"
-                                                                                alt="Image 2" width="50" height="50" style="z-index: 50;">
+                                                                                    class="position-absolute bottom-0 end-0 rounded-circle border border-secondary p-1 bg-white"
+                                                                                    alt="Image 2" width="50" height="50"
+                                                                                    style="z-index: 50;">
                                                                                 <% } %>
                                                                                     <% displayedCount++; %>
                                                                                         <% } %>
@@ -121,16 +123,18 @@
                                                             </div>
                                                             <% } %>
 
-                                                                <div class=" d-flex flex-column justify-content-around p-2"
+                                                                <div class=" d-flex flex-column justify-content-around p-2 rounded border-0 zoneTexteMessage ms-2"
                                                                     style="width: 90%;">
-                                                                        <div class="fw-bold fs-5">
-                                                                            <% 
-            const participantsList = discussion.participants
-                .filter(participant => participant.id !== user.id) // Exclure l'utilisateur actuel
-                .map(participant => `${participant.nom} ${participant.prenom}`); 
-        %>
-        <%= participantsList.join(', ') %>
-                                                                        </div>
+                                                                    <div class="fw-bold fs-4">
+                                                                        <% const
+                                                                            participantsList=discussion.participants
+                                                                            .filter(participant=> participant.id !==
+                                                                            user.id)
+                                                                            .map(participant => `${participant.nom}
+                                                                            ${participant.prenom}`);
+                                                                            %>
+                                                                            <%= participantsList.join(', ') %>
+                                                                    </div>
                                                                         <div class="d-flex w-100">
                                                                             <% discussion.messages.forEach(message=> {
                                                                                 %>
@@ -138,83 +142,82 @@
                                                                                         <%= message.prenom %> :
                                                                                 </div>
                                                                                 <div class="me-3 fs-5">
-                                                                                    <%= message.message_text %>
+                                                                                     <%= message.message_text.length > 50 ? message.message_text.slice(0, 50) + ' ...' : message.message_text %>
                                                                                 </div>
-                                                                                <div class="fs-5">
-                                                                                    ⸱ <%= new
-                                                                                        Date(message.sent_at).toLocaleString()
-                                                                                        %>
-                                                                                </div>
-                                                                                <% }); %>
-                                                                        </div>
+                                                                    <div class="fs-5">
+                                                                        ⸱ <%= new Date(message.sent_at).toLocaleString()
+                                                                            %>
+                                                                    </div>
+                                                                    <% }); %>
                                                                 </div>
-                        </div>
-                        <% }); %>
+                </div>
+                </a>
+                <% }); %>
 
-                            <!-- Modal -->
-                            <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content" style="height: 240px;">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel"></h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body h-100">
-                                            <form id="messageForm" action="" method="post">
-                                                <input type="hidden" name="selectedUserIds" id="selectedUserIds">
-                                                <textarea class="form-control " name="message"
-                                                    placeholder="Écrivez votre message..." required></textarea>
+                    <!-- Modal -->
+                    <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content" style="height: 240px;">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="titreModal"></h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body h-100">
+                                    <form id="messageForm" action="" method="post">
+                                        <input type="hidden" name="selectedUserIds" id="selectedUserIds">
+                                        <textarea class="form-control " name="message"
+                                            placeholder="Écrivez votre message..." required></textarea>
 
-                                                <div class="modal-footer">
-                                                    <button type="submit" class="btn btn-primary">Envoyer le
-                                                        message</button>
-                                                </div>
-                                            </form>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Envoyer le
+                                                message</button>
                                         </div>
-                                    </div>
+                                    </form>
                                 </div>
                             </div>
-                            
-                </div>
-               
+                        </div>
+                    </div>
             </div>
-            
+
             <script>
                 $(document).ready(function () {
                     // Initialiser Select2 sur le sélecteur #usersSelect
                     $(' #usersSelect').select2({ placeholder: "Rechercher un utilisateur...", allowClear: true });
-                    // Cacher ou afficher le message d'alerte en fonction de la sélection
-                    $('#usersSelect').on('change', function () {
+                    //Cacher ou afficher le messaged'alerte en fonction de la sélection
+                    $('#usersSelect').on('change', function
+                        () {
                         if ($(this).val() &&
                             $(this).val().length > 0) {
                             $('#selectionStatus').hide();
                             $('#btnModalMessage').removeAttr('disabled');
-                            var selectedOptions = $('#usersSelect').select2('data');
-
+                            var selectedOptions =
+                                $('#usersSelect').select2('data');
                             // Mettre à jour la div avec les options sélectionnées
-                            var displayText = 'Envoyer un message à : ';
+                            var displayText = 'Envoyer un message à:';
                             let displayIds = [];
-                            selectedOptions.forEach(function (option, index) {
+                            selectedOptions.forEach(function
+                                (option, index) {
                                 displayIds.push(option.id)
                                 displayText += option.text;
                                 if (index < selectedOptions.length - 1) { displayText += ', '; }
-                            }); // Afficher le texte dans la div $('#exampleModalLabel').text(displayText);
-
+                            }); // Afficher le texte dans la div
+                            $('#titreModal').text(displayText);
                             $('#selectedUserIds').val(displayIds.join(','));
-                            $('#exampleModalLabel').text(displayText);
                         } else {
-                            $('#selectionStatus').show(); $('#btnModalMessage').attr('disabled', true);
+                            $('#selectionStatus').show();
+                            $('#btnModalMessage').attr('disabled',
+                                true);
                         }
                     }); // Ouvrir le modal lorsque le bouton est cliqué
                     $('#btnModalMessage').on('click', function () {
-                        if (!$(this).hasClass('disabled')) {
+                        if
+                            (!$(this).hasClass('disabled')) {
                             $('#exampleModal').modal('show');
-
                         }
                     });
-                });
+                }); 
             </script>
 
             <%- include('./shared/footer.ejs')%>

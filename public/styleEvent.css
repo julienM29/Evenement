@@ -193,19 +193,22 @@ NavBarre
     background-color: #d5feff;
 }
 
-
-.messages-container {
-    max-height: 500px;
-    overflow-y: auto;
-    padding: 10px;
-    border: 1px solid #ccc;
+/* Page de discussion*/
+.conteneurMessage {
+    position: relative; /* Ensure the parent has position relative */
 }
-.message-card {
-    background: #f9f9f9;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+.position-absolute-bottom {
+    position: absolute;
+    bottom: 0;
+    z-index: 2;
+    background-color: white; /* Optional: to make sure it overlays correctly */
+    width: 100%; /* Ensure the form takes the full width of the parent */
+    padding: 10px; /* Optional: for spacing */
+}
+.messageDiscussion {
+    max-width: 650px; /* Définir la largeur maximale du conteneur de texte */
+    word-wrap: break-word; /* Permet de renvoyer à la ligne si un mot dépasse la largeur */
+    white-space: normal; /* Permet au texte de revenir à la ligne normalement */
 }
 
 .buttonDiscussion{
@@ -219,3 +222,44 @@ NavBarre
     border: 1px solid #5f5f5f;
 }
 
+/* CSS SELECT2 PAGE MESSAGERIE*/
+
+.select2-container--default .select2-selection--multiple {
+    padding: 10px 10px 10px 10px;
+    border: 2px solid #9fa4aa; /* Bordure personnalisée */
+    border-radius: 8px; /* Rayon des coins arrondi */
+    background-color: #f8f9fa; /* Couleur de fond personnalisée */
+}
+
+/* Modifier la couleur de fond et le texte des éléments sélectionnés */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #b2b7bd; /* Couleur de fond des éléments sélectionnés */
+    color: #ffffff; /* Couleur du texte des éléments sélectionnés */
+    border: none; /* Supprimer les bordures des éléments sélectionnés */
+    font-weight: bold;
+    
+}
+
+/* Modifier la couleur et la taille du texte dans la zone de sélection */
+.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    color: #495057; /* Couleur du texte */
+    font-size: 20px; /* Taille de la police */
+}
+
+/* Modifier l'apparence des options dans le menu déroulant */
+.select2-container--default .select2-results__option {
+    padding: 10px; /* Espacement des options */
+}
+
+/* Modifier l'apparence des options sélectionnées dans le menu déroulant */
+.select2-container--default .select2-results__option--highlighted {
+    background-color: #007bff; /* Couleur de fond au survol */
+    color: #ffffff; /* Couleur du texte au survol */
+}
+.select2-selection__choice__remove{
+    font-size: 24px;
+}
+
+.lienDiscussion:hover .zoneTexteMessage{
+ background-color: #ffffff;
+}

@@ -29,7 +29,8 @@ const formatDate = (dateString) => {
         moisNom,
         heures,
         minutes,
-        dateFormatee: `${jour}-${mois}-${annee} ${heures}:${minutes}`
+        dateFormatee: `${jour}-${mois}-${annee} ${heures}:${minutes}`,
+        dateBDD: `${annee}-${mois}-${jour} ${heures}:${minutes}`
     };
 };
 const formatDateInput = (dateString) => {
@@ -39,6 +40,7 @@ const formatDateInput = (dateString) => {
     const annee = dateObj.getFullYear();
     const heures = dateObj.getHours().toString().padStart(2, '0');
     const minutes = dateObj.getMinutes().toString().padStart(2, '0');
+    
 
     return `${annee}-${mois}-${jour}T${heures}:${minutes}`;
 };
@@ -194,6 +196,70 @@ export const showEvent = async (req, res) => {
     }
     
 }
+// Page évaluation d'un évènement 
+export const makeEvaluation = async (req,res)=>{
+    const user = req.session.get('user')
+    const eventId = req.params.id
+    const userId = user.id
+    const [result] = await connection.promise().query(
+        `SELECT * FROM evaluation
+        WHERE evenement_id =? AND user_id =?`,[eventId,userId]
+    );
+    if (req.method === 'GET') { // Requete GET affichage de la page
+        const [evenements] = await connection.promise().query(
+            `SELECT evenement.*, 
+                 GROUP_CONCAT(mots_cles.id SEPARATOR ',') AS motsCles,
+                 user.prenom AS organisateurPrenom, user.nom AS organisateurNom
+                 FROM evenement 
+                 INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
+                 INNER JOIN mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
+                 INNER JOIN user ON user.id = evenement.organisateur_id
+                 WHERE evenement.id = ? 
+                 GROUP BY evenement.id`, [eventId]
+        );
+        
+        const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
+            const dateDebutEvenement = formatDate(evenement.date_debut_evenement);
+            const dateFinEvenement = formatDate(evenement.date_fin_evenement);
+            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
+                ...evenement,
+                date_debut_evenement: dateDebutEvenement,
+                date_fin_evenement: dateFinEvenement,
+            };
+        }));
+        const [search] = await connection.promise().query('SELECT * FROM participation WHERE evenement_id =? AND user_id =?', [eventId, userId])
+
+        let participation = false // Permet d'afficher ou d'enlever le bouton de participation à l'évènement
+        if (search.length > 0) {
+            participation = true
+        }
+        return res.view('templates/evaluation.ejs', {
+            evenement: evenementsAvecDetails[0],
+            participation: participation,
+            evaluation: result[0],
+            user: user
+        })
+    }
+    if(req.method === 'POST'){
+        const commentaire = req.body.commentaire
+        const evaluation = req.body.evaluation
+        const now = new Date();
+        const nowFormatted = formatDate(now)
+        console.log(evaluation)
+        if(result.length !== 0){
+            await connection.promise().query(
+                'UPDATE evaluation SET evaluation = ?, commentaire = ?, date = ?  WHERE id = ?',
+                [ evaluation,  commentaire, nowFormatted.dateBDD, result[0].id]
+            ); 
+        } else {
+            await connection.promise().query(
+                'INSERT INTO evaluation (evenement_id, user_id, evaluation, commentaire, date) VALUES (?,?,?,?,?)',
+                [eventId, userId, evaluation,  commentaire, nowFormatted.dateBDD]
+            );
+        }
+        
+        res.redirect('/')    }
+}
 //Page affichant ces évènements actifs
 export const showMyEventActive = async (req, res) => {
     const user = req.session.get('user')
@@ -267,7 +333,6 @@ export const showMyEventPasted = async (req, res) => {
 
 // Lorsque l'utilisateur appuye sur le bouton pour valider sa participation sur la page showEvent
 export const participyEvent = async (req, res) => {
-console.log('jarrive ici')
     if (req.method === 'GET') {
         try {
             const eventId = req.params.id

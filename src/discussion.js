@@ -170,7 +170,7 @@ export const showMessage = async (req, res) => {
                 );
             }
         } else {
-            discussionId = existingDiscussions[0].id;
+            discussionId = existingDiscussions[0].discussion_id;
         }
 
         // Créer un message id id_discussion sender_id message_text sent_at

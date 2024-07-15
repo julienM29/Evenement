@@ -1,71 +1,55 @@
-<%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
-    <div class=" w-100 d-flex  justify-content-center" style="background-color: rgb(242, 243, 243);">
-        <div class="w-50 d-flex flex-column align-items-center">            
-        <h2 class="mt-5 mb-4">
-            <% 
-            const participantsList = discussion.participants
-                .filter(participant => participant.id !== user.id) 
-                .map(participant => `${participant.nom} ${participant.prenom}`); 
-        %>
-        <%= participantsList.join(', ') %>
+<%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' }) %>
+<div class="w-100 d-flex justify-content-center" style="background-color: rgb(242, 243, 243);">
+    <div class="w-50 mt-5 d-flex flex-column align-items-center position-relative" id="conteneurMessage" style="max-height: 1050px; overflow-y: auto; padding: 10px; border: 1px solid #ccc;">
+        <h2 class="mt-4 mb-4 fw-bold">
+            <% const participantsList = discussion.participants.filter(participant => participant.id !== user.id).map(participant => `${participant.nom} ${participant.prenom}`); %>
+            <%= participantsList.join(', ') %>
         </h2>
-        <div class="d-flex flex-column w-100">   
-            <% 
-            let jourMessageAvant = null;
-            let moisMessageAvant = null;
-        %>        
-                <% discussion.messages.forEach(message=> { %>      
-                    <% if(jourMessageAvant !== message.sent_at.jour){ %>
-                        <div class="w-100 d-flex justify-content-center mb-2 fs-4 mt-4">
-                            <%= message.sent_at.jour %> <%= message.sent_at.moisNom  %> <%= message.sent_at.annee  %>
+        <div class="d-flex flex-column w-100">
+            <% let jourMessageAvant = null; let moisMessageAvant = null; %>
+            <% discussion.messages.forEach(message => { %>
+                <% if (jourMessageAvant !== message.sent_at.jour) { %>
+                    <div class="w-100 d-flex justify-content-center mb-4 fs-4 mt-4">
+                        <%= message.sent_at.jour %> <%= message.sent_at.moisNom %> <%= message.sent_at.annee %>
+                    </div>
+                <% } %>
+                <% if (message.sender_id === user.id) { %>
+                    <div class="d-flex w-100 justify-content-start mb-3">
+                        <div class="me-3 fs-5">
+                            <img src="/images/<%= message.photo %>" width="50" height="50" class="rounded-circle border border-secondary p-1 bg-white">
                         </div>
-                        <% } %>
-                    <% if(message.sender_id === user.id){ %>
-                        <div class="d-flex w-100 justify-content-start mb-2">
-                            <div class="me-3 fs-5">
+                        <div class="me-3 fs-5 d-flex align-items-end">
+                            <div class="rounded px-3 py-2 messageDiscussion"><%= message.message_text %></div>
+                        </div>
+                        <div class="fs-5 d-flex align-items-end">
+                            ⸱ <%= message.sent_at.heures %>:<%= message.sent_at.minutes %>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="d-flex w-100 justify-content-end mb-2">
+                        <div class="fs-5 d-flex align-items-end me-3">
+                            <%= message.sent_at.heures %>:<%= message.sent_at.minutes %> ⸱ 
+                        </div>
+                        <div class="me-3 fs-5 d-flex align-items-end">
+                            <div class="rounded px-3 py-2 messageDiscussion"><%= message.message_text %></div>
+                        </div>
                         <img src="/images/<%= message.photo %>" width="50" height="50" class="rounded-circle border border-secondary p-1 bg-white">
                     </div>
-                    <div class="me-3 fs-5 d-flex align-items-end " >
-                        <div class=" rounded px-3 py-2 messageDiscussion"> <%= message.message_text %></div>
-                        
-                    </div>
-                    <div class="fs-5 d-flex align-items-end">
-                        ⸱ <%= message.sent_at.heures %>:<%= message.sent_at.minutes %>
-                    </div>
-                            
-                        <% } else {%>
-                        <div class="d-flex w-100 justify-content-end mb-2">
-                            <div class="me-3 fs-5">
-                    </div>
-                    <div class="me-3 fs-5 d-flex align-items-end">
-                        <div class=" rounded px-3 py-2 messageDiscussion"> <%= message.message_text %></div>
-                    </div>
-                    <div class="fs-5 d-flex align-items-end">
-                        ⸱ <%= message.sent_at.heures %>:<%= message.sent_at.minutes %>
-                    </div>
-                    <img src="/images/<%= message.photo %>" width="50" height="50" class="rounded-circle border border-secondary p-1 bg-white">
-                            <% } %>
-                    
-                    
+                <% } %>
+                <% jourMessageAvant = message.sent_at.jour %>
+                <% moisMessageAvant = message.sent_at.mois %>
+            <% }); %>
+        </div>
+        <div class="w-100 d-flex justify-content-center position-absolute bottom-0" style="z-index: 2;">
+            <div class="w-75 d-flex justify-content-center">
+                <div class="w-100 d-flex justify-content-between align-items-center mt-4">
+                    <form action="" method="post" class="w-100">
+                        <input type="text" name="message" class="px-2 p-2 rounded-pill" style="width: 80%;">
+                        <button type="submit" class="mb-4 px-2 p-2 rounded-pill buttonDiscussion fw-bold fs-5" style="width: 12.5%;">Send <i class="fas fa-paper-plane"></i></button>
+                    </form>
                 </div>
-                <%  jourMessageAvant = message.sent_at.jour %>
-                <%  moisMessageAvant = message.sent_at.mois %>
-                    <% }); %> 
-                    <div class="w-100 d-flex  justify-content-center">
-                        <div class="w-75 d-flex justify-content-center"> 
-                            
-                        <div class="w-100 d-flex justify-content-between align-items-center mt-4">
-                            <form action="" method="post"></form>
-                                <input type="text" name="message" class="px-2 p-2 rounded-pill" style="width: 80%;">
-                            <button type="submit" class="px-2 p-2 rounded-pill buttonDiscussion fw-bold fs-5" style="width: 12.5%;"> Send <i class="fas fa-paper-plane"></i></button>
-                        </form> 
-                        </div>
-                    </div> 
-                
-                            </div>
-                        </div>
-            
-
+            </div>
+        </div>
     </div>
-
-    <%- include('./shared/footer.ejs')%>
+</div>
+<%- include('./shared/footer.ejs') %>
