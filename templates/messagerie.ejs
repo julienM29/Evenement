@@ -31,6 +31,20 @@
         #searchInput {
             padding-left: 32px;
         }
+        
+        .image-containerTest {
+            width: 75px;
+            height: 75px;
+            position: relative;
+        }
+        .image-containerTest img {
+
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            padding: 5px;
+            background-color: white;
+        }
+        
     </style>
 
 
@@ -71,52 +85,72 @@
                         <div id="selectionStatus" class="text-muted mb-2" style="width: 90%;">Sélectionnez au moins un
                             utilisateur pour pouvoir écrire un message</div>
                     </div>
-                    <div class="mb-2 d-flex w-100 mb-5 mt-5" style="height: 10%;">
-                        <% if(locals.user) {%> <!-- Changer pour si il y a juste 2 utilisateurs-->
-                            <div class="d-flex justify-content-center" style="width: 10%;">
-                                <img class="rounded-circle border border-secondary p-1" src="/images/homme.png"
-                                    width="70" height="70">
-                            </div>
-                            <% } else { %> <!-- Changer pour si il y a 2 ou + utilisateur-->
-                                <div class="d-flex position-relative" style="width: 10%;">
-                                    <img src="/images/homme.png"
-                                        class="position-relative top-0 start-0 rounded-circle border border-secondary p-1"
-                                        alt="Image 1" width="60" height="60" style="z-index: 1;">
-                                    <img src="/images/homme.png"
-                                        class="position-absolute bottom-0 end-0 rounded-circle border border-secondary p-1 bg-white"
-                                        alt="Image 2" width="60" height="60" style="z-index: 50;">
-                                </div>
-                                <% } %>
-                                    <div class=" d-flex flex-column justify-content-around p-2" style="width: 90%;">
-                                        <div class="fw-bold fs-5">Mr Blabla Blabla</div>
-                                        <div class="d-flex w-100">
-                                            <div class="me-3 fs-5">Mr X : Bla bla bla bla bla .....</div>
-                                            <div class="fs-5"> envoyé le jeudi à 8:30</div>
+
+                    <% discussions.forEach(discussion=> { %>
+                        <a href="/discussion/<%= discussion.id %>" class="text-black text-decoration-none">
+                        <div class="mb-2 d-flex w-100 mb-3 mt-5">
+                            <% if(discussion.participants.length===2 ) {%>
+                                <% discussion.participants.forEach(participant=> {%>
+                                    <% if(participant.id !==user.id ){ %>
+                                        <!-- Changer pour si il y a juste 2 utilisateurs-->
+                                        <div class="d-flex image-containerTest">
+                                            <img class="rounded-circle border border-secondary p-1"
+                                                src="/images/<%=participant.photo  %>" width="70" height="70">
                                         </div>
-                                    </div>
-                    </div>
-                    <!-- Pour chaque discussion -->
-                    <% discussions.forEach(discussion=> { %> 
-                        <div>
-                            <div> Discussion : <%= discussion.id  %></div>
-                            <div>
-                            <% discussion.participants.forEach(participant=> {%>
-                                <%= participant.nom %> <%= participant.prenom %>
-                                <% }) %>
-                            </div>
-                            <!-- Afficher les messages -->
-        <div>
-            <% discussion.messages.forEach(message => { %>
-                <div class="d-flex">
-                    <strong class="me-2"><%= message.nom %> <%= message.prenom %> :</strong>
-                    <p class="me-2"><%= message.message_text %></p>
-                    <small><%= new Date(message.sent_at).toLocaleString() %></small>
-                </div>
-            <% }); %>
-        </div>
+                                        <% } %>
+                                            <% }) %>
+                                                <% } %> <!-- Changer pour si il y a 2 ou + utilisateur-->
+                                                    <% if(discussion.participants.length> 2 ) {%>
+                                                        <% let displayedCount=0; %>
+                                                        <div class="d-flex image-containerTest">
+                                                                <% discussion.participants.forEach(participant=> {%>
+                                                                    <% if(participant.id !==user.id && displayedCount <
+                                                                        2){ %>
+                                                                        <% if(displayedCount===0){ %>
+                                                                            <img src="/images/<%=participant.photo  %>"
+                                                                            class="position-relative top-0 start-0 rounded-circle border border-secondary p-1"
+                                                                            alt="Image 1" width="50" height="50" style="z-index: 1;">
+                                                                            <% } else { %>
+                                                                                <img src="/images/<%=participant.photo  %>"
+                                                                                class="position-absolute bottom-0 end-0 rounded-circle border border-secondary p-1 bg-white"
+                                                                                alt="Image 2" width="50" height="50" style="z-index: 50;">
+                                                                                <% } %>
+                                                                                    <% displayedCount++; %>
+                                                                                        <% } %>
+                                                                                            <% }) %>
+                                                            </div>
+                                                            <% } %>
+
+                                                                <div class=" d-flex flex-column justify-content-around p-2"
+                                                                    style="width: 90%;">
+                                                                        <div class="fw-bold fs-5">
+                                                                            <% 
+            const participantsList = discussion.participants
+                .filter(participant => participant.id !== user.id) // Exclure l'utilisateur actuel
+                .map(participant => `${participant.nom} ${participant.prenom}`); 
+        %>
+        <%= participantsList.join(', ') %>
+                                                                        </div>
+                                                                        <div class="d-flex w-100">
+                                                                            <% discussion.messages.forEach(message=> {
+                                                                                %>
+                                                                                <div class="me-3 fs-5">
+                                                                                        <%= message.prenom %> :
+                                                                                </div>
+                                                                                <div class="me-3 fs-5">
+                                                                                    <%= message.message_text %>
+                                                                                </div>
+                                                                                <div class="fs-5">
+                                                                                    ⸱ <%= new
+                                                                                        Date(message.sent_at).toLocaleString()
+                                                                                        %>
+                                                                                </div>
+                                                                                <% }); %>
+                                                                        </div>
+                                                                </div>
                         </div>
-                    <% }); %>
-     
+                        <% }); %>
+
                             <!-- Modal -->
                             <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                                 aria-hidden="true">
@@ -142,13 +176,16 @@
                                     </div>
                                 </div>
                             </div>
+                            
                 </div>
+               
             </div>
+            
             <script>
                 $(document).ready(function () {
                     // Initialiser Select2 sur le sélecteur #usersSelect
-                    $(' #usersSelect').select2({ placeholder: "Rechercher un utilisateur...", allowClear: true }); 
-                                   // Cacher ou afficher le message d'alerte en fonction de la sélection
+                    $(' #usersSelect').select2({ placeholder: "Rechercher un utilisateur...", allowClear: true });
+                    // Cacher ou afficher le message d'alerte en fonction de la sélection
                     $('#usersSelect').on('change', function () {
                         if ($(this).val() &&
                             $(this).val().length > 0) {
@@ -164,17 +201,20 @@
                                 displayText += option.text;
                                 if (index < selectedOptions.length - 1) { displayText += ', '; }
                             }); // Afficher le texte dans la div $('#exampleModalLabel').text(displayText);
-                                        
+
                             $('#selectedUserIds').val(displayIds.join(','));
+                            $('#exampleModalLabel').text(displayText);
                         } else {
                             $('#selectionStatus').show(); $('#btnModalMessage').attr('disabled', true);
                         }
                     }); // Ouvrir le modal lorsque le bouton est cliqué
                     $('#btnModalMessage').on('click', function () {
-                        if
-                            (!$(this).hasClass('disabled')) { $('#exampleModal').modal('show'); }
+                        if (!$(this).hasClass('disabled')) {
+                            $('#exampleModal').modal('show');
+
+                        }
                     });
                 });
             </script>
 
-                                        <%- include('./shared/footer.ejs')%>
+            <%- include('./shared/footer.ejs')%>
