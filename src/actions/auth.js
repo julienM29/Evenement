@@ -50,11 +50,12 @@ export const loginAction = async (req, res) => {
         const email = req.body.email
         const motDePasse = req.body.password
         const [user] = await connection.promise().query('SELECT * FROM user WHERE email = ?', [email]);
+        const user_id = user[0].id
         if (await argon2.verify(user[0].password, motDePasse)) { // Vérification du mot de passe avec le hashage grâce à argon2
             req.session.set('user', {
-                id: user[0].id,
+                id: user_id,
                 nom: user[0].nom,
-                prenom: user[0].prenom
+                prenom: user[0].prenom,
             })
             return res.redirect('/')
         }

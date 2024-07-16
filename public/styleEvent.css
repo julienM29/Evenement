@@ -258,3 +258,23 @@ body {
     word-wrap: break-word; /* Permet de renvoyer à la ligne si un mot dépasse la largeur */
     white-space: normal; /* Permet au texte de revenir à la ligne normalement */
 }
+
+/********************* */
+.lienNotificationMessage {
+    position: relative;
+    display: inline-block; /* Pour que le conteneur s'adapte à la taille de son contenu */
+}
+.badge-notification {
+    position: absolute; /* Positionner absolument par rapport au conteneur parent */
+    top: -10px; /* Ajuster la position du badge en haut */
+    right: -10px; /* Ajuster la position du badge à droite */
+    background-color: red; /* Couleur de fond du badge, vous pouvez changer en bg-danger si vous utilisez Bootstrap */
+    color: white; /* Couleur du texte */
+    border-radius: 50%; /* Badge circulaire */
+    padding: 0.35em 0.5em; /* Taille du badge */
+    font-size: 0.90em; /* Taille du texte du badge */
+    font-weight: bold; /* Mettre le texte en gras */
+    line-height: 1; /* Hauteur de ligne pour centrer le texte */
+    text-align: center; /* Aligner le texte au centre */
+    z-index: 10; /* Assurez-vous que le badge est au-dessus de l'icône */
+}

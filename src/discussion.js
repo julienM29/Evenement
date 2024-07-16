@@ -54,6 +54,11 @@ const discussionsWithMessages = await Promise.all(discussions.map(async discussi
          LIMIT 1`,
         [discussion.id]
     );
+    const [notification_messagerie] = await connection.promise().query(`SELECT COUNT(*) AS notification_count
+            FROM evenement.notification_messagerie 
+            WHERE user_id = ? AND is_read = 0 AND discussion_id = ?`, [user_id, discussion.id]);
+           const notificationCount = notification_messagerie[0].notification_count
+           console.log(notificationCount)
     // Récupération des informations des participants pour chaque discussion
     const [participants] = await connection.promise().query(
         `SELECT *, user.nom AS nom , user.prenom AS prenom , user.photo AS photo, user.id AS id
@@ -66,7 +71,8 @@ const discussionsWithMessages = await Promise.all(discussions.map(async discussi
     return {
         ...discussion,
         messages: messages,
-        participants: participants
+        participants: participants,
+        notificationCount: notificationCount
     };
 }));
 return discussionsWithMessages
@@ -114,11 +120,19 @@ async function getDiscussion (discussion_id, user_id){
     return discussionsWithMessages
     }
 
+ export async function nbNotifMessage  (user_id){
+    const [notification_messagerie] = await connection.promise().query(`SELECT COUNT(*) AS notification_count
+            FROM evenement.notification_messagerie 
+            WHERE user_id = ? and is_read = 0`, [user_id]);
+           const notificationCount = notification_messagerie[0].notification_count
+           console.log(notificationCount)
+           return notificationCount
+}
 // Page de messagerie    
-export const showMessage = async (req, res) => {
+export const showMessagerie = async (req, res) => {
     const user = req.session.get('user')
     const user_id = user.id
-
+    const nbNotifMessageNonLus = await nbNotifMessage(user_id)
     if (req.method === 'GET') {
         // Utilisateurs pour le select (choix pour envoyer un message)
         const [users] = await connection.promise().query('SELECT * FROM user ');
@@ -128,6 +142,7 @@ export const showMessage = async (req, res) => {
             user: user,
             users: users,
             discussions: discussionsWithMessages,
+            nbNotifMessageNonLus: nbNotifMessageNonLus
         });
     }
     if (req.method === "POST") {
@@ -183,30 +198,66 @@ export const showMessage = async (req, res) => {
     }
 }
 // Page affichant une discussion
-export const showDiscussion = async (req,res)=>{
-    const discussion_id = req.params.id
-    const user = req.session.get('user')
-    const user_id = user.id
+export const showDiscussion = async (req, res) => {
+    const discussion_id = req.params.id;
+    const user = req.session.get('user');
+    const user_id = user.id;
+    const nbNotifMessageNonLus = await nbNotifMessage(user_id)
+    try {
+        if (req.method === 'GET') {
+            // Récupérer les utilisateurs pour le choix de l'envoi de message
+            const [users] = await connection.promise().query('SELECT * FROM user');
+            await connection.promise().query(
+                'UPDATE notification_messagerie SET is_read = 1  WHERE user_id = ? AND discussion_id =?',
+                [ user_id,  discussion_id]
+            ); 
+            // Récupérer les discussions avec les messages
+            const discussionsWithMessages = await getDiscussion(discussion_id, user_id);
+            
+            return res.view('templates/discussion.ejs', {
+                user: user,
+                users: users,
+                discussion: discussionsWithMessages[0],
+                nbNotifMessageNonLus: nbNotifMessageNonLus
+            });
+        }
+        
+        if (req.method === 'POST') {
+            const now = getFormattedDate();
+            const message = req.body.message;
+            
+            // Insérer le message dans la table des messages
+            const [result] = await connection.promise().query(
+                'INSERT INTO message (discussion_id, sender_id, message_text, sent_at) VALUES (?, ?, ?, ?)',
+                [discussion_id, user_id, message, now]
+            );
 
-    if (req.method === 'GET') {
-        // Utilisateurs pour le select (choix pour envoyer un message)
-        const [users] = await connection.promise().query('SELECT * FROM user ');
-        const discussionsWithMessages = await getDiscussion(discussion_id,user_id)
+            // Récupérer les participants de la discussion
+            const [participants] = await connection.promise().query(
+                'SELECT user_id FROM discussion_participants WHERE discussion_id = ? AND user_id != ?',
+                [discussion_id,user_id]
+            );
 
-        return res.view('templates/discussion.ejs', {
-            user: user,
-            users: users,
-            discussion: discussionsWithMessages[0],
-        });
+            // Préparer les données pour l'insertion des notifications
+            const notificationValues = participants.map(participant => [
+                participant.user_id, // Assurez-vous que `user_id` est correctement extrait
+                discussion_id,
+                now
+            ]);
+
+            // Insérer les notifications pour tous les participants
+            await connection.promise().query(
+                'INSERT INTO notification_messagerie (user_id, discussion_id, created_at) VALUES ?',
+                [notificationValues]
+            );
+
+            // Redirection après l'insertion
+            if (result) {
+                res.redirect(`/discussion/${discussion_id}`);
+            }
+        }
+    } catch (err) {
+        console.error('Erreur lors du traitement de la demande:', err);
+        res.status(500).send('Une erreur est survenue.');
     }
-    if(req.method === 'POST'){
-        const now = getFormattedDate()
-        const message = req.body.message
-        const [result] = await connection.promise().query('INSERT INTO message ( discussion_id, sender_id, message_text, sent_at) VALUES (?,?,?,?)',
-            [discussion_id, user_id, message, now]);
-        if (result) {
-            res.redirect(`/discussion/${discussion_id}`)
-        } 
-    }
-
 }

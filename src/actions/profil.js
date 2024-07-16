@@ -3,6 +3,7 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import fs from "node:fs";
 import { pipeline } from "stream/promises"; // Utilisation de pipeline pour la copie du fichier
+import { nbNotifMessage } from "../discussion.js";
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 const imagesDir = join(rootDir, 'public', 'images');
@@ -10,13 +11,17 @@ const imagesDir = join(rootDir, 'public', 'images');
 // Page Affichant le profil
 export const showProfil = async (req, res) => {
     const user = req.session.get('user')
+    const user_id = user.id
+    const nbNotifMessageNonLus = await nbNotifMessage(userId)
+
     const postId = req.params.id; // Récupération de l'id dans l'url
 
     const [results] = await connection.promise().query('SELECT * FROM user WHERE id =? ', [postId]);
     const userProfil = results[0] // On récupère les résultats SQL dans un tableau donc obligé de passer par une variable tableau
     return res.view('templates/profil.ejs', {
         userProfil: userProfil,
-        user: user
+        user: user,
+        nbNotifMessageNonLus:nbNotifMessageNonLus
     })
 }
 // Page de modification d'un profil
@@ -24,14 +29,16 @@ export const modifyProfil = async (req, res) => {
     const userId = req.params.id; // Récupération de l'id du profil dans l'url
     if (req.method === 'GET') { // Si on affiche la page
         const user = req.session.get('user') // User connecté
-        
+        const user_id = user.id
+        const nbNotifMessageNonLus = await nbNotifMessage(userId)
 
         const [results] = await connection.promise().query('SELECT * FROM user WHERE id =? ', [userId]); // Récupération des infos
         const userProfil = results[0] // On récupère les résultats SQL dans un tableau donc obligé de passer par une variable tableau
 
         return res.view('templates/modificationProfil.ejs', { // Retourne la vue
             userProfil: userProfil,
-            user: user
+            user: user,
+            nbNotifMessageNonLus: nbNotifMessageNonLus
         })
     }
     if (req.method === 'POST') { // Si le formulaire est submit
