@@ -146,7 +146,7 @@ export const showEvent = async (req, res) => {
         const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
-                 GROUP_CONCAT(mots_cles.id SEPARATOR ',') AS motsCles,
+                 GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
                  user.prenom AS organisateurPrenom, user.nom AS organisateurNom
                  FROM evenement 
                  INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
@@ -175,7 +175,7 @@ export const showEvent = async (req, res) => {
             };
         }));
         const [search] = await connection.promise().query('SELECT * FROM participation WHERE evenement_id =? AND user_id =?', [eventId, userId])
-
+        
         let participation = false // Permet d'afficher ou d'enlever le bouton de participation à l'évènement
         if (search.length > 0) {
             participation = true
@@ -205,6 +205,10 @@ export const makeEvaluation = async (req,res)=>{
         `SELECT * FROM evaluation
         WHERE evenement_id =? AND user_id =?`,[eventId,userId]
     );
+    let evaluation = result[0]
+    let evaluationLength = result.length
+    console.log(result)
+    console.log(evaluationLength)
     if (req.method === 'GET') { // Requete GET affichage de la page
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
@@ -236,7 +240,8 @@ export const makeEvaluation = async (req,res)=>{
         return res.view('templates/evaluation.ejs', {
             evenement: evenementsAvecDetails[0],
             participation: participation,
-            evaluation: result[0],
+            evaluation: evaluation,
+            evaluationLength: evaluationLength,
             user: user
         })
     }

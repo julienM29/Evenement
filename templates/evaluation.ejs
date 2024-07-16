@@ -1,6 +1,9 @@
 <%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
     <div class=" w-100 d-flex justify-content-center" style="background-color: rgb(242, 243, 243);">
-
+        <% if(evenement.statut !== 2){%>
+            <div class="w-100 align-items-center d-flex justify-content-center  fs-4"> Vous ne pouvez pas évaluer l'évènement "<b> <%= evenement.titre %></b>" car il n'est pas terminé.</div>
+            <%  }%>
+        <% if(evenement.statut === 2){%>
         <div class=" d-flex flex-column mt-4" style="width : 45%;">
             <div class="d-flex mb-2" style="height:440px">
                 <div class=" h-100 d-flex flex-column mr-1" style="width : 30%;">
@@ -101,6 +104,9 @@
                     </div>
                 </div>
             </div>
+            <% }%>
+            <% if(evenement.statut === 2){%>
+
             <div class="mb-2 w-100 bg-white rounded border d-flex flex-column align-items-center px-2 py-3 fs-5">
                 <div class="mb-4 fw-bold fs-4">Évaluer l'évènement</div>
                 <form action="" method="post" class="w-100 d-flex justify-content-center">
@@ -151,8 +157,10 @@
                     </div>
                 </form>
             </div>
+        
+            <% } %>
         </div>
-        <% if (evaluation.evaluation) { %>
+        <% if (evaluationLength > 0) { %>
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     let etoile = parseInt(document.getElementById('rating').value, 10); // Assurez-vous que etoile est un nombre entier

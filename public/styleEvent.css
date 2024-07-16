@@ -1,4 +1,4 @@
-/* Ensure the container handles overflow */
+/********************** INDEX *********************/
 .hover-zoom-bg {
     transition: background-color 0.3s ease, border-radius 0.3s ease; /* Smooth transition for background color */
     overflow: hidden; /* Hide overflow to keep image contained */
@@ -6,7 +6,7 @@
     border-radius : 30px;
 }
 
-/* Add zoom effect on hover */
+/*  zoom effet  hover */
 .hover-zoom {
     transition: transform 0.3s ease, border-radius 0.3s ease; /* Smooth transition for zoom */
     max-height: 300px; /* Set your desired max height */
@@ -15,13 +15,13 @@
     object-position: 50% 30%;;
 }
 
-/* Apply zoom on hover */
+/*  zoom hover */
 .hover-zoom-bg:hover .hover-zoom {
     transform: scale(1.1); /* Zoom effect */
     
 }
 
-/* Change background color on hover */
+/* Change background color hover */
 .hover-zoom-bg:hover {
     background-color: #ffffff; /* Darker grey on hover */
 }
@@ -31,11 +31,7 @@
     max-height: 300px; /* Set your desired max height for the container */
 }
 
-/*   
-Style pour la sideBar
-*/
-
-
+/************************************* Style pour la sideBar ********************************/
 body {
     font-family: 'Roboto', sans-serif;
 }
@@ -75,9 +71,7 @@ body {
     display: block;
 }
 
-/* 
-NavBarre
-*/
+/*******************************  NavBarre ***************************/
 .border-dashed-success {
     border: 1px dashed #28a745; /* Couleur de bordure verte */
 }
@@ -140,7 +134,7 @@ NavBarre
   .fc table{
     font-size : 1.10em;
   }
-/* Show Event*/
+/*************************************** Show Event ****************************/
   .custom-shadow{
     box-shadow: 0 0 10px 2px currentColor;
     border-color: inherit;
@@ -193,24 +187,8 @@ NavBarre
     background-color: #d5feff;
 }
 
-/* Page de discussion*/
-.conteneurMessage {
-    position: relative; /* Ensure the parent has position relative */
-}
-.position-absolute-bottom {
-    position: absolute;
-    bottom: 0;
-    z-index: 2;
-    background-color: white; /* Optional: to make sure it overlays correctly */
-    width: 100%; /* Ensure the form takes the full width of the parent */
-    padding: 10px; /* Optional: for spacing */
-}
-.messageDiscussion {
-    max-width: 650px; /* Définir la largeur maximale du conteneur de texte */
-    word-wrap: break-word; /* Permet de renvoyer à la ligne si un mot dépasse la largeur */
-    white-space: normal; /* Permet au texte de revenir à la ligne normalement */
-}
 
+/************************************* PAGE DE DISCUSSION *****************************/
 .buttonDiscussion{
     background-color: #3df9ff;
 }
@@ -222,7 +200,7 @@ NavBarre
     border: 1px solid #5f5f5f;
 }
 
-/* CSS SELECT2 PAGE MESSAGERIE*/
+/****************************** CSS SELECT2 PAGE MESSAGERIE ************************/
 
 .select2-container--default .select2-selection--multiple {
     padding: 10px 10px 10px 10px;
@@ -241,15 +219,13 @@ NavBarre
 }
 
 /* Modifier la couleur et la taille du texte dans la zone de sélection */
-.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
     color: #495057; /* Couleur du texte */
-    font-size: 20px; /* Taille de la police */
+    font-size: 22px; /* Taille de la police */
 }
 
 /* Modifier l'apparence des options dans le menu déroulant */
-.select2-container--default .select2-results__option {
-    padding: 10px; /* Espacement des options */
-}
+
 
 /* Modifier l'apparence des options sélectionnées dans le menu déroulant */
 .select2-container--default .select2-results__option--highlighted {
@@ -262,4 +238,23 @@ NavBarre
 
 .lienDiscussion:hover .zoneTexteMessage{
  background-color: #ffffff;
+}
+
+
+/********************   Page de discussion ************************/
+.conteneurMessage {
+    position: relative; /* Ensure the parent has position relative */
+}
+.position-absolute-bottom {
+    position: absolute;
+    bottom: 0;
+    z-index: 2;
+    background-color: white; /* Optional: to make sure it overlays correctly */
+    width: 100%; /* Ensure the form takes the full width of the parent */
+    padding: 10px; /* Optional: for spacing */
+}
+.messageDiscussion {
+    max-width: 650px; /* Définir la largeur maximale du conteneur de texte */
+    word-wrap: break-word; /* Permet de renvoyer à la ligne si un mot dépasse la largeur */
+    white-space: normal; /* Permet au texte de revenir à la ligne normalement */
 }

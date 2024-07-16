@@ -21,29 +21,31 @@
                         <div
                             class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-center fs-5 flex-column">
                             <% if (locals.user.id===evenement.organisateur_id) { %>
-                                <% if (evenement.statut===0 ) { %>
+                                <% if (evenement.statut=== 1 ) { %>
                                     <a href="/cancel/<%= evenement.id %>"
                                         class="optionEventForm text-decoration-none  mb-2 px-3 py-2  rounded-pill border-dashed-inscription  fs-5 fw-bold text-dark d-flex align-items-center">
                                         Annuler l'évènement
                                     </a>
-                                    <% } else { %>
+                                    <% } %>
+                                    <% if(evenement.statut=== 3){ %>
                                         <a href="/activate/<%= evenement.id %>"
                                             class="optionEventForm text-decoration-none  mb-2 px-3 py-2  rounded-pill border-dashed-inscription  fs-5 fw-bold text-dark d-flex align-items-center">
                                             Réactiver l'évènement
                                         </a>
                                         <% } %>
-
                                             <a href="/delete/<%= evenement.id %>"
                                                 class="optionEventForm text-decoration-none mt-3  px-3 py-2  rounded-pill border-dashed-inscription  fs-5 fw-bold text-dark d-flex align-items-center">
                                                 Supprimer l'évènement
                                             </a>
-                                            <% } else { %>
-                                                <% evenement.motsCles.forEach(mot=> { %>
-                                                    <div class="">
-                                                        <%= motsCles[mot].nom %>
-                                                    </div>
-                                                    <% }); %>
-                                                        <% } %>
+                                            <% } %>
+                            <% if (locals.user.id!==evenement.organisateur_id) { %>
+                                
+                                <div style="width: 90%; height: 90%;" class="d-flex flex-nowrap">
+                                        <div class="">
+                                            <%= evenement.motsCles.join(', ') %>
+                                        </div>
+                                </div>
+                            <% } %>
                         </div>
                     </div>
                     <% if (locals.user.id===evenement.organisateur_id) { %> <!-- Si il est l'organisateur-->
