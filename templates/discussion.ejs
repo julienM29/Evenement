@@ -27,13 +27,13 @@
                     </div>
                 <% } else { %>
                     <div class="d-flex w-100 justify-content-end mb-2">
-                        <div class="fs-5 d-flex align-items-end me-3">
-                            <%= message.sent_at.heures %>:<%= message.sent_at.minutes %> ⸱ 
-                        </div>
                         <div class="me-3 fs-5 d-flex align-items-end">
                             <div class="rounded px-3 py-2 messageDiscussion"><%= message.message_text %></div>
                         </div>
                         <img src="/images/<%= message.photo %>" width="50" height="50" class="rounded-circle border border-secondary p-1 bg-white">
+                        <div class="fs-5 d-flex align-items-end me-3">
+                            ⸱ <%= message.sent_at.heures %>:<%= message.sent_at.minutes %> 
+                        </div>
                     </div>
                 <% } %>
                 <% jourMessageAvant = message.sent_at.jour %>

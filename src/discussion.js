@@ -202,7 +202,7 @@ export const showDiscussion = async (req, res) => {
     const discussion_id = req.params.id;
     const user = req.session.get('user');
     const user_id = user.id;
-    const nbNotifMessageNonLus = await nbNotifMessage(user_id)
+
     try {
         if (req.method === 'GET') {
             // Récupérer les utilisateurs pour le choix de l'envoi de message
@@ -211,6 +211,7 @@ export const showDiscussion = async (req, res) => {
                 'UPDATE notification_messagerie SET is_read = 1  WHERE user_id = ? AND discussion_id =?',
                 [ user_id,  discussion_id]
             ); 
+            const nbNotifMessageNonLus = await nbNotifMessage(user_id)
             // Récupérer les discussions avec les messages
             const discussionsWithMessages = await getDiscussion(discussion_id, user_id);
             
