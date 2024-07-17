@@ -179,8 +179,8 @@ body {
     background-color: #d5feff;
 }
 .optionEventForm{
-    border : 1px solid #cccccc;
-    background-color: #ffffff;
+    border : 1px solid #9c9c9c;
+    background-color: #e7e7e7;
 }
 .optionEventForm:hover{
     border : 1px solid #6259da;
@@ -220,7 +220,7 @@ body {
 
 /* Modifier la couleur et la taille du texte dans la zone de sélection */
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-    color: #495057; /* Couleur du texte */
+    color: #423c3c; /* Couleur du texte */
     font-size: 22px; /* Taille de la police */
 }
 

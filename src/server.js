@@ -11,7 +11,7 @@ import formbody from '@fastify/formbody';
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyMultipart from '@fastify/multipart';
 
-import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, showMyEventActive, unsubscribeEvent, cancelEvent, activateEvent, showMyEventPasted, deleteEvent, makeEvaluation } from "./actions/evenement.js";
+import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, showMyEventActive, unsubscribeEvent, cancelEvent, activateEvent, showMyEventPasted, deleteEvent, makeEvaluation, invitationEvent } from "./actions/evenement.js";
 import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
 import { modifyProfil, showProfil } from "./actions/profil.js";
 import { showParticipations } from "./actions/participation.js";
@@ -93,6 +93,8 @@ app.get('/cancel/:id',cancelEvent)
 app.get('/activate/:id',activateEvent)
 // Supprimer un évènement
 app.get('/delete/:id',deleteEvent)
+// Partager un évènement ( invitation )
+app.post('/invitation/:id', invitationEvent)
 
 // Profil de l'utilisateur
 app.get('/profil/:id', showProfil);

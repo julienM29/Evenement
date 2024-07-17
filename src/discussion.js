@@ -58,7 +58,6 @@ const discussionsWithMessages = await Promise.all(discussions.map(async discussi
             FROM evenement.notification_messagerie 
             WHERE user_id = ? AND is_read = 0 AND discussion_id = ?`, [user_id, discussion.id]);
            const notificationCount = notification_messagerie[0].notification_count
-           console.log(notificationCount)
     // Récupération des informations des participants pour chaque discussion
     const [participants] = await connection.promise().query(
         `SELECT *, user.nom AS nom , user.prenom AS prenom , user.photo AS photo, user.id AS id
@@ -94,6 +93,7 @@ async function getDiscussion (discussion_id, user_id){
              FROM message m
              JOIN user u ON m.sender_id = u.id
              WHERE m.discussion_id = ?
+             ORDER BY sent_at ASC
              `,
             [discussion.id]
         );
@@ -125,7 +125,13 @@ async function getDiscussion (discussion_id, user_id){
             FROM evenement.notification_messagerie 
             WHERE user_id = ? and is_read = 0`, [user_id]);
            const notificationCount = notification_messagerie[0].notification_count
-           console.log(notificationCount)
+           return notificationCount
+}
+export async function nbNotifEvenement  (user_id){
+    const [notification_evenement] = await connection.promise().query(`SELECT COUNT(*) AS notification_count
+            FROM evenement.notification_evenement 
+            WHERE user_id = ? and is_read = 0`, [user_id]);
+           const notificationCount = notification_evenement[0].notification_count
            return notificationCount
 }
 // Page de messagerie    

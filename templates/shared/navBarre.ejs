@@ -43,31 +43,53 @@
 
                                     <a href="/messagerie/<%= user.id %>" class="lienNotificationMessage text-body">
                                         <i class="fas fa-message fa-2x"></i>
-                                        <% if(nbNotifMessageNonLus > 9){ %>
+                                        <% if(nbNotifMessageNonLus> 9){ %>
                                             <span class="badge rounded-pill badge-notification bg-danger">9+</span>
-                                            <% }  %>
-                                        <% if(nbNotifMessageNonLus > 0 && nbNotifMessageNonLus < 9){ %>
-                                            <span class="badge rounded-pill badge-notification bg-danger"><%= nbNotifMessageNonLus %></span>
-                                        <% } %>
+                                            <% } %>
+                                                <% if(nbNotifMessageNonLus> 0 && nbNotifMessageNonLus < 9){ %>
+                                                        <span class="badge rounded-pill badge-notification bg-danger">
+                                                            <%= nbNotifMessageNonLus %>
+                                                        </span>
+                                                        <% } %>
                                     </a>
                                     <% } else {%>
                                         <a href="" class="lienNotificationMessage text-body">
                                             <i class="fas fa-message fa-2x"></i>
                                         </a>
-                                        <% } %>
+
 
                                 </div>
-                                <div id="logoProfil">
-                                    <li
-                                        class="ms-5 mr-5 h-100 fw-bolder navButton px-2 rounded-pill border-dashed-profil d-flex align-items-center ">
-                                        <div class="nav-link fs-4 text-dark p-1" id="profilButton">
-                                            <%= user.prenom.charAt(0).toUpperCase() %>
-                                                <%= user.nom.charAt(0).toUpperCase() %>
-                                        </div>
-                                    </li>
-                                </div>
-
                                 <% } %>
+                                <% if(nbNotifEventNonLus){ %>
+                                    <div class="d-flex justify-content-between" style="width: 15%;" id="notifications">
+    
+                                        <a href="/messagerie/<%= user.id %>" class="lienNotificationMessage text-body">
+                                            <i class="fas fa-envelope fa-2x"></i>
+                                            <% if(nbNotifMessageNonLus> 9){ %>
+                                                <span class="badge rounded-pill badge-notification bg-danger">9+</span>
+                                                <% } %>
+                                                    <% if(nbNotifEventNonLus> 0 && nbNotifEventNonLus < 9){ %>
+                                                            <span class="badge rounded-pill badge-notification bg-danger">
+                                                                <%= nbNotifEventNonLus %>
+                                                            </span>
+                                                            <% } %>
+                                        </a>
+                                        <% } else {%>
+                                            <a href="" class="lienNotificationMessage text-body">
+                                                <i class="fas fa-envelope fa-2x"></i>
+                                            </a>
+    
+    
+                                    </div>
+                                    <% } %>
+                                    <div id="logoProfil">
+                                        <li
+                                            class="ms-5 mr-5 h-100 fw-bolder navButton px-2 rounded-pill border-dashed-profil d-flex align-items-center ">
+                                                <img class="rounded-circle border border-secondary p-1" src="/images/<%= user.photo %>" width="40" height="40">
+                                        </li>
+                                    </div>
+
+                                    <% } %>
             </div>
         </div>
     </div>

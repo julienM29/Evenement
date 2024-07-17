@@ -56,6 +56,7 @@ export const loginAction = async (req, res) => {
                 id: user_id,
                 nom: user[0].nom,
                 prenom: user[0].prenom,
+                photo: user[0].photo
             })
             return res.redirect('/')
         }

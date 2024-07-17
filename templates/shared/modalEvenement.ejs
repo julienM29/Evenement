@@ -1,0 +1,27 @@
+<div class="modal fade" id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="height: 300px; width: 600px;">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold fs-4" id="titreModal"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body h-100">
+                <form id="invitationForm" action="/invitation/<%= evenement.id%>" method="post">
+                    <label class="mb-3 fs-5 fw-bold" for="users">Sélectionner des personnes à inviter : </label>
+                    <div class="w-100 d-flex justify-content-center">
+                    <select class="form-select form-select-solid fs-5 mb-4" id="usersSelect" name="users" multiple="multiple" style="width: 90%" data-hide-search="true">
+                        <% for (const user of users) { %>
+                            <option value="<%= user.id %>">
+                                <%= user.nom %> <%= user.prenom %>
+                            </option>
+                        <% } %>
+                    </select>
+                </div>
+                    <div class="modal-footer mt-5 mb-3 w-100 d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary">Envoyer l'invitation</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

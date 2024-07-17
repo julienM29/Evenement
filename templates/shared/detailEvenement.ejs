@@ -210,7 +210,7 @@
                                     </div>
                 </div>
 
-                <div class="d-flex justify-content-center w-100 bg-white  border-top mt-4">
+                <div class="d-flex justify-content-around w-100 bg-white  border-top mt-4">
                     <% if (participation===false) {%>
                         <a href="/participation/<%= evenement.id %>"
                             class="optionEventForm text-decoration-none mt-3 mb-2 px-3 py-2  rounded-pill border-dashed-inscription  fs-3 fw-bold text-dark d-flex align-items-center">
@@ -224,12 +224,16 @@
                                     Se désinscrire
                                 </a>
                                 <% } %>
+                                <button type="button" id="btnModalMessage" class="btn border-0 fs-4 text-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" >
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fa-solid fa-share-from-square fa-stack-1x"></i>
+                                    </span>
+                                </button>                               
                 </div>
                 <% } %>
 </div>
-
+<% if (locals.user.id===evenement.organisateur_id) { %>
 <input type="file" id="fileInput" name="photo" style="display: none;">
-
 <input type="datetime-local" id="dateDebutInput" name="dateDebut" class="invisible"
     value="<%= evenement.dateDebutEvenementInput %>">
 <input type="datetime-local" id="dateFinalInput" name="dateFin" class="invisible"
@@ -237,10 +241,14 @@
 <input type="datetime-local" id="dateInscriptionInput" name="dateInscription" class="invisible"
     value="<%= evenement.dateFinalInscriptionInput %>">
 
-<% if (locals.user.id===evenement.organisateur_id) { %> <!-- Si il est l'organisateur-->
     </form>
     <% } %>
 
+
+    <% if (locals.user.id!==evenement.organisateur_id) { %>
+ <!-- Modal -->
+ <%- include('./modalEvenement.ejs') %>
+ <% } %>
 
         </div>
         <% if (locals.user.id===evenement.organisateur_id) { %> <!-- Si il est l'organisateur-->
@@ -261,4 +269,19 @@
                 });
             </script>
             <script src="/accueil.js" onload="initAccueil()"></script>
-            <% } %>
+        <% } %>
+        <script>
+            $(document).ready(function () {
+                $('#usersSelect').select2({ placeholder: "Rechercher un utilisateur...", allowClear: true });
+                $('#usersSelect').select2({
+                    dropdownParent: $('#exampleModal')
+                });
+                // Ouvrir le modal lorsque le bouton est cliqué
+                $('#btnModalMessage').on('click', function () {
+                        $('#exampleModal').modal('show');
+                        
+                let displayText = `Partager l'évènement : <%= evenement.titre%>`
+                $('#titreModal').text(displayText);
+                });
+            });
+        </script>

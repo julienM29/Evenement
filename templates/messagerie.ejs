@@ -9,8 +9,8 @@
     <title>Document</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/dd5559ee21.js" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
-        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Select2 JS -->
@@ -135,25 +135,7 @@
             <% }); %>
 
             <!-- Modal -->
-            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content" style="height: 240px;">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="titreModal"></h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body h-100">
-                            <form id="messageForm" action="" method="post">
-                                <input type="hidden" name="selectedUserIds" id="selectedUserIds">
-                                <textarea class="form-control" name="message" placeholder="Écrivez votre message..." required></textarea>
-                                <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary">Envoyer le message</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <%- include('./shared/modalMessagerie.ejs') %>
         </div>
     </div>
 

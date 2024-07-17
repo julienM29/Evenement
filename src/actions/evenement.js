@@ -3,7 +3,7 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import fs from "node:fs";
 import { pipeline } from "stream/promises"; // Utilisation de pipeline pour la copie du fichier
-import { nbNotifMessage } from "../discussion.js";
+import { nbNotifEvenement, nbNotifMessage } from "../discussion.js";
 
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
@@ -118,6 +118,7 @@ export const listeEvent = async (req, res) => {
     const user_id = user.id
     try {
         const nbNotifMessageNonLus = await nbNotifMessage(user_id)
+        const nbNotifEventNonLus = await nbNotifEvenement(user_id)
         // Récupérer tous les événements
         const [evenements] = await connection.promise().query(
             `SELECT * 
@@ -135,7 +136,8 @@ export const listeEvent = async (req, res) => {
         return res.view('/templates/index.ejs', { // Appel du fichier ejs
             evenements: evenementsAvecDetails || [],
             user: user,
-            nbNotifMessageNonLus: nbNotifMessageNonLus
+            nbNotifMessageNonLus: nbNotifMessageNonLus,
+            nbNotifEventNonLus: nbNotifEventNonLus
 
         });
     } catch (error) {
@@ -149,7 +151,7 @@ export const showEvent = async (req, res) => {
     const user = req.session.get('user')
     const userId = user.id;
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
-
+    const [users] = await connection.promise().query('SELECT * FROM user');
     if (req.method === 'GET') { // Requete GET affichage de la page
         const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
         const [evenements] = await connection.promise().query(
@@ -193,7 +195,8 @@ export const showEvent = async (req, res) => {
             motsCles: motsCles,
             participation: participation,
             nbNotifMessageNonLus: nbNotifMessageNonLus,
-            user: user
+            user: user,
+            users: users
         })
     }
     if(req.method === 'POST'){
@@ -538,6 +541,37 @@ export const deleteEvent = async (req,res)=>{
         await connection.promise().query('UPDATE evenement SET statut_id =  4  WHERE id = ?',
             [ eventId]
         )
+        res.redirect('/'); // Redirection après la création de l'événement
+    } catch (error) {
+        console.error('Erreur lors de la suppression de la participation :', error);
+        return res.status(500).send('Erreur interne du serveur');
+    }
+}
+export const invitationEvent = async (req,res)=>{
+    try {
+        const eventId = req.params.id
+        const user = req.session.get('user');
+        const userId = user.id
+        const now = new Date();
+        const nowFormatted = formatDate(now)
+        const guests = req.body.users
+        console.log(guests)
+        if (!user) {
+            return res.status(401).send('Utilisateur non authentifié');
+        }
+        for (const guestId of guests) {
+            const [invitation] = await connection.promise().query(
+                'INSERT INTO invitation (evenement_id, sent_at, user_id_sender, user_id_guest) VALUES (?,?,?,?)',
+                [eventId,nowFormatted.dateBDD , userId,  guestId]
+            );
+            let reference = invitation.insertId
+            await connection.promise().query(
+                'INSERT INTO notification_evenement (user_id, type, reference_id, created_at) VALUES (?,?,?,?)',
+                [guestId, 'invitation',reference , nowFormatted.dateBDD]
+            );
+        }
+        
+        
         res.redirect('/'); // Redirection après la création de l'événement
     } catch (error) {
         console.error('Erreur lors de la suppression de la participation :', error);
