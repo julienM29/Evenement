@@ -128,17 +128,30 @@ async function getDiscussion (discussion_id, user_id){
            return notificationCount
 }
 export async function nbNotifEvenement  (user_id){
-    const [notification_evenement] = await connection.promise().query(`SELECT COUNT(*) AS notification_count
+    const [notification_invitation] = await connection.promise().query(`SELECT COUNT(*) AS notification_count
             FROM evenement.notification_evenement 
-            WHERE user_id = ? and is_read = 0`, [user_id]);
-           const notificationCount = notification_evenement[0].notification_count
-           return notificationCount
+            WHERE user_id = ? and is_read = 0 and type = 'invitation'`, [user_id]);
+           const notificationInvitationCount = notification_invitation[0].notification_count
+    const [notification_evaluation] = await connection.promise().query(`SELECT COUNT(*) AS notification_count
+            FROM evenement.notification_evenement 
+            WHERE user_id = ? and is_read = 0 and type = 'evaluation'`, [user_id]);
+            const notificationEvaluationCount = notification_evaluation[0].notification_count
+            const nb_notifs = notificationEvaluationCount + notificationInvitationCount
+
+            const notificationEvent = 
+            {
+              nb_invitation : notificationInvitationCount,
+              nb_evaluation : notificationEvaluationCount,
+              nb_notifs : nb_notifs
+            }
+           return notificationEvent
 }
 // Page de messagerie    
 export const showMessagerie = async (req, res) => {
     const user = req.session.get('user')
     const user_id = user.id
     const nbNotifMessageNonLus = await nbNotifMessage(user_id)
+    const nbNotifEventNonLus = await nbNotifEvenement(user_id)
     if (req.method === 'GET') {
         // Utilisateurs pour le select (choix pour envoyer un message)
         const [users] = await connection.promise().query('SELECT * FROM user ');
@@ -148,7 +161,8 @@ export const showMessagerie = async (req, res) => {
             user: user,
             users: users,
             discussions: discussionsWithMessages,
-            nbNotifMessageNonLus: nbNotifMessageNonLus
+            nbNotifMessageNonLus: nbNotifMessageNonLus,
+            nbNotifEventNonLus: nbNotifEventNonLus
         });
     }
     if (req.method === "POST") {
@@ -218,6 +232,8 @@ export const showDiscussion = async (req, res) => {
                 [ user_id,  discussion_id]
             ); 
             const nbNotifMessageNonLus = await nbNotifMessage(user_id)
+            const nbNotifEventNonLus = await nbNotifEvenement(user_id)
+
             // Récupérer les discussions avec les messages
             const discussionsWithMessages = await getDiscussion(discussion_id, user_id);
             
@@ -225,7 +241,8 @@ export const showDiscussion = async (req, res) => {
                 user: user,
                 users: users,
                 discussion: discussionsWithMessages[0],
-                nbNotifMessageNonLus: nbNotifMessageNonLus
+                nbNotifMessageNonLus: nbNotifMessageNonLus,
+                nbNotifEventNonLus: nbNotifEventNonLus
             });
         }
         

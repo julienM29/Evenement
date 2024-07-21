@@ -17,6 +17,7 @@ import { modifyProfil, showProfil } from "./actions/profil.js";
 import { showParticipations } from "./actions/participation.js";
 import connection from "./database.js";
 import { showDiscussion, showMessagerie } from "./discussion.js";
+import { showInvitations } from "./invitation.js";
 
 
 const app = fastify() // Création d'une instance fastify
@@ -95,6 +96,7 @@ app.get('/activate/:id',activateEvent)
 app.get('/delete/:id',deleteEvent)
 // Partager un évènement ( invitation )
 app.post('/invitation/:id', invitationEvent)
+app.get('/invitation/:id', showInvitations)
 
 // Profil de l'utilisateur
 app.get('/profil/:id', showProfil);

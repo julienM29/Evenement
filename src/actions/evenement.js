@@ -151,6 +151,8 @@ export const showEvent = async (req, res) => {
     const user = req.session.get('user')
     const userId = user.id;
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
+    const nbNotifEventNonLus = await nbNotifEvenement(userId)
+
     const [users] = await connection.promise().query('SELECT * FROM user');
     if (req.method === 'GET') { // Requete GET affichage de la page
         const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
@@ -195,6 +197,7 @@ export const showEvent = async (req, res) => {
             motsCles: motsCles,
             participation: participation,
             nbNotifMessageNonLus: nbNotifMessageNonLus,
+            nbNotifEventNonLus: nbNotifEventNonLus,
             user: user,
             users: users
         })
@@ -578,6 +581,7 @@ export const invitationEvent = async (req,res)=>{
         return res.status(500).send('Erreur interne du serveur');
     }
 }
+
 ///////////////////////////// MOTS CLES  /////////////////////////////
 
 // Page de création de mots clés

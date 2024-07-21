@@ -278,3 +278,8 @@ body {
     text-align: center; /* Aligner le texte au centre */
     z-index: 10; /* Assurez-vous que le badge est au-dessus de l'icône */
 }
+
+/* Page de notifications*/
+.nouvellesNotifications{
+    background-color: #c9fdf9;
+}

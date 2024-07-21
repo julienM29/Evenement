@@ -28,6 +28,7 @@
     "argon2": "^0.40.3",
     "bootstrap": "^4.6.2",
     "bootstrap-icons": "^1.11.3",
+    "datatables.net-dt": "^2.0.8",
     "ejs": "^3.1.10",
     "fastify": "^4.28.1",
     "fastify-multer": "^2.0.3",
