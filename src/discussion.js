@@ -128,13 +128,17 @@ async function getDiscussion (discussion_id, user_id){
            return notificationCount
 }
 export async function nbNotifEvenement  (user_id){
-    const [notification_invitation] = await connection.promise().query(`SELECT COUNT(*) AS notification_count
+    const [notification_invitation] = await connection.promise().query(`
+            SELECT COUNT(*) AS notification_count
             FROM evenement.notification_evenement 
             WHERE user_id = ? and is_read = 0 and type = 'invitation'`, [user_id]);
            const notificationInvitationCount = notification_invitation[0].notification_count
-    const [notification_evaluation] = await connection.promise().query(`SELECT COUNT(*) AS notification_count
-            FROM evenement.notification_evenement 
-            WHERE user_id = ? and is_read = 0 and type = 'evaluation'`, [user_id]);
+    const [notification_evaluation] = await connection.promise().query(`
+            SELECT COUNT(*) AS notification_count
+            FROM evenement.evaluation e 
+            inner join evenement e2 on e2.id = e.evenement_id 
+            inner join notification_evenement ne on ne.reference_id = e.id 
+            where e2.organisateur_id = ? and ne.is_read = 0`, [user_id]);
             const notificationEvaluationCount = notification_evaluation[0].notification_count
             const nb_notifs = notificationEvaluationCount + notificationInvitationCount
 

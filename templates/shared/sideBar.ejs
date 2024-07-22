@@ -51,11 +51,11 @@
                 </li>
                 <li>
                     <a href="/messagerie/<%= user.id %>" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                                class="fa-solid fa-message fa-stack-1x <% if(nbNotifMessageNonLus){ %> text-danger<% } %>"></i></span>Ma messagerie</a>
+                                class="fa-solid fa-message fa-stack-1x <% if(nbNotifMessageNonLus > 0){ %> text-danger<% } %>"></i></span>Ma messagerie</a>
                 </li>
                 <li>
-                    <a href="/invitation/<%= user.id%>" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                                class="fa-solid fa-envelope fa-stack-1x <% if(nbNotifEventNonLus){ %> text-danger<% } %>"></i></span>Mes notifications</a>
+                    <a href="/notification/<%= user.id%>" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
+                                class="fa-solid fa-envelope fa-stack-1x <% if(nbNotifEventNonLus.nb_notifs > 0){ %> text-danger<% } %>"></i></span>Mes notifications</a>
                 </li>
             <% } %>
         </ul>

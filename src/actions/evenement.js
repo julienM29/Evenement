@@ -76,7 +76,7 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
         // Insertion de l'événement dans la table evenement
         const [event] = await connection.promise().query(
             'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement,date_fin_evenement, nb_participants_max, nbParticipants, statut_id, organisateur_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, 0, 0, userId]
+            [titre, lieu, description, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, 0, 1, userId]
         );
 
         eventId = event.insertId;
@@ -119,6 +119,7 @@ export const listeEvent = async (req, res) => {
     try {
         const nbNotifMessageNonLus = await nbNotifMessage(user_id)
         const nbNotifEventNonLus = await nbNotifEvenement(user_id)
+        console.log(nbNotifEventNonLus)
         // Récupérer tous les événements
         const [evenements] = await connection.promise().query(
             `SELECT * 
@@ -152,7 +153,6 @@ export const showEvent = async (req, res) => {
     const userId = user.id;
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
     const nbNotifEventNonLus = await nbNotifEvenement(userId)
-
     const [users] = await connection.promise().query('SELECT * FROM user');
     if (req.method === 'GET') { // Requete GET affichage de la page
         const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
@@ -167,6 +167,7 @@ export const showEvent = async (req, res) => {
                  WHERE evenement.id = ? 
                  GROUP BY evenement.id`, [eventId]
         );
+        console.log(evenements)
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
             const dateFinalInscription = formatDate(evenement.date_final_inscription);
             const dateDebutEvenement = formatDate(evenement.date_debut_evenement);
@@ -217,14 +218,17 @@ export const makeEvaluation = async (req,res)=>{
     const eventId = req.params.id
     const userId = user.id
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
+    const nbNotifEventNonLus = await nbNotifEvenement(userId)
+    let evaluation = null
     const [result] = await connection.promise().query(
         `SELECT * FROM evaluation
         WHERE evenement_id =? AND user_id =?`,[eventId,userId]
     );
-    let evaluation = result[0]
+    if(result.length > 0){
+        evaluation = result[0]
+    } 
     let evaluationLength = result.length
-    console.log(result)
-    console.log(evaluationLength)
+
     if (req.method === 'GET') { // Requete GET affichage de la page
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
@@ -253,12 +257,14 @@ export const makeEvaluation = async (req,res)=>{
         if (search.length > 0) {
             participation = true
         }
+        console.log(evenementsAvecDetails[0].statut_id)
         return res.view('templates/evaluation.ejs', {
             evenement: evenementsAvecDetails[0],
             participation: participation,
             evaluation: evaluation,
             evaluationLength: evaluationLength,
             nbNotifMessageNonLus: nbNotifMessageNonLus,
+            nbNotifEventNonLus: nbNotifEventNonLus,
             user: user
         })
     }
@@ -272,13 +278,23 @@ export const makeEvaluation = async (req,res)=>{
             await connection.promise().query(
                 'UPDATE evaluation SET evaluation = ?, commentaire = ?, date = ?  WHERE id = ?',
                 [ evaluation,  commentaire, nowFormatted.dateBDD, result[0].id]
+            );
+            await connection.promise().query(
+                'UPDATE notification_evenement SET is_read = 0 WHERE id = ?',
+                [result[0].id]
             ); 
         } else {
-            await connection.promise().query(
+            const [newEvaluation] = await connection.promise().query(
                 'INSERT INTO evaluation (evenement_id, user_id, evaluation, commentaire, date) VALUES (?,?,?,?,?)',
                 [eventId, userId, evaluation,  commentaire, nowFormatted.dateBDD]
             );
+            let reference = newEvaluation.insertId
+            await connection.promise().query(
+                'INSERT INTO notification_evenement (user_id, type, reference_id, created_at) VALUES (?,?,?,?)',
+                [userId, 'evaluation',reference , nowFormatted.dateBDD]
+            );
         }
+        
         
         res.redirect('/')    }
 }
@@ -287,7 +303,7 @@ export const showMyEventActive = async (req, res) => {
     const user = req.session.get('user')
     const userId = req.params.id
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
-
+    const nbNotifEventNonLus = await nbNotifEvenement(userId)
     try {
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
@@ -311,7 +327,8 @@ export const showMyEventActive = async (req, res) => {
             {
                 user: user,
                 evenements: evenementsAvecDetails,
-                nbNotifMessageNonLus: nbNotifMessageNonLus
+                nbNotifMessageNonLus: nbNotifMessageNonLus,
+                nbNotifEventNonLus: nbNotifEventNonLus
             }
         )
     } catch (error) {
@@ -324,6 +341,7 @@ export const showMyEventPasted = async (req, res) => {
     const user = req.session.get('user')
     const userId = req.params.id
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
+    const nbNotifEventNonLus = await nbNotifEvenement(userId)
     try {
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
@@ -347,7 +365,8 @@ export const showMyEventPasted = async (req, res) => {
             {
                 user: user,
                 evenements: evenementsAvecDetails,
-                nbNotifMessageNonLus: nbNotifMessageNonLus
+                nbNotifMessageNonLus: nbNotifMessageNonLus,
+                nbNotifEventNonLus: nbNotifEventNonLus
             }
         )
     } catch (error) {
@@ -418,13 +437,16 @@ export const createEvent = async (req, res) => {
     const user = req.session.get('user')
     const userId = user.id
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
+    const nbNotifEventNonLus = await nbNotifEvenement(userId)
+
     if (req.method === 'GET') { // Affichage formulaire
         try {
             const [motsCles] = await connection.promise().query('SELECT * FROM mots_cles');
             return res.view('templates/creation.ejs', {
                 user: req.session.get('user'),
                 motsCles: motsCles,
-                nbNotifMessageNonLus: nbNotifMessageNonLus
+                nbNotifMessageNonLus: nbNotifMessageNonLus,
+                nbNotifEventNonLus: nbNotifEventNonLus
             });
         } catch (error) {
             console.error('Erreur lors de la récupération des mots clés :', error);
@@ -436,6 +458,7 @@ export const createEvent = async (req, res) => {
         try {
             const user = req.session.get('user');
             const userId = user.id
+            const eventId = 0
             if (!user) {
                 return res.status(401).send('Utilisateur non authentifié');
             }
@@ -458,6 +481,7 @@ export const modifierEvenement = async (req, res) => {
     const user = req.session.get('user')
     const userId = user.id
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
+    const nbNotifEventNonLus = await nbNotifEvenement(userId)
 
     if (req.method === 'GET') { // Requete GET affichage de la page
         const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
@@ -484,7 +508,8 @@ export const modifierEvenement = async (req, res) => {
             evenement: evenementsAvecDetails[0],
             motsCles: motsCles,
             user: user,
-            nbNotifMessageNonLus: nbNotifMessageNonLus
+            nbNotifMessageNonLus: nbNotifMessageNonLus,
+            nbNotifEventNonLus: nbNotifEventNonLus
         })
     }
     if (req.method === 'POST') { // Requete POST soumission du formulaire
@@ -589,10 +614,13 @@ export const createKeyWords = async (req, res) => {
     const user = req.session.get('user')
     const userId = user.id
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
+    const nbNotifEventNonLus = await nbNotifEvenement(userId)
+
     if (req.method === 'GET') { // Affichage
         return res.view('templates/motsCles.ejs', 
              { user:user,
                 nbNotifMessageNonLus: nbNotifMessageNonLus,
+                nbNotifEventNonLus: nbNotifEventNonLus,
                 error: null 
             });
     }
@@ -606,7 +634,6 @@ export const createKeyWords = async (req, res) => {
             console.log('mot clé existe déjà en base de donnée');
             return res.view('templates/motsCles.ejs', { error: 'Le mot clé existe déjà en base de données.' });
         }
-
     }
 }
 

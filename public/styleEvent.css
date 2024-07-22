@@ -283,3 +283,9 @@ body {
 .nouvellesNotifications{
     background-color: #c9fdf9;
 }
+.nouvellesNotifications:hover{
+    background-color: #a3fdf6;
+}
+.anciennesNotifications:hover{
+    background-color: #f7f7f7;
+}

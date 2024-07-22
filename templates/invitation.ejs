@@ -1,46 +1,89 @@
 <%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
     <div class=" w-100 d-flex justify-content-center" style="background-color: rgb(242, 243, 243);">
         <div class="mt-5 w-50  d-flex flex-column ">
-            <div id="nouveau">
-                <div class="fw-bold fs-2">Nouveau</div>
-                <div class=" d-flex flex-column align-items-center bg-white border rounded py-2"
-                    id="conteneurNotifications">
-                    <% for (const invitationNonLus of invitationsNonLus) { %>
-                        <div class=" text-center nouvellesNotifications  w-100 border-bottom px-4 py-3">
-                            <a href="/evenement/<%= invitationNonLus.evenement_id%>" class="text-decoration-none text-black">
-                                <div class="d-flex justify-content-center">
-                                    <div class="d-flex image-containerTest">
-                                        <img class="rounded-circle border border-secondary p-1"
-                                            src="/images/<%=invitationNonLus.photo %>" width="70" height="70">
-                                    </div>
-                                    <div class="w-50 d-flex flex-column justify-content-center px-3">
-                                        <div class="d-flex ">
-                                            <div class="me-2 fw-bold fs-5">
-                                                <%=invitationNonLus.invitant %>
+            <% if(invitationsNonLus.length> 0 ){ %>
+                <div id="nouveau" class="mb-4">
+                    <div class="fw-bold fs-2">Nouveau</div>
+                    <div class=" d-flex flex-column align-items-center border rounded  "
+                        id="conteneurNotifications">
+                        <% for (const invitationNonLus of invitationsNonLus) { %>
+                            <div class=" text-center nouvellesNotifications  w-100 border-bottom px-4 py-3">
+                                <a href="/validationNotification/<%= invitationNonLus.reference_id%>/<%= invitationNonLus.evenement_id%>"
+                                    class="text-decoration-none text-black">
+                                    <div class="d-flex justify-content-center">
+                                        <div class="d-flex image-containerTest">
+                                            <img class="rounded-circle border border-secondary p-1"
+                                                src="/images/<%=invitationNonLus.photo %>" width="70" height="70">
+                                        </div>
+                                        <div class="w-50 d-flex flex-column justify-content-center px-3">
+                                            <div class="d-flex ">
+                                                <div class="me-2 fw-bold fs-5">
+                                                    <%=invitationNonLus.invitant %>
+                                                </div>
+                                                <div class="fs-5"> vous invite à participer à :</div>
                                             </div>
-                                            <div class="fs-5"> vous invite à participer à :</div>
+                                            <div class="fw-bold d-flex justify-content-start fs-5">
+                                                <%=invitationNonLus.titre %>
+                                            </div>
                                         </div>
-                                        <div class="fw-bold d-flex justify-content-start fs-5">
-                                            <%=invitationNonLus.titre %>
+                                        <div class="fs-5 d-flex flex-column">
+                                            <div>
+                                                <%=invitationNonLus.date.jour %>
+                                                    <%=invitationNonLus.date.moisNom %>
+                                            </div>
+                                            <div class=" fs-5 d-flex aling-items-start">
+                                                <%=invitationNonLus.date.heures %>:<%=invitationNonLus.date.minutes %>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="fs-5 d-flex flex-column">
-                                        <div>
-                                            <%=invitationNonLus.date.jour %>
-                                                <%=invitationNonLus.date.moisNom %>
-                                        </div>
-                                        <div class=" fs-5 d-flex aling-items-start">
-                                            <%=invitationNonLus.date.heures %>:<%=invitationNonLus.date.minutes %>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        <% } %>
+                                </a>
+                            </div>
+                            <% } %>
+                    </div>
                 </div>
-            </div>
+                <% } %>
+                <% if(invitationsLus.length> 0 ){ %>
+                    <div id="ancien">
+                        <div class="fw-bold fs-2">Plus tôt</div>
+                        <div class=" d-flex flex-column align-items-center bg-white border rounded "
+                            id="conteneurNotifications">
+                            <% for (const invitationLus of invitationsLus) { %>
+                                <div class=" text-center anciennesNotifications  w-100 border-bottom px-4 py-3">
+                                    <a href="/validationNotification/<%= invitationLus.reference_id%>/<%= invitationLus.evenement_id%>"
+                                        class="text-decoration-none text-black">
+                                        <div class="d-flex justify-content-center">
+                                            <div class="d-flex image-containerTest">
+                                                <img class="rounded-circle border border-secondary p-1"
+                                                    src="/images/<%=invitationLus.photo %>" width="70" height="70">
+                                            </div>
+                                            <div class="w-50 d-flex flex-column justify-content-center px-3">
+                                                <div class="d-flex ">
+                                                    <div class="me-2 fw-bold fs-5">
+                                                        <%=invitationLus.invitant %>
+                                                    </div>
+                                                    <div class="fs-5"> vous invite à participer à :</div>
+                                                </div>
+                                                <div class="fw-bold d-flex justify-content-start fs-5">
+                                                    <%=invitationLus.titre %>
+                                                </div>
+                                            </div>
+                                            <div class="fs-5 d-flex flex-column">
+                                                <div>
+                                                    <%=invitationLus.date.jour %>
+                                                        <%=invitationLus.date.moisNom %>
+                                                </div>
+                                                <div class=" fs-5 d-flex aling-items-start">
+                                                    <%=invitationLus.date.heures %>:<%=invitationLus.date.minutes %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <% } %>
+                        </div>
+                    </div>
+                    <% } %>
         </div>
-
     </div>
 
     <%- include('./shared/footer.ejs')%>

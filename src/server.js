@@ -17,7 +17,7 @@ import { modifyProfil, showProfil } from "./actions/profil.js";
 import { showParticipations } from "./actions/participation.js";
 import connection from "./database.js";
 import { showDiscussion, showMessagerie } from "./discussion.js";
-import { showInvitations } from "./invitation.js";
+import { showInvitations, validNotifEvent } from "./invitation.js";
 
 
 const app = fastify() // Création d'une instance fastify
@@ -94,10 +94,12 @@ app.get('/cancel/:id',cancelEvent)
 app.get('/activate/:id',activateEvent)
 // Supprimer un évènement
 app.get('/delete/:id',deleteEvent)
-// Partager un évènement ( invitation )
-app.post('/invitation/:id', invitationEvent)
-app.get('/invitation/:id', showInvitations)
 
+// Page de notification
+app.post('/notification/:id', invitationEvent)
+app.get('/notification/:id', showInvitations)
+// Validation de notification évènement
+app.get('/validationNotification/:ref/:event',validNotifEvent)
 // Profil de l'utilisateur
 app.get('/profil/:id', showProfil);
 // Page de modification de profil
