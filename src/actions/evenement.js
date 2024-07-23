@@ -12,7 +12,7 @@ const imagesDir = join(rootDir, 'public', 'images');
 ////////////////// Fonction de modification des informations sur les évènements pour récupérer ceux liés aux tables User et Mots clés ////////////////////////////////////////
 
 // Fonction pour formatter la date
-const formatDate = (dateString) => {
+export const formatDate = (dateString) => {
     const dateObj = new Date(dateString);
     const jour = dateObj.getDate().toString().padStart(2, '0');
     const moisNoms = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
@@ -34,7 +34,7 @@ const formatDate = (dateString) => {
         dateBDD: `${annee}-${mois}-${jour} ${heures}:${minutes}`
     };
 };
-const formatDateInput = (dateString) => {
+export const formatDateInput = (dateString) => {
     const dateObj = new Date(dateString);
     const jour = dateObj.getDate().toString().padStart(2, '0');
     const mois = (dateObj.getMonth() + 1).toString().padStart(2, '0');
@@ -212,153 +212,6 @@ export const showEvent = async (req, res) => {
     }
     
 }
-// Page évaluation d'un évènement 
-export const makeEvaluation = async (req,res)=>{
-    const user = req.session.get('user')
-    const eventId = req.params.id
-    const userId = user.id
-    const nbNotifMessageNonLus = await nbNotifMessage(userId)
-    const nbNotifEventNonLus = await nbNotifEvenement(userId)
-    let evaluation = null
-    const [result] = await connection.promise().query(
-        `SELECT * FROM evaluation
-        WHERE evenement_id =? AND user_id =?`,[eventId,userId]
-    );
-    if(result.length > 0){
-        evaluation = result[0]
-    } 
-    let evaluationLength = result.length
-
-    if (req.method === 'GET') { // Requete GET affichage de la page
-        const [evenements] = await connection.promise().query(
-            `SELECT evenement.*, 
-                 GROUP_CONCAT(mots_cles.id SEPARATOR ',') AS motsCles,
-                 user.prenom AS organisateurPrenom, user.nom AS organisateurNom
-                 FROM evenement 
-                 INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
-                 INNER JOIN mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
-                 INNER JOIN user ON user.id = evenement.organisateur_id
-                 WHERE evenement.id = ? 
-                 GROUP BY evenement.id`, [eventId]
-        );
-        
-        const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
-            const dateDebutEvenement = formatDate(evenement.date_debut_evenement);
-            const dateFinEvenement = formatDate(evenement.date_fin_evenement);
-            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
-                ...evenement,
-                date_debut_evenement: dateDebutEvenement,
-                date_fin_evenement: dateFinEvenement,
-            };
-        }));
-        const [search] = await connection.promise().query('SELECT * FROM participation WHERE evenement_id =? AND user_id =?', [eventId, userId])
-
-        let participation = false // Permet d'afficher ou d'enlever le bouton de participation à l'évènement
-        if (search.length > 0) {
-            participation = true
-        }
-        console.log(evenementsAvecDetails[0].statut_id)
-        return res.view('templates/evaluation.ejs', {
-            evenement: evenementsAvecDetails[0],
-            participation: participation,
-            evaluation: evaluation,
-            evaluationLength: evaluationLength,
-            nbNotifMessageNonLus: nbNotifMessageNonLus,
-            nbNotifEventNonLus: nbNotifEventNonLus,
-            user: user
-        })
-    }
-    if(req.method === 'POST'){
-        const commentaire = req.body.commentaire
-        const evaluation = req.body.evaluation
-        const now = new Date();
-        const nowFormatted = formatDate(now)
-        console.log(evaluation)
-        if(result.length !== 0){
-            await connection.promise().query(
-                'UPDATE evaluation SET evaluation = ?, commentaire = ?, date = ?  WHERE id = ?',
-                [ evaluation,  commentaire, nowFormatted.dateBDD, result[0].id]
-            );
-            await connection.promise().query(
-                'UPDATE notification_evenement SET is_read = 0 WHERE id = ?',
-                [result[0].id]
-            ); 
-        } else {
-            const [newEvaluation] = await connection.promise().query(
-                'INSERT INTO evaluation (evenement_id, user_id, evaluation, commentaire, date) VALUES (?,?,?,?,?)',
-                [eventId, userId, evaluation,  commentaire, nowFormatted.dateBDD]
-            );
-            let reference = newEvaluation.insertId
-            await connection.promise().query(
-                'INSERT INTO notification_evenement (user_id, type, reference_id, created_at) VALUES (?,?,?,?)',
-                [userId, 'evaluation',reference , nowFormatted.dateBDD]
-            );
-        }
-        
-        
-        res.redirect('/')    }
-}
-// Page affichant les évaluations d'un de tes évènements
-export const showEvaluations = async (req,res)=>{
-    const user = req.session.get('user')
-    const eventId = req.params.id
-    const userId = user.id
-    const nbNotifMessageNonLus = await nbNotifMessage(userId)
-    const nbNotifEventNonLus = await nbNotifEvenement(userId)
-    if(req.method == 'GET'){
-        const [evenement] = await connection.promise().query(
-            `SELECT evenement.*, 
-                 GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
-                 user.prenom AS organisateurPrenom, user.nom AS organisateurNom
-                 FROM evenement 
-                 INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
-                 INNER JOIN mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
-                 INNER JOIN user ON user.id = evenement.organisateur_id
-                 WHERE evenement.id = ? `, [eventId]
-        );
-        
-        let [evenementAvecDetail] = evenement.map(event => ({
-            ...event,
-            dateDebutEvenement : formatDate(event.date_debut_evenement),
-            dateFinEvenement : formatDate(event.date_fin_evenement)
-        }));
-        const [evaluations] = await connection.promise().query(`
-            SELECT  e.evaluation, e.commentaire,e.date, CONCAT(u.prenom, ' ', u.nom) AS identite
-            FROM evaluation e
-            inner join user u on  u.id = e.user_id
-            where e.evenement_id = ?
-             order by date DESC
-            `, [eventId])
-        const evaluationsDateFormatted = evaluations.map(evaluation => ({
-            ...evaluation,
-            dateEvaluation : formatDate(evaluation.date),
-        }));
-        const [moyenneEval] = await connection.promise().query(`
-            SELECT AVG(e.evaluation) AS moyenne
-            FROM evaluation e
-            WHERE e.evenement_id = ?
-            `, [eventId])
-        const moyenne = (parseFloat(moyenneEval[0].moyenne)).toFixed(2)
-        const [nbEvalByNote] = await connection.promise().query(`
-            SELECT e.evaluation, COUNT(*) AS count
-            FROM evaluation e
-            WHERE e.evenement_id = ?
-            GROUP BY e.evaluation 
-            `, [eventId])
-            console.log(moyenne)
-        return res.view('templates/showEvaluations.ejs', {
-                user:user,
-                nbNotifMessageNonLus: nbNotifMessageNonLus,
-                nbNotifEventNonLus: nbNotifEventNonLus,
-                evenement: evenementAvecDetail,
-                moyenne : moyenne,
-                nbEvalByNote :nbEvalByNote,
-                evaluations: evaluationsDateFormatted
-            })
-    }
-    
-}
-
 
 //Page affichant ces évènements actifs
 export const showMyEventActive = async (req, res) => {
@@ -637,37 +490,7 @@ export const deleteEvent = async (req,res)=>{
         return res.status(500).send('Erreur interne du serveur');
     }
 }
-export const invitationEvent = async (req,res)=>{
-    try {
-        const eventId = req.params.id
-        const user = req.session.get('user');
-        const userId = user.id
-        const now = new Date();
-        const nowFormatted = formatDate(now)
-        const guests = req.body.users
-        console.log(guests)
-        if (!user) {
-            return res.status(401).send('Utilisateur non authentifié');
-        }
-        for (const guestId of guests) {
-            const [invitation] = await connection.promise().query(
-                'INSERT INTO invitation (evenement_id, sent_at, user_id_sender, user_id_guest) VALUES (?,?,?,?)',
-                [eventId,nowFormatted.dateBDD , userId,  guestId]
-            );
-            let reference = invitation.insertId
-            await connection.promise().query(
-                'INSERT INTO notification_evenement (user_id, type, reference_id, created_at) VALUES (?,?,?,?)',
-                [guestId, 'invitation',reference , nowFormatted.dateBDD]
-            );
-        }
-        
-        
-        res.redirect('/'); // Redirection après la création de l'événement
-    } catch (error) {
-        console.error('Erreur lors de la suppression de la participation :', error);
-        return res.status(500).send('Erreur interne du serveur');
-    }
-}
+
 
 ///////////////////////////// MOTS CLES  /////////////////////////////
 

@@ -1,29 +1,7 @@
 // dataInvitation.js
+import { formatDate } from "./actions/evenement.js";
 import connection from "./database.js";
 import { nbNotifEvenement, nbNotifMessage } from "./discussion.js";
-
-const formatDate = (dateString) => {
-    const dateObj = new Date(dateString);
-    const jour = dateObj.getDate().toString().padStart(2, '0');
-    const moisNoms = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-    const moisNom = moisNoms[(dateObj.getMonth())];
-
-    const mois = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-    const annee = dateObj.getFullYear();
-    const heures = dateObj.getHours().toString().padStart(2, '0');
-    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
-
-    return {
-        jour,
-        mois,
-        annee,
-        moisNom,
-        heures,
-        minutes,
-        dateFormatee: `${jour}-${mois}-${annee} ${heures}:${minutes}`,
-        dateBDD: `${annee}-${mois}-${jour} ${heures}:${minutes}`
-    };
-};
 
 export async function notificationsEvenementNonLus(userId, is_read) {
     try {
@@ -82,6 +60,38 @@ export const showInvitations = async (req, res) => {
         notificationsNonLus: notificationsNonLus,
         notificationsLus: notificationsLus
     });
+}
+
+export const invitationEvent = async (req,res)=>{
+    try {
+        const eventId = req.params.id
+        const user = req.session.get('user');
+        const userId = user.id
+        const now = new Date();
+        const nowFormatted = formatDate(now)
+        const guests = req.body.users
+        console.log(guests)
+        if (!user) {
+            return res.status(401).send('Utilisateur non authentifié');
+        }
+        for (const guestId of guests) {
+            const [invitation] = await connection.promise().query(
+                'INSERT INTO invitation (evenement_id, sent_at, user_id_sender, user_id_guest) VALUES (?,?,?,?)',
+                [eventId,nowFormatted.dateBDD , userId,  guestId]
+            );
+            let reference = invitation.insertId
+            await connection.promise().query(
+                'INSERT INTO notification_evenement (user_id, type, reference_id, created_at) VALUES (?,?,?,?)',
+                [guestId, 'invitation',reference , nowFormatted.dateBDD]
+            );
+        }
+        
+        
+        res.redirect('/'); // Redirection après la création de l'événement
+    } catch (error) {
+        console.error('Erreur lors de la suppression de la participation :', error);
+        return res.status(500).send('Erreur interne du serveur');
+    }
 }
 
 export const validNotifEvent = async (req,res)=>{

@@ -11,13 +11,14 @@ import formbody from '@fastify/formbody';
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyMultipart from '@fastify/multipart';
 
-import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, showMyEventActive, unsubscribeEvent, cancelEvent, activateEvent, showMyEventPasted, deleteEvent, makeEvaluation, invitationEvent, showEvaluations } from "./actions/evenement.js";
+import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, showMyEventActive, unsubscribeEvent, cancelEvent, activateEvent, showMyEventPasted, deleteEvent } from "./actions/evenement.js";
 import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
 import { modifyProfil, showProfil } from "./actions/profil.js";
 import { showParticipations } from "./actions/participation.js";
 import connection from "./database.js";
 import { showDiscussion, showMessagerie } from "./discussion.js";
-import { showInvitations, validNotifEvent } from "./invitation.js";
+import { invitationEvent, showInvitations, validNotifEvent } from "./invitation.js";
+import { makeEvaluation, showEvaluations } from "./actions/evaluation.js";
 
 
 const app = fastify() // Création d'une instance fastify

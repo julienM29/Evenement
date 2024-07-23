@@ -1,27 +1,6 @@
+import { formatDate } from "./actions/evenement.js";
 import connection from "./database.js";
 
-// Fonction pour formatter la date venant de la BDD
-const formatDate = (dateString) => {
-    const dateObj = new Date(dateString);
-    const jour = dateObj.getDate().toString().padStart(2, '0');
-    const moisNoms = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-    const moisNom = moisNoms[(dateObj.getMonth())];
-
-    const mois = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-    const annee = dateObj.getFullYear();
-    const heures = dateObj.getHours().toString().padStart(2, '0');
-    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
-
-    return {
-        jour,
-        mois,
-        annee,
-        moisNom,
-        heures,
-        minutes,
-        dateFormatee: `${jour}-${mois}-${annee} ${heures}:${minutes}`
-    };
-};
 function getFormattedDate() {
     const now = new Date();
 

@@ -3,7 +3,7 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import fs from "node:fs";
 import { pipeline } from "stream/promises"; // Utilisation de pipeline pour la copie du fichier
-import { nbNotifMessage } from "../discussion.js";
+import { nbNotifEvenement, nbNotifMessage } from "../discussion.js";
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 const imagesDir = join(rootDir, 'public', 'images');
@@ -12,8 +12,8 @@ const imagesDir = join(rootDir, 'public', 'images');
 export const showProfil = async (req, res) => {
     const user = req.session.get('user')
     const user_id = user.id
-    const nbNotifMessageNonLus = await nbNotifMessage(userId)
-
+    const nbNotifMessageNonLus = await nbNotifMessage(user_id)
+    const nbNotifEventNonLus = await nbNotifEvenement(user_id)
     const postId = req.params.id; // Récupération de l'id dans l'url
 
     const [results] = await connection.promise().query('SELECT * FROM user WHERE id =? ', [postId]);
@@ -21,7 +21,8 @@ export const showProfil = async (req, res) => {
     return res.view('templates/profil.ejs', {
         userProfil: userProfil,
         user: user,
-        nbNotifMessageNonLus:nbNotifMessageNonLus
+        nbNotifMessageNonLus:nbNotifMessageNonLus,
+        nbNotifEventNonLus: nbNotifEventNonLus
     })
 }
 // Page de modification d'un profil
@@ -31,6 +32,7 @@ export const modifyProfil = async (req, res) => {
         const user = req.session.get('user') // User connecté
         const user_id = user.id
         const nbNotifMessageNonLus = await nbNotifMessage(userId)
+        const nbNotifEventNonLus = await nbNotifEvenement(userId)
 
         const [results] = await connection.promise().query('SELECT * FROM user WHERE id =? ', [userId]); // Récupération des infos
         const userProfil = results[0] // On récupère les résultats SQL dans un tableau donc obligé de passer par une variable tableau
@@ -38,7 +40,8 @@ export const modifyProfil = async (req, res) => {
         return res.view('templates/modificationProfil.ejs', { // Retourne la vue
             userProfil: userProfil,
             user: user,
-            nbNotifMessageNonLus: nbNotifMessageNonLus
+            nbNotifMessageNonLus: nbNotifMessageNonLus,
+            nbNotifEventNonLus: nbNotifEventNonLus
         })
     }
     if (req.method === 'POST') { // Si le formulaire est submit

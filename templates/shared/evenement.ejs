@@ -23,7 +23,7 @@
         </div>
         <div class="w-100 d-flex justify-content-center ">
             <button type="button"
-                class="mt-4 mb-3  d-flex align-items-center justify-content-center p-1 rounded-pill border-dashed-inscription  boutonShowEvent"
+                class="mt-4 mb-3 me-2 d-flex align-items-center justify-content-center p-1 rounded-pill border-dashed-inscription  boutonShowEvent"
                 style="width:40%;">
                 <a href="/evenement/<%= evenement.id %>"
                     class="fs-5 fw-bolder text-dark text-decoration-none d-flex align-items-center">
@@ -35,6 +35,22 @@
                     </svg>
                 </a>
             </button>
+            <% if(evenement.statut_id===2){ %>
+
+                <button type="button"
+                    class="mt-4 mb-3  d-flex align-items-center justify-content-center p-1 rounded-pill border-dashed-inscription  boutonShowEvent"
+                    style="width:40%;">
+                    <a href="/evaluations/evenement/<%= evenement.id %>"
+                        class="fs-5 fw-bolder text-dark text-decoration-none d-flex align-items-center">
+                        Évaluations
+                        <svg class="ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 10" width="40" height="20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M1 5h12m0 0L9 1m4 4L9 9" />
+                        </svg>
+                    </a>
+                </button>
+                <% } %>
         </div>
     </div>
 </div>
