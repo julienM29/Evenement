@@ -87,11 +87,21 @@ export const showInvitations = async (req, res) => {
 export const validNotifEvent = async (req,res)=>{
     const ref_id = req.params.ref // Référence id
     const event_id = req.params.event // Évènement id
+    const type = req.params.type // type de notification 
+
     const [validation] = await connection.promise().query(
         'UPDATE notification_evenement SET is_read = 1 WHERE reference_id = ?', [ref_id]
     ); 
-    if(validation){
-        res.redirect(`/evenement/${event_id}`)
+    if(type === 'invitation'){
+        console.log('invit')
+        if(validation){
+            res.redirect(`/evenement/${event_id}`)
+        }
     }
-    
+    if(type === 'evaluation'){
+        console.log('eval')
+        if(validation){
+            res.redirect(`/evaluations/evenement/${event_id}`)
+        }
+    } 
 }

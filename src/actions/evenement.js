@@ -298,6 +298,68 @@ export const makeEvaluation = async (req,res)=>{
         
         res.redirect('/')    }
 }
+// Page affichant les évaluations d'un de tes évènements
+export const showEvaluations = async (req,res)=>{
+    const user = req.session.get('user')
+    const eventId = req.params.id
+    const userId = user.id
+    const nbNotifMessageNonLus = await nbNotifMessage(userId)
+    const nbNotifEventNonLus = await nbNotifEvenement(userId)
+    if(req.method == 'GET'){
+        const [evenement] = await connection.promise().query(
+            `SELECT evenement.*, 
+                 GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
+                 user.prenom AS organisateurPrenom, user.nom AS organisateurNom
+                 FROM evenement 
+                 INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
+                 INNER JOIN mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
+                 INNER JOIN user ON user.id = evenement.organisateur_id
+                 WHERE evenement.id = ? `, [eventId]
+        );
+        
+        let [evenementAvecDetail] = evenement.map(event => ({
+            ...event,
+            dateDebutEvenement : formatDate(event.date_debut_evenement),
+            dateFinEvenement : formatDate(event.date_fin_evenement)
+        }));
+        const [evaluations] = await connection.promise().query(`
+            SELECT  e.evaluation, e.commentaire,e.date, CONCAT(u.prenom, ' ', u.nom) AS identite
+            FROM evaluation e
+            inner join user u on  u.id = e.user_id
+            where e.evenement_id = ?
+             order by date DESC
+            `, [eventId])
+        const evaluationsDateFormatted = evaluations.map(evaluation => ({
+            ...evaluation,
+            dateEvaluation : formatDate(evaluation.date),
+        }));
+        const [moyenneEval] = await connection.promise().query(`
+            SELECT AVG(e.evaluation) AS moyenne
+            FROM evaluation e
+            WHERE e.evenement_id = ?
+            `, [eventId])
+        const moyenne = (parseFloat(moyenneEval[0].moyenne)).toFixed(2)
+        const [nbEvalByNote] = await connection.promise().query(`
+            SELECT e.evaluation, COUNT(*) AS count
+            FROM evaluation e
+            WHERE e.evenement_id = ?
+            GROUP BY e.evaluation 
+            `, [eventId])
+            console.log(moyenne)
+        return res.view('templates/showEvaluations.ejs', {
+                user:user,
+                nbNotifMessageNonLus: nbNotifMessageNonLus,
+                nbNotifEventNonLus: nbNotifEventNonLus,
+                evenement: evenementAvecDetail,
+                moyenne : moyenne,
+                nbEvalByNote :nbEvalByNote,
+                evaluations: evaluationsDateFormatted
+            })
+    }
+    
+}
+
+
 //Page affichant ces évènements actifs
 export const showMyEventActive = async (req, res) => {
     const user = req.session.get('user')

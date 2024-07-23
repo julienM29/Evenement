@@ -11,7 +11,7 @@ import formbody from '@fastify/formbody';
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyMultipart from '@fastify/multipart';
 
-import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, showMyEventActive, unsubscribeEvent, cancelEvent, activateEvent, showMyEventPasted, deleteEvent, makeEvaluation, invitationEvent } from "./actions/evenement.js";
+import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, showMyEventActive, unsubscribeEvent, cancelEvent, activateEvent, showMyEventPasted, deleteEvent, makeEvaluation, invitationEvent, showEvaluations } from "./actions/evenement.js";
 import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
 import { modifyProfil, showProfil } from "./actions/profil.js";
 import { showParticipations } from "./actions/participation.js";
@@ -99,7 +99,7 @@ app.get('/delete/:id',deleteEvent)
 app.post('/notification/:id', invitationEvent)
 app.get('/notification/:id', showInvitations)
 // Validation de notification évènement
-app.get('/validationNotification/:ref/:event',validNotifEvent)
+app.get('/validationNotification/:type/:ref/:event',validNotifEvent)
 // Profil de l'utilisateur
 app.get('/profil/:id', showProfil);
 // Page de modification de profil
@@ -116,6 +116,8 @@ app.post('/discussion/:id', showDiscussion)
 // Page évaluation d'un évènement
 app.get('/evaluation/:id', makeEvaluation)
 app.post('/evaluation/:id', makeEvaluation)
+// Page affichant les évaluations de ton évènement
+app.get('/evaluations/evenement/:id',showEvaluations)
 
 // Page API Event
 app.get('/api/events/:id', async (req, res) => { 

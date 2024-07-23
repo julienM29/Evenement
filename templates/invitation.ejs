@@ -7,7 +7,7 @@
                     <div class=" d-flex flex-column align-items-center border rounded  " id="conteneurNotifications">
                         <% for (const notificationNonLus of notificationsNonLus) { %>
                             <div class=" text-center nouvellesNotifications  w-100 border-bottom px-4 py-3">
-                                <a href="/validationNotification/<%= notificationNonLus.reference_id%>/<%= notificationNonLus.evenement_id%>"
+                                <a href="/validationNotification/<%= notificationNonLus.type%>/<%= notificationNonLus.reference_id%>/<%= notificationNonLus.evenement_id%>"
                                     class="text-decoration-none text-black">
                                     <div class="d-flex justify-content-center">
                                         <div class="d-flex image-containerTest">

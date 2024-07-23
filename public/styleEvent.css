@@ -95,7 +95,7 @@ body {
     border: 1px dashed #49dde2; /* Couleur de bordure verte */
 }
 .border-dashed-create:hover{
-    background-color: #49dde2 ;
+    background-color: #d2fdff ;
     border: 2px dashed #000000;
     color : white;
 }
