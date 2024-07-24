@@ -289,3 +289,19 @@ body {
 .anciennesNotifications:hover{
     background-color: #f7f7f7;
 }
+
+
+/* Page du profil */
+
+.titreProfil{
+    font-weight: bold;
+    color: #00eeff;
+}
+.btn-custom {
+    --bs-btn-padding-y: 0.25rem;
+    padding-top: var(--bs-btn-padding-y);
+    padding-bottom: var(--bs-btn-padding-y);
+    --bs-btn-padding-x: 0.25rem;
+    padding-right: var(--bs-btn-padding-x);
+    padding-left: var(--bs-btn-padding-x);
+}

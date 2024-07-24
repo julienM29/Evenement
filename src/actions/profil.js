@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url"
 import fs from "node:fs";
 import { pipeline } from "stream/promises"; // Utilisation de pipeline pour la copie du fichier
 import { nbNotifEvenement, nbNotifMessage } from "../discussion.js";
+import { formatDate } from "./evenement.js";
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 const imagesDir = join(rootDir, 'public', 'images');
@@ -14,15 +15,59 @@ export const showProfil = async (req, res) => {
     const user_id = user.id
     const nbNotifMessageNonLus = await nbNotifMessage(user_id)
     const nbNotifEventNonLus = await nbNotifEvenement(user_id)
-    const postId = req.params.id; // Récupération de l'id dans l'url
-
-    const [results] = await connection.promise().query('SELECT * FROM user WHERE id =? ', [postId]);
+    const profilId = req.params.id; // Récupération de l'id dans l'url
+    const [results] = await connection.promise().query('SELECT * FROM user WHERE id =? ', [profilId]);
     const userProfil = results[0] // On récupère les résultats SQL dans un tableau donc obligé de passer par une variable tableau
+    const [evaluations] = await connection.promise().query(`
+        SELECT eval.evenement_id, eval.evaluation, eval.commentaire, eval.date, event.titre 
+        FROM evenement.evaluation eval 
+        inner join evenement event on event.id = eval.evenement_id 
+        where user_id = ?
+        `, [user_id])
+    const [evenementsActifs] = await connection.promise().query(`
+        SELECT  titre, lieu, description, photo, date_final_inscription, organisateur_id, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id
+        FROM evenement.evenement
+        where organisateur_id = ? and statut_id = 1 ;`, [user_id])
+    const [evenementsFinis] = await connection.promise().query(`
+        SELECT  titre, lieu, description, photo, date_final_inscription, organisateur_id, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id
+        FROM evenement.evenement
+        where organisateur_id = ? and statut_id = 2 ;`, [user_id])
+        const evaluationsAvecDate = await Promise.all(evaluations.map(async evaluation => {
+            const dateEvaluation = formatDate(evaluation.date);
+            return { 
+                ...evaluation,
+                dateEvaluation: dateEvaluation,
+            };
+        }));
+        const evenementsActifsAvecDate = await Promise.all(evenementsActifs.map(async evenementActif => {
+            const dateDebutEvenement = formatDate(evenementActif.date_debut_evenement);
+            const dateFinEvenement = formatDate(evenementActif.date_fin_evenement);
+            return { 
+                ...evenementActif,
+                dateDebutEvenement: dateDebutEvenement,
+                dateFinEvenement: dateFinEvenement
+            };
+        }));
+        console.log(evenementsActifsAvecDate)
+        const evenementsFinisAvecDate = await Promise.all(evenementsFinis.map(async evenementFini => {
+            const dateDebutEvenement = formatDate(evenementFini.date_debut_evenement);
+            const dateFinEvenement = formatDate(evenementFini.date_fin_evenement);
+            return { 
+                ...evenementFini,
+                dateDebutEvenement: dateDebutEvenement,
+                dateFinEvenement: dateFinEvenement
+            };
+        }));
+
     return res.view('templates/profil.ejs', {
         userProfil: userProfil,
         user: user,
         nbNotifMessageNonLus:nbNotifMessageNonLus,
-        nbNotifEventNonLus: nbNotifEventNonLus
+        nbNotifEventNonLus: nbNotifEventNonLus,
+        evaluations: evaluationsAvecDate,
+        evenementsActifs: evenementsActifsAvecDate,
+        evenementsFinis: evenementsFinisAvecDate
+
     })
 }
 // Page de modification d'un profil

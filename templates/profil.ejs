@@ -1,24 +1,144 @@
 <%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
 
 
-<div class=" w-100 d-flex flex-column justify-content-center" style="background-color: rgb(242, 243, 243);">
-    <h1 class="d-flex justify-content-center mb-4"> Profil de <%=userProfil.nom %> <%=userProfil.prenom %></h1>
-        <div class="container d-flex justify-content-center my-4">
-            <div>
-                <div style="width: 200px; height:200px">
-                    <img src="/images/<%=userProfil.photo %>" class="img-fluid">
-                </div>
-                <div>
-                    <%=userProfil.nom %>
-                </div>
-                <div>
+    <div class=" w-100 d-flex justify-content-center" style="background-color: rgb(242, 243, 243);">
+        <div class="w-50 d-flex flex-column">
+            <div class="mt-5 w-100 d-flex justify-content-center">
+                <img src="/images/<%=userProfil.photo %>" width="200" height="200"
+                    class="img-fluid rounded-circle p-1 bg-white">
+
+            </div>
+            <h1 class="d-flex justify-content-center mb-4 mt-1 ">
+                <%=userProfil.nom %>
                     <%=userProfil.prenom %>
+            </h1>
+            <div class="w-100 bg-white d-flex justify-content-around mb-3 rounded border p-3">
+                <div class="d-flex align-items-center">
+                    <div class="me-3 fw-bold fs-4 ">Email :</div>
+                    <div class="fs-4">
+                        <%=userProfil.email %>
+                    </div>
                 </div>
                 <div>
-                    <%=userProfil.email %>
+                    <button class="btn btn-success fs-5 btn-custom" >
+                        Envoyer un message
+                        <span class="fa-stack fa-lg">
+                            <i class="fas fa-pen-to-square fa-stack-1x"></i>
+                        </span>
+                        
+                    </button>
                 </div>
             </div>
+            <div class=" d-flex " style="height: 700px;">
+                <div class="w-50 h-100 border me-3 bg-white rounded p-3 d-flex flex-column" id="1">
+                    <div class="d-flex flex-column h-100">
+                        <div class="d-flex flex-column mb-3 h-50">
+                            <div class=" fs-3 titreProfil d-flex align-items-center" style="height: 25%;">Évènements actifs</div>
+                            <div class="d-flex flex-column">
 
+                                <% for (const eventActif of evenementsActifs){ %>
+                                    <div class="d-flex w-100 pb-2 pt-3 border-top">
+                                        <div class="d-flex flex-column" style="width: 70%;">
+                                            <div class=" d-flex align-items-center fw-bold fs-5 fst-italic">
+                                                <%= eventActif.titre %>
+                                            </div>
+
+                                            <div class="w-75 d-flex justify-content-center">
+                                                <%= eventActif.lieu %>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column fs-6" style="width: 30%;">
+                                            <div class="d-flex justify-content-center">
+                                                <%= eventActif.dateDebutEvenement.jour %>/<%=
+                                                        eventActif.dateDebutEvenement.mois %> au <%=
+                                                            eventActif.dateFinEvenement.jour %>/<%=
+                                                                eventActif.dateFinEvenement.mois %>
+                                            </div>
+                                            <div class="d-flex justify-content-center">
+                                                <%= eventActif.dateFinEvenement.annee %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column mb-3 h-50">
+                            <div class="mb-4 fs-3 titreProfil">Évènements passés</div>
+                            <div class="d-flex flex-column">
+
+                                <% for (const eventActif of evenementsActifs){ %>
+                                    <div class="d-flex w-100 border-top pb-2 pt-3">
+                                        <div class="d-flex flex-column" style="width: 70%;">
+                                            <div class=" d-flex align-items-center fw-bold fst-italic fs-5">
+                                                <%= eventActif.titre %>
+                                            </div>
+
+                                            <div class="w-75 d-flex justify-content-center">
+                                                <%= eventActif.lieu %>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex flex-column fs-6" style="width: 30%;">
+                                            <div class="d-flex justify-content-center">
+                                                <%= eventActif.dateDebutEvenement.jour %>/<%=
+                                                        eventActif.dateDebutEvenement.mois %> au <%=
+                                                            eventActif.dateFinEvenement.jour %>/<%=
+                                                                eventActif.dateFinEvenement.mois %>
+                                            </div>
+                                            <div class="d-flex justify-content-center">
+                                                <%= eventActif.dateFinEvenement.annee %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="w-50 h-100 border bg-white rounded p-3 d-flex flex-column" id="1">
+                    <div class="titreProfil fs-3 d-flex align-items-center" style="height: 12%;">Ses évaluations</div>
+                    <% for(const eval of evaluations){ %>
+                        <div class="d-flex w-100 mb-3 border-top pb-2 pt-3">
+                            <div class="me-3 d-flex flex-column" style="width: 20%;">
+                                <div class="fw-bold d-flex justify-content-center fs-4">
+                                    <%= eval.evaluation%>
+                                </div>
+                                <div class="d-flex justify-content-center">
+                                    <% for (let i=0 ; i < 5; i++){ %>
+                                        <% if(i <=(eval.evaluation -1) ){ %>
+                                            <img src="/images/etoile.png" alt="" width="15" height="15">
+                                            <% } else { %>
+                                                <img src="/images/etoile-blanche.png" alt="" width="14" height="14">
+                                                <% } %>
+                                                    <% } %>
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column " style="width: 55%;">
+                                <div class="d-flex ">
+                                    <div class="fw-bold me-2">
+                                        <%= eval.identite%>
+                                    </div>
+                                </div>
+                                <div class="mt-2 d-flex flex-column">
+                                    <div class="fw-bold fs-5 mb-2">
+                                        <%= eval.titre%>
+                                    </div>
+                                    <div>
+                                        <%= eval.commentaire%>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-25 d-flex justify-content-center align-items-center">
+                                <%= eval.dateEvaluation.jour %>
+                                    <%= eval.dateEvaluation.moisNom %>
+                                        <%= eval.dateEvaluation.annee %>
+                            </div>
+                        </div>
+                        <% } %>
+
+                </div>
+
+            </div>
         </div>
     </div>
     <%- include('./shared/footer.ejs')%>
