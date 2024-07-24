@@ -61,14 +61,13 @@
                                 <% if(evaluation.statut_id !==2){ %>
                                     Évènement en cours
                                     <% } else { %>
-                                        <% if(evaluation.evaluation_count===1){ %>
+                                        
                                             <a href="/evaluation/<%= evaluation.evenement_id%>">
-                                                Évènement évalué
+                                                <% if(evaluation.evaluation_count===1){ %> 
+                                                    Évaluation faites
+                                                    <% } else {%>
+                                                    Évaluer l'évènement
                                             </a>
-                                            <% } else {%>
-                                                <a href="/evaluation/<%= evaluation.evenement_id%>">
-                                                    Pas d'évaluation
-                                                </a>
                                                 <% } %>
                                                     <% } %>
                             </td>

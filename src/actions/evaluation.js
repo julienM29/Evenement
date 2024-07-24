@@ -47,7 +47,6 @@ export const makeEvaluation = async (req,res)=>{
         if (search.length > 0) {
             participation = true
         }
-        console.log(evenementsAvecDetails[0].statut_id)
         return res.view('templates/evaluation.ejs', {
             evenement: evenementsAvecDetails[0],
             participation: participation,
@@ -63,7 +62,6 @@ export const makeEvaluation = async (req,res)=>{
         const evaluation = req.body.evaluation
         const now = new Date();
         const nowFormatted = formatDate(now)
-        console.log(evaluation)
         if(result.length !== 0){
             await connection.promise().query(
                 'UPDATE evaluation SET evaluation = ?, commentaire = ?, date = ?  WHERE id = ?',
@@ -115,7 +113,7 @@ export const showEvaluations = async (req,res)=>{
             dateFinEvenement : formatDate(event.date_fin_evenement)
         }));
         const [evaluations] = await connection.promise().query(`
-            SELECT  e.evaluation, e.commentaire,e.date, CONCAT(u.prenom, ' ', u.nom) AS identite
+            SELECT  e.evaluation, e.commentaire,e.date, CONCAT(u.prenom, ' ', u.nom) AS identite, u.id as user_id
             FROM evaluation e
             inner join user u on  u.id = e.user_id
             where e.evenement_id = ?
@@ -130,14 +128,19 @@ export const showEvaluations = async (req,res)=>{
             FROM evaluation e
             WHERE e.evenement_id = ?
             `, [eventId])
-        const moyenne = (parseFloat(moyenneEval[0].moyenne)).toFixed(2)
+        let moyenne 
+            if(moyenneEval.moyenne === null){
+                moyenne = 0
+            } else {
+               moyenne = (parseFloat(moyenneEval[0].moyenne)).toFixed(2) 
+            }
+         
         const [nbEvalByNote] = await connection.promise().query(`
             SELECT e.evaluation, COUNT(*) AS count
             FROM evaluation e
             WHERE e.evenement_id = ?
             GROUP BY e.evaluation 
             `, [eventId])
-            console.log(moyenne)
         return res.view('templates/showEvaluations.ejs', {
                 user:user,
                 nbNotifMessageNonLus: nbNotifMessageNonLus,
