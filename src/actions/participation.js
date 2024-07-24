@@ -27,12 +27,13 @@ export const showMyParticipations = async (req,res)=>{
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
     const nbNotifEventNonLus = await nbNotifEvenement(userId)
     const [evaluations] = await connection.promise().query(`
-        SELECT p.evenement_id, p.user_id, e.titre,e.lieu, e.date_debut_evenement , e.date_fin_evenement , e.nbParticipants , e.photo, (SELECT COUNT(*) 
+        SELECT p.evenement_id, p.user_id, e.titre,e.lieu, e.date_debut_evenement , e.date_fin_evenement, e.statut_id , e.nbParticipants , e.photo, (SELECT COUNT(*) 
             FROM evaluation 
             WHERE user_id = ? AND evenement_id = p.evenement_id) as evaluation_count 
             FROM evenement.participation p
             inner join evenement e on e.id = p.evenement_id 
             where p.user_id =?
+            order by e.date_debut_evenement ASC
         `,[userId,userId])
     const evaluationsAvecDetails = await Promise.all(evaluations.map(async evaluation => {
             const dateDebutEvenement = formatDate(evaluation.date_debut_evenement);

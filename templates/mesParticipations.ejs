@@ -21,6 +21,7 @@
                         <th class="fs-5 fw-bold">Début de l'évènement</th>
                         <th class="fs-5 fw-bold">Fin de l'évènement</th>
                         <th class="fs-5 fw-bold">Participants</th>
+                        <th class="fs-5 fw-bold">Statut</th>
                         <th class="fs-5 fw-bold">Évaluation</th>
                     </tr>
                 </thead>
@@ -50,13 +51,26 @@
                                 <%= evaluation.nbParticipants %>
                             </td>
                             <td class="fs-5">
-                                <% if(evaluation.evaluation_count===1){ %>
-                                    <a href="/">
-                                        <%= evaluation.evaluation_count %>
-                                    </a>
-                                    <% } else {%>
-                                        <%= evaluation.evaluation_count %>
-                                            <% } %>
+                                <% if(evaluation.statut_id===2){ %>
+                                    Terminé
+                                    <% } else { %>
+                                        En cours
+                                        <% } %>
+                            </td>
+                            <td class="fs-5  <% if(evaluation.statut_id !== 2){  %> text-danger<% } %>">
+                                <% if(evaluation.statut_id !==2){ %>
+                                    Évènement en cours
+                                    <% } else { %>
+                                        <% if(evaluation.evaluation_count===1){ %>
+                                            <a href="/evaluation/<%= evaluation.evenement_id%>">
+                                                Évènement évalué
+                                            </a>
+                                            <% } else {%>
+                                                <a href="/evaluation/<%= evaluation.evenement_id%>">
+                                                    Pas d'évaluation
+                                                </a>
+                                                <% } %>
+                                                    <% } %>
                             </td>
                         </tr>
                         <% }); %>
