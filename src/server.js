@@ -14,7 +14,7 @@ import fastifyMultipart from '@fastify/multipart';
 import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, showMyEventActive, unsubscribeEvent, cancelEvent, activateEvent, showMyEventPasted, deleteEvent } from "./actions/evenement.js";
 import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
 import { modifyProfil, showProfil } from "./actions/profil.js";
-import { showParticipations } from "./actions/participation.js";
+import { showMyParticipations, showParticipations } from "./actions/participation.js";
 import connection from "./database.js";
 import { showDiscussion, showMessagerie } from "./discussion.js";
 import { invitationEvent, showInvitations, validNotifEvent } from "./invitation.js";
@@ -88,7 +88,8 @@ app.get('/participations/:id', showParticipations)
 app.get('/participation/:id', participyEvent)
 // Désinscription d'une participation
 app.get('/desinscription/:id',unsubscribeEvent)
-
+// Page affichant mes participations
+app.get('/mesParticipations/:id', showMyParticipations)
 // Anuler un évènement
 app.get('/cancel/:id',cancelEvent)
 // Réactiver un évènement

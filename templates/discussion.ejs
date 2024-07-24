@@ -9,7 +9,7 @@
             <% let jourMessageAvant = null; let moisMessageAvant = null; %>
             <% discussion.messages.forEach(message => { %>
                 <% if (jourMessageAvant !== message.sent_at.jour) { %>
-                    <div class="w-100 d-flex justify-content-center mb-4 fs-4 mt-4">
+                    <div class="w-100 d-flex justify-content-center mb-4 fs-4 mt-4 text-decoration-underline">
                         <%= message.sent_at.jour %> <%= message.sent_at.moisNom %> <%= message.sent_at.annee %>
                     </div>
                 <% } %>

@@ -137,7 +137,7 @@ export const showMessagerie = async (req, res) => {
     const nbNotifEventNonLus = await nbNotifEvenement(user_id)
     if (req.method === 'GET') {
         // Utilisateurs pour le select (choix pour envoyer un message)
-        const [users] = await connection.promise().query('SELECT * FROM user ');
+        const [users] = await connection.promise().query('SELECT * FROM user where id != ?',[user_id]);
         const discussionsWithMessages = await getDiscussions(user_id)
      
         return res.view('templates/messagerie.ejs', {

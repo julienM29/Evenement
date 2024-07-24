@@ -1,23 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/style.css" rel="stylesheet">
-
-    <title>Document</title>
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- jQuery (nécessaire pour Select2) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Select2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-</head>
-<%- include('./shared/navBarre.ejs')%>
-<body>
-<h1> Création d'un évènement</h1>
-<div class="w-100 d-flex justify-content-center">
+<%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
+    <div class=" w-100 d-flex justify-content-center" style="background-color: rgb(242, 243, 243);">
 
     <div class="card mt-2 px-2 w-50">
         <% if (locals.user) {%>
