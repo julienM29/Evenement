@@ -5,40 +5,42 @@
         <div class="w-50 d-flex flex-column">
             <div class="mt-5 w-100 d-flex justify-content-center">
                 <img src="/images/<%=userProfil.photo %>" width="200" height="200"
-                    class="img-fluid rounded-circle p-1 bg-white">
-
+                    class="img-fluid rounded-circle border border-info p-1 bg-white">
             </div>
-            <h1 class="d-flex justify-content-center mb-4 mt-1 ">
+            <h1 class="d-flex justify-content-center mb-4 mt-1 " id="identite">
                 <%=userProfil.nom %>
                     <%=userProfil.prenom %>
             </h1>
-            <div class="w-100 bg-white d-flex justify-content-around mb-3 rounded border p-3">
-                <div class="d-flex align-items-center">
-                    <div class="me-3 fw-bold fs-4 ">Email :</div>
-                    <div class="fs-4">
-                        <%=userProfil.email %>
+            <div class="w-100 d-flex justify-content-center">
+                <div class="d-flex w-50 justify-content-around">
+                    <div class="d-flex align-items-center">
+                        <div class="fw-bold fs-5 me-2">Email :</div>
+                        <div class="fs-5">
+                            <%=userProfil.email %>
+                        </div>
+                    </div>
+                    <div class="<% if(user.id === userProfil.id){ %> invisible <% } %>">
+                        <button class="btn btn-success fs-6 btn-custom" id="btnModalMessage" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            Envoyer un message
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-pen-to-square fa-stack-1x"></i>
+                            </span>
+
+                        </button>
                     </div>
                 </div>
-                <div>
-                    <button class="btn btn-success fs-5 btn-custom" >
-                        Envoyer un message
-                        <span class="fa-stack fa-lg">
-                            <i class="fas fa-pen-to-square fa-stack-1x"></i>
-                        </span>
-                        
-                    </button>
-                </div>
             </div>
-            <div class=" d-flex " style="height: 700px;">
+            <div class=" d-flex mt-3" style="height: 700px;">
                 <div class="w-50 h-100 border me-3 bg-white rounded p-3 d-flex flex-column" id="1">
                     <div class="d-flex flex-column h-100">
                         <div class="d-flex flex-column mb-3 h-50">
-                            <div class=" fs-3 titreProfil d-flex align-items-center" style="height: 25%;">Évènements actifs</div>
+                            <div class=" fs-3 titreProfil d-flex align-items-center" style="height: 25%;">Évènements
+                                actifs</div>
                             <div class="d-flex flex-column">
 
                                 <% for (const eventActif of evenementsActifs){ %>
                                     <div class="d-flex w-100 pb-2 pt-3 border-top">
-                                        <div class="d-flex flex-column" style="width: 70%;">
+                                        <div class="d-flex flex-column" style="width: 65%;">
                                             <div class=" d-flex align-items-center fw-bold fs-5 fst-italic">
                                                 <%= eventActif.titre %>
                                             </div>
@@ -47,8 +49,10 @@
                                                 <%= eventActif.lieu %>
                                             </div>
                                         </div>
-                                        <div class="d-flex flex-column fs-6" style="width: 30%;">
-                                            <div class="d-flex justify-content-center">
+                                        <div class="d-flex justify-content-center align-items-center fs-6"
+                                            style="width: 10%;"><i class="fa-solid fa-clock"></i></div>
+                                        <div class="d-flex flex-column justify-content-center" style="width: 25%;">
+                                            <div class="d-flex justify-content-center ">
                                                 <%= eventActif.dateDebutEvenement.jour %>/<%=
                                                         eventActif.dateDebutEvenement.mois %> au <%=
                                                             eventActif.dateFinEvenement.jour %>/<%=
@@ -67,9 +71,9 @@
                             <div class="d-flex flex-column">
 
                                 <% for (const eventActif of evenementsActifs){ %>
-                                    <div class="d-flex w-100 border-top pb-2 pt-3">
-                                        <div class="d-flex flex-column" style="width: 70%;">
-                                            <div class=" d-flex align-items-center fw-bold fst-italic fs-5">
+                                    <div class="d-flex w-100 pb-2 pt-3 border-top">
+                                        <div class="d-flex flex-column" style="width: 65%;">
+                                            <div class=" d-flex align-items-center fw-bold fs-5 fst-italic">
                                                 <%= eventActif.titre %>
                                             </div>
 
@@ -77,8 +81,10 @@
                                                 <%= eventActif.lieu %>
                                             </div>
                                         </div>
-                                        <div class="d-flex flex-column fs-6" style="width: 30%;">
-                                            <div class="d-flex justify-content-center">
+                                        <div class="d-flex justify-content-center align-items-center fs-6"
+                                            style="width: 10%;"><i class="fa-solid fa-clock"></i></div>
+                                        <div class="d-flex flex-column justify-content-center" style="width: 25%;">
+                                            <div class="d-flex justify-content-center ">
                                                 <%= eventActif.dateDebutEvenement.jour %>/<%=
                                                         eventActif.dateDebutEvenement.mois %> au <%=
                                                             eventActif.dateFinEvenement.jour %>/<%=
@@ -93,7 +99,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="w-50 h-100 border bg-white rounded p-3 d-flex flex-column" id="1">
                     <div class="titreProfil fs-3 d-flex align-items-center" style="height: 12%;">Ses évaluations</div>
@@ -135,10 +140,21 @@
                             </div>
                         </div>
                         <% } %>
-
                 </div>
-
             </div>
         </div>
     </div>
+    <%- include('./shared/modalMessagerie.ejs') %>
+    <script>
+        $(document).ready(function () {
+            var identite = document.getElementById('identite').innerText;
+            var displayText = 'Envoyer un message à : '+ identite;
+            // Ouvrir le modal lorsque le bouton est cliqué
+            $('#btnModalMessage').on('click', function () {
+                console.log('click')
+                    $('#exampleModal').modal('show');
+                    $('#titreModal').text(displayText);
+            });
+        });
+    </script>
     <%- include('./shared/footer.ejs')%>

@@ -48,7 +48,6 @@ export const showProfil = async (req, res) => {
                 dateFinEvenement: dateFinEvenement
             };
         }));
-        console.log(evenementsActifsAvecDate)
         const evenementsFinisAvecDate = await Promise.all(evenementsFinis.map(async evenementFini => {
             const dateDebutEvenement = formatDate(evenementFini.date_debut_evenement);
             const dateFinEvenement = formatDate(evenementFini.date_fin_evenement);
