@@ -72,9 +72,8 @@ export const showProfil = async (req, res) => {
 // Page de modification d'un profil
 export const modifyProfil = async (req, res) => {
     const userId = req.params.id; // Récupération de l'id du profil dans l'url
+    const user = req.session.get('user') // User connecté
     if (req.method === 'GET') { // Si on affiche la page
-        const user = req.session.get('user') // User connecté
-        const user_id = user.id
         const nbNotifMessageNonLus = await nbNotifMessage(userId)
         const nbNotifEventNonLus = await nbNotifEvenement(userId)
 
@@ -116,6 +115,15 @@ export const modifyProfil = async (req, res) => {
             await connection.promise().query('UPDATE user SET nom = ?, prenom = ?, email = ?, photo = ?  WHERE id = ?',
                 [nom, prenom, email, photoFileName, userId]
             )
+        }
+        // Mettre à jour les informations de l'utilisateur connecté si il a modifié ses informations
+        if (user.id === parseInt(userId)) {
+            user.nom = nom;
+            user.prenom = prenom;
+            if (photoFileName) {
+                user.photo = photoFileName;
+            }
+            req.session.set('user', user);
         }
         res.redirect(`/profil/${userId}`)
 
