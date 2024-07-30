@@ -119,7 +119,6 @@ export const listeEvent = async (req, res) => {
     try {
         const nbNotifMessageNonLus = await nbNotifMessage(user_id)
         const nbNotifEventNonLus = await nbNotifEvenement(user_id)
-        console.log(nbNotifEventNonLus)
         // Récupérer tous les événements
         const [evenements] = await connection.promise().query(
             `SELECT * 
@@ -582,4 +581,40 @@ export const getTest = async (req, res) => {
         res.redirect('/')
     }
 }
+
+export const apiListeEvent = async (req, res) => {
+    let { lieu, nom } = req.params;
+    const statut_id = req.params.actif;
+
+    // Construction de la requête SQL
+    let requete = "SELECT * FROM evenement WHERE statut_id = ?";
+    let params = [statut_id];
+
+    if (nom) {
+        requete += " AND evenement.titre LIKE ?";
+        params.push(`%${nom}%`);
+    }
+
+    if (lieu) {
+        requete += " AND evenement.lieu LIKE ?";
+        params.push(`%${lieu}%`);
+    }
+
+    try {
+        const [evenementsSansDates] = await connection.promise().query(requete, params);
+        const evenements = await Promise.all(evenementsSansDates.map(async evenement => {
+            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
+                ...evenement,
+                date_final_inscription: formatDate(evenement.date_final_inscription),
+                date_debut_evenement: formatDate(evenement.date_debut_evenement),
+                date_fin_evenement: formatDate(evenement.date_fin_evenement),
+            };
+        }));
+        res.send(evenements);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send({ error: 'Erreur lors de la recherche des événements' });
+    }
+};
+
 

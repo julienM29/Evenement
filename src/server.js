@@ -11,7 +11,7 @@ import formbody from '@fastify/formbody';
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyMultipart from '@fastify/multipart';
 
-import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, showMyEventActive, unsubscribeEvent, cancelEvent, activateEvent, showMyEventPasted, deleteEvent } from "./actions/evenement.js";
+import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, showMyEventActive, unsubscribeEvent, cancelEvent, activateEvent, showMyEventPasted, deleteEvent, apiListeEvent } from "./actions/evenement.js";
 import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
 import { modifyProfil, showProfil } from "./actions/profil.js";
 import { showMyParticipations, showParticipations } from "./actions/participation.js";
@@ -143,6 +143,8 @@ app.get('/api/events/:id', async (req, res) => {
         res.status(500).send('Erreur serveur');
     }
 });
+// Page API Liste Event
+app.get('/search/:lieu/:nom/:actif', apiListeEvent)
 // Page test
 app.get('/test/:id', getTest)
 app.post('/test/:id', getTest)
