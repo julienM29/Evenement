@@ -72,7 +72,7 @@
                                 <select class="form-select form-select-solid" id="motsCles" name="motsCles[]"
                                     multiple="multiple" style="width: 100%" data-hide-search="true">
                                     <% motsCles.forEach(mot=> { %>
-                                        <% const isSelected=evenement.motsCles.includes(String(mot.id)); %>
+                                        <% const isSelected=evenement.motsCles.includes(String(mot.nom)); %>
                                             <option value="<%= mot.id %>" <%=isSelected ? 'selected' : '' %>><%= mot.nom
                                                     %>
                                             </option>
