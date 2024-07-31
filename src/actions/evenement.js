@@ -212,14 +212,6 @@ export const showEvent = async (req, res) => {
             users: users
         })
     }
-    if(req.method === 'POST'){
-        console.log('post show event')
-        const parts = req.parts(); // Récupère les parties du formulaire utilisant multipart fastify
-        const modify = true
-        await addOrModifyEvent(parts, userId, modify, eventId)
-        res.redirect('/')
-    }
-    
 }
 
 //Page affichant ces évènements actifs
@@ -411,20 +403,31 @@ export const modifierEvenement = async (req, res) => {
         const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
-                 GROUP_CONCAT(mots_cles.id SEPARATOR ',') AS motsCles 
-                 FROM evenement.evenement 
-                 INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
-                 INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
-                 WHERE evenement.id = ? 
+                 GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
+                 user.prenom AS organisateurPrenom, user.nom AS organisateurNom
+                 FROM evenement 
+                 INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
+                 INNER JOIN mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
+                 INNER JOIN user ON user.id = evenement.organisateur_id
+                 WHERE evenement.id = ?
                  GROUP BY evenement.id`, [eventId]
         );
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
+            const dateFinalInscription = formatDate(evenement.date_final_inscription);
+            const dateDebutEvenement = formatDate(evenement.date_debut_evenement);
+            const dateFinEvenement = formatDate(evenement.date_fin_evenement);
+            const dateFinalInscriptionInput = formatDateInput(evenement.date_final_inscription);
+            const dateDebutEvenementInput = formatDateInput(evenement.date_debut_evenement);
+            const dateFinEvenementInput = formatDateInput(evenement.date_fin_evenement);
             const motsClesArray = evenement.motsCles.split(',');
             return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
                 ...evenement,
-                date_final_inscription: formatDateInput(evenement.date_final_inscription),
-                date_debut_evenement: formatDateInput(evenement.date_debut_evenement),
-                date_fin_evenement: formatDateInput(evenement.date_fin_evenement),
+                date_final_inscription: dateFinalInscription,
+                date_debut_evenement: dateDebutEvenement,
+                date_fin_evenement: dateFinEvenement,
+                dateDebutEvenementInput: dateDebutEvenementInput,
+                dateFinalInscriptionInput: dateFinalInscriptionInput,
+                dateFinEvenementInput: dateFinEvenementInput,
                 motsCles: motsClesArray.map(mot => mot.trim())
             };
         }));

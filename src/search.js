@@ -14,6 +14,7 @@ function switchTextToggle() {
     } else {
         toggle.innerText = 'À venir'
     }
+    searchEvent();
 }
 
 async function searchEvent() {

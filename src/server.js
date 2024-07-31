@@ -69,13 +69,12 @@ app.post('/creation', createEvent);
 // Création d'un mot clé
 app.get('/motsCles', createKeyWords);
 app.post('/motsCles', createKeyWords);
-// Page d'un évènement
+// Page du détail d'un évènement
 app.get('/evenement/:id', showEvent);
-app.post('/evenement/:id', showEvent);
 
 // Page de modification d'un evenement
-app.get('/modifierEvenement/:id', modifierEvenement);
-app.post('/modifierEvenement/:id', modifierEvenement);
+app.get('/modifier/evenement/:id', modifierEvenement);
+app.post('/modifier/evenement/:id', modifierEvenement);
 
 // Page Mes évènements actifs
 app.get('/mesEvenements/actif/:id', showMyEventActive)

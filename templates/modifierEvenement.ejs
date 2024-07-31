@@ -1,95 +1,204 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/style.css" rel="stylesheet">
+   <div class=" w-100 d-flex justify-content-center" style="background-color: rgb(242, 243, 243);">
 
-    <title>Document</title>
+      <div class=" d-flex flex-column mt-4" style="width : 45%;">
+         <form action="" method="post" enctype="multipart/form-data" id="modifyForm">
+            <div class="d-flex mb-2" style="height:440px">
+               <div class=" h-100 d-flex flex-column mr-1" style="width : 30%;">
+                  <div class="h-50 bg-white rounded border mr-1 mb-1 d-flex justify-content-center align-items-center">
+                     <div class="w-75">
+                        <div class="w-100 text-center mb-2 h-25 d-flex justify-content-around ">
+                           <img src="/images/organisateur.png" width="45" height="45">
+                           <div class="fw-bold fs-4 d-flex align-items-center">Organisateur</div>
+                        </div>
+                        <div class="text-center h-75 d-flex align-items-center justify-content-center fst-italic fs-5">
+                           <%= evenement.organisateurNom %>
+                              <%= evenement.organisateurPrenom %>
+                        </div>
+                     </div>
+                  </div>
+                  <div
+                     class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-center fs-5 flex-column">
 
-    <!-- jQuery (nécessaire pour Select2) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- Select2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-</head>
-
-<body>
-    <%- include('./shared/navBarre.ejs')%>
-
-        <h1 class="w-100 text-center my-4"> Modifier l'évènement : <%= evenement.titre %>
-        </h1>
-        <div class="w-100 d-flex justify-content-center">
-
-            <div class="card mt-2 px-2 w-50">
-                <% if (locals.user) {%>
-                    <form action="" method="post" enctype="multipart/form-data">
-                        <div class="form-group mb-2">
-                            <label class="mb-2" for="titre">Nom de l'évènement</label>
-                            <input type="text" class="form-control" name="titre" id="titre"
-                                value="<%= evenement.titre %>">
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="mb-2" for="lieu">Lieu</label>
-                            <input type="text" class="form-control" name="lieu" id="lieu" value="<%= evenement.lieu %>">
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="mb-2" for="description">Description</label>
-                            <input type="text" class="form-control" name="description" id="description"
-                                value="<%= evenement.description%>">
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="mb-2" for="motsCles">Mots clés associés à l'évènement :</label>
-                            <select class="form-select form-select-solid" id="motsCles" name="motsCles[]"
-                                multiple="multiple" style="width: 100%" data-hide-search="true">
-                                <% motsCles.forEach(mot=> { %>
-                                    <% const isSelected=evenement.motsCles.includes(String(mot.id)); %>
-                                        <option value="<%= mot.id %>" <%=isSelected ? 'selected' : '' %>><%= mot.nom %>
-                                        </option>
-                                        <% }); %>
-                            </select>
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="mb-2" for="photo">Photo illustrant l'évènement</label>
-                            <input type="file" class="form-control" name="photo" id="photo">
-                        </div>
-                        <div class="form-group mb-2">
-                            <label class="mb-2" for="dateInscription">Date finale d'inscription</label>
-                            <input type="datetime-local" class="form-control" name="dateInscription"
-                                id="dateInscription" value="<%= evenement.date_final_inscription %>">
-                        </div>
-                        <div class="form-group mb-2 ">
-                            <label class="mb-2" for="dateDebut">Date de début de l'évènement</label>
-                            <input type="datetime-local" class="form-control" name="dateDebut" id="dateDebut"
-                                value="<%= evenement.date_debut_evenement %>">
-                        </div>
-                        <div class="form-group mb-2 ">
-                            <label class="mb-2" for="dateFin">Date de fin de l'évènement</label>
-                            <input type="datetime-local" class="form-control" name="dateFin" id="dateFin"
-                                value="<%= evenement.date_fin_evenement %>">
-                        </div>
-                        <div class="form-group mb-2 ">
-                            <label class="mb-2" for="nbParticipants">Nombres de participants maximum</label>
-                            <input type="number" class="form-control" name="nbParticipants" id="nbParticipants"
-                                value="<%= evenement.nb_participants_max %>">
-                        </div>
-                        <div class="w-100 d-flex justify-content-center">
-                            <button class=" mt-3 btn btn-primary mb-3"> Modifier l'évènement</button>
-
-                        </div>
-                    </form>
-                    <% } %>
+                  </div>
+               </div>
+               <div class="position-relative containerImg cursor-pointer" style="width:70%; height:100%;"
+                  id="imgToInputFile">
+                  <img class="w-100 h-100 rounded border mx-1 custom-shadow" id="imagePreview" src="/images/<%= evenement.photo%>">
+                  <div class="overlay border p-2 border-white">Télécharger la photo illustrant l'évènement
+                  </div>
+               </div>
             </div>
-        </div>
+            <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
+               <label class="border-b mb-2 fw-bold fs-5" for="titre">Nom de l'évènement :</label>
+               <input type="text" class="w-100 bg-white rounded border px-2 py-3 fw-bold fs-5" name="titre"
+                  id="titre" placeholder="Choisir un nom pour votre évènement" value="<%= evenement.titre %>">
+            </div>
+            <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
+               <label class="border-b mb-2 fw-bold fs-5" for="lieu">Lieu de l'évènement :</label>
+               <input type="text" class=" w-100 bg-white rounded border px-2 py-3 fs-5" name="lieu" id="lieu" placeholder="Choisissez le lieu de votre évènement" value="<%= evenement.lieu %>">
+            </div>
+               
+               <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
+                  <label class="border-b mb-2 fw-bold fs-5" for="motsCles">Mots clés associés à
+                     l'évènement
+                     :</label>
+                  <select class="form-select form-select-solid" id="motsCles" name="motsCles[]" multiple="multiple"
+                     style="width: 100%" data-hide-search="true">
+                     <% motsCles.forEach(mot=> { %>
+                        <% const isSelected=evenement.motsCles.includes(String(mot.nom)); %>
+                            <option value="<%= mot.id %>" <%=isSelected ? 'selected' : '' %>><%= mot.nom
+                                    %>
+                            </option>
+                            <% }); %>
+                  </select>
+               </div>
+               <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
+                  <label class="border-b mb-2 fw-bold fs-5" for="description">Description de
+                     l'évènement</label>
+                  <textarea class="p-3 rounded border fs-6" name="description" id="description"> <%= evenement.description %> </textarea>
+               </div>
+                  <div class="d-flex justify-content-center mb-2 w-100 bg-white rounded border px-2 py-3">
+                     <div class="w-50 ">
 
-        <script>
-            $(document).ready(function () {
-                $('#motsCles').select2({
-                    placeholder: "Selectionner des mots clés",
-                    allowClear: true
-                });
+                        <div class="mb-2 px-1 fs-5 fw-bold">
+                           Début de l'évènement :
+                        </div>
+                        <div class="w-75 mx-1 p-1  d-flex justify-content-between  cursor-pointer dateForm"
+                           id="dateDebutDiv">
+                           <div class="w-25 d-flex justify-content-center align-items-center fs-1 fw-bold "
+                              id="debutEvenementJour">
+                              <%= evenement.date_debut_evenement.jour %>
+                           </div>
+                           <div class="w-50 d-flex flex-column justify-content-center ">
+                              <div class="fw-bold" id="debutEvenementMois">
+                                <%= evenement.date_debut_evenement.moisNom %>
+                                <%= evenement.date_debut_evenement.annee %>
+                              </div>
+                              <div id="debutEvenementHeure">
+                                <%= evenement.date_debut_evenement.heures %>:<%=
+                                                                evenement.date_debut_evenement.minutes %>
+                              </div>
+                           </div>
+                           <div class="w-25 d-flex  justify-content-center align-items-center">
+                              <img src="/images/plus.png" width="40" height="40">
+                           </div>
+                        </div>
+                     </div>
+                     <div class="w-50">
+
+                        <div class="mb-2 px-1 fs-5 fw-bold">
+                           Fin de l'évènement :
+                        </div>
+                        <div class="w-75 mx-1 p-1  d-flex justify-content-between cursor-pointer dateForm "
+                           id="dateFinalDiv">
+
+                           <div class="w-25 d-flex justify-content-center align-items-center fs-1 fw-bold "
+                              id="finEvenementJour">
+                              <%= evenement.date_fin_evenement.jour %>
+                           </div>
+                           <div class="w-50 d-flex flex-column justify-content-center ">
+                              <div class="fw-bold" id="finEvenementMois">
+                                <%= evenement.date_fin_evenement.moisNom %>
+                                <%= evenement.date_fin_evenement.annee %>
+                              </div>
+                              <div id="finEvenementHeure">
+                                <%= evenement.date_fin_evenement.heures %>:<%=
+                                                                evenement.date_fin_evenement.minutes %>
+                              </div>
+
+                           </div>
+                           <div class="w-25 d-flex  justify-content-center align-items-center">
+                              <img src="/images/plus.png" width="40" height="40">
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div
+                     class="d-flex flex-column justify-content-center mb-2 w-100 bg-white rounded border px-2 py-3 mb-1">
+                     <div class="w-100 d-flex">
+                        <div class="w-50 ">
+                           <div class="mb-2 px-1 fs-5 fw-bold">
+                              Date limite d'inscription :
+                           </div>
+                           <div
+                              class="w-75 mx-1 p-1 d-flex justify-content-between cursor-pointer dateForm "
+                              id="dateInscriptionDiv">
+
+                              <div class="w-25 d-flex justify-content-center align-items-center fs-1 fw-bold "
+                                 id="inscriptionEvenementJour">
+                                 <%= evenement.date_final_inscription.jour %>
+                              </div>
+                              <div class="w-50 d-flex flex-column justify-content-center ">
+                                 <div class="fw-bold" id="inscriptionEvenementMois">
+                                    <%= evenement.date_final_inscription.moisNom %>
+                                                                <%= evenement.date_final_inscription.annee %>
+                                 </div>
+                                 <div id="inscriptionEvenementHeure">
+                                    <%= evenement.date_final_inscription.heures %>:<%=
+                                                                    evenement.date_final_inscription.minutes %>
+                                 </div>
+
+                              </div>
+                              <div class="w-25 d-flex  justify-content-center align-items-center">
+                                 <img src="/images/plus.png" width="40" height="40">
+                              </div>
+                           </div>
+                        </div>
+                        <div class="w-50">
+
+                           <div class="mb-2 px-1 fs-5 fw-bold">
+                              Places maximum :
+                           </div>
+                           <input type="number" class="w-75 mx-1 p-1  fs-1" name="nbParticipants" id="nbParticipants" value="<%= evenement.nb_participants_max %>">
+                        </div>
+                     </div>
+                     <div class="d-flex justify-content-center w-100 bg-white  border-top mt-4">
+                        <button class="w-50 mt-3 btn btn-primary mb-3 fs-4 "> Modifier
+                           l'évènement</button>
+
+                     </div>
+
+                  </div>
+                  <input type="file" id="fileInput" name="photo" style="display: none;">
+                  <input type="datetime-local" id="dateDebutInput" name="dateDebut" class="invisible" value="<%= evenement.dateDebutEvenementInput%>">
+                  <input type="datetime-local" id="dateFinalInput" name="dateFin" class="invisible" value="<%= evenement.dateFinEvenementInput%>">
+                  <input type="datetime-local" id="dateInscriptionInput" name="dateInscription" class="invisible" value="<%= evenement.dateFinalInscriptionInput%>">
+
+         </form>
+
+
+
+      </div>
+      <script>
+         document.getElementById('modifyForm').addEventListener('submit', function (e) {
+            // Vérifier si la touche pressée est "Entrée"
+            if (e.key === 'Enter') {
+               e.preventDefault(); // Empêcher la soumission du formulaire
+            }
+         });
+
+         $(document).ready(function () {
+            $('#motsCles').select2({
+               placeholder: "Selectionner des mots clés",
+               allowClear: true
             });
-        </script>
-        <%- include('./shared/footer.ejs')%>
+         });
+         document.getElementById('fileInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+               const reader = new FileReader();
+               reader.onload = function (e) {
+                  const preview = document.getElementById('imagePreview');
+                  preview.src = e.target.result;
+                  preview.style.display = 'block';
+               }
+               reader.readAsDataURL(file);
+            }
+         });
+      </script>
+      <script src="/accueil.js" onload="initAccueil()"></script>
+   </div>
+
+   <%- include('./shared/footer.ejs')%>

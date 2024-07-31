@@ -25,14 +25,21 @@
                </div>
                <div class="position-relative containerImg cursor-pointer" style="width:70%; height:100%;"
                   id="imgToInputFile">
-                  <img class="w-100 h-100 rounded border mx-1 custom-shadow" id="imagePreview">
+                  <img class="w-100 h-100 rounded border mx-1 custom-shadow" id="imagePreview" src="/images/illustration.jpg">
                   <div class="overlay border p-2 border-white">Télécharger la photo illustrant l'évènement
                   </div>
                </div>
             </div>
-               <input type="text" class="mb-2 w-100 bg-white rounded border px-2 py-3 fw-bold fs-5" name="titre"
+            <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
+               <label class="border-b mb-2 fw-bold fs-5" for="titre">Nom de l'évènement :</label>
+               <input type="text" class="w-100 bg-white rounded border px-2 py-3 fw-bold fs-5" name="titre"
                   id="titre" placeholder="Choisir un nom pour votre évènement">
-               <input type="text" class="mb-2 w-100 bg-white rounded border px-2 py-3 fs-5" name="lieu" id="lieu" placeholder="Choisissez le lieu de votre évènement">
+            </div>
+            <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
+               <label class="border-b mb-2 fw-bold fs-5" for="lieu">Lieu de l'évènement :</label>
+               <input type="text" class=" w-100 bg-white rounded border px-2 py-3 fs-5" name="lieu" id="lieu" placeholder="Choisissez le lieu de votre évènement">
+            </div>
+               
                <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
                   <label class="border-b mb-2 fw-bold fs-5" for="motsCles">Mots clés associés à
                      l'évènement

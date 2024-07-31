@@ -20,7 +20,8 @@
                         </div>
                     </div>
                     <div class="<% if(user.id === userProfil.id){ %> invisible <% } %>">
-                        <button class="btn btn-success fs-6 btn-custom" id="btnModalMessage" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <button class="btn btn-success fs-6 btn-custom" id="btnModalMessage" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal">
                             Envoyer un message
                             <span class="fa-stack fa-lg">
                                 <i class="fas fa-pen-to-square fa-stack-1x"></i>
@@ -34,8 +35,9 @@
                 <div class="w-50 h-100 border me-3 bg-white rounded p-3 d-flex flex-column" id="1">
                     <div class="d-flex flex-column h-100">
                         <div class="d-flex flex-column mb-3 h-50">
-                            <div class=" fs-3 titreProfil d-flex align-items-center" style="height: 25%;">Évènements
-                                actifs</div>
+                            <div class=" fs-3 titreProfil d-flex align-items-center" style="height: 25%;">Ses évènements
+                                actifs
+                            </div>
                             <div class="d-flex flex-column">
 
                                 <% for (const eventActif of evenementsActifs){ %>
@@ -45,7 +47,9 @@
                                                 <%= eventActif.titre %>
                                             </div>
 
-                                            <div class="w-75 d-flex justify-content-center">
+                                            <div class="w-75 d-flex justify-content-center align-items-center">
+                                                <img src="http://localhost:3000/images/espace-reserve.png" width="20"
+                                                    height="20" class="mx-2">
                                                 <%= eventActif.lieu %>
                                             </div>
                                         </div>
@@ -67,31 +71,33 @@
                             </div>
                         </div>
                         <div class="d-flex flex-column mb-3 h-50">
-                            <div class="mb-4 fs-3 titreProfil">Évènements passés</div>
+                            <div class="mb-4 fs-3 titreProfil">Ses évènements passés</div>
                             <div class="d-flex flex-column">
 
-                                <% for (const eventActif of evenementsActifs){ %>
+                                <% for (const eventFini of evenementsFinis){ %>
                                     <div class="d-flex w-100 pb-2 pt-3 border-top">
                                         <div class="d-flex flex-column" style="width: 65%;">
                                             <div class=" d-flex align-items-center fw-bold fs-5 fst-italic">
-                                                <%= eventActif.titre %>
+                                                <%= eventFini.titre %>
                                             </div>
 
-                                            <div class="w-75 d-flex justify-content-center">
-                                                <%= eventActif.lieu %>
+                                            <div class="w-75 d-flex justify-content-center align-items-center">
+                                                <img src="http://localhost:3000/images/espace-reserve.png" width="20"
+                                                    height="20" class="mx-2">
+                                                <%= eventFini.lieu %>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-center align-items-center fs-6"
                                             style="width: 10%;"><i class="fa-solid fa-clock"></i></div>
                                         <div class="d-flex flex-column justify-content-center" style="width: 25%;">
                                             <div class="d-flex justify-content-center ">
-                                                <%= eventActif.dateDebutEvenement.jour %>/<%=
-                                                        eventActif.dateDebutEvenement.mois %> au <%=
-                                                            eventActif.dateFinEvenement.jour %>/<%=
-                                                                eventActif.dateFinEvenement.mois %>
+                                                <%= eventFini.dateDebutEvenement.jour %>/<%=
+                                                        eventFini.dateDebutEvenement.mois %> au <%=
+                                                            eventFini.dateFinEvenement.jour %>/<%=
+                                                                eventFini.dateFinEvenement.mois %>
                                             </div>
                                             <div class="d-flex justify-content-center">
-                                                <%= eventActif.dateFinEvenement.annee %>
+                                                <%= eventFini.dateFinEvenement.annee %>
                                             </div>
                                         </div>
                                     </div>
@@ -111,9 +117,9 @@
                                 <div class="d-flex justify-content-center">
                                     <% for (let i=0 ; i < 5; i++){ %>
                                         <% if(i <=(eval.evaluation -1) ){ %>
-                                            <img src="/images/etoile.png" alt="" width="15" height="15">
+                                            <img src="/images/etoile.png" alt="" width="20" height="20">
                                             <% } else { %>
-                                                <img src="/images/etoile-blanche.png" alt="" width="14" height="14">
+                                                <img src="/images/etoile-blanche.png" alt="" width="19" height="19">
                                                 <% } %>
                                                     <% } %>
                                 </div>
@@ -145,16 +151,16 @@
         </div>
     </div>
     <%- include('./shared/modalMessagerie.ejs') %>
-    <script>
-        $(document).ready(function () {
-            var identite = document.getElementById('identite').innerText;
-            var displayText = 'Envoyer un message à : '+ identite;
-            // Ouvrir le modal lorsque le bouton est cliqué
-            $('#btnModalMessage').on('click', function () {
-                console.log('click')
+        <script>
+            $(document).ready(function () {
+                var identite = document.getElementById('identite').innerText;
+                var displayText = 'Envoyer un message à : ' + identite;
+                // Ouvrir le modal lorsque le bouton est cliqué
+                $('#btnModalMessage').on('click', function () {
+                    console.log('click')
                     $('#exampleModal').modal('show');
                     $('#titreModal').text(displayText);
+                });
             });
-        });
-    </script>
-    <%- include('./shared/footer.ejs')%>
+        </script>
+        <%- include('./shared/footer.ejs')%>
