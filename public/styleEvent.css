@@ -31,6 +31,12 @@
     max-height: 300px; /* Set your desired max height for the container */
 }
 
+.spacingNavBarre{
+    margin-top: 5rem;
+}
+.spacingContentNavBarre{
+    margin-top: 7rem;
+}
 /************************************* Style pour la sideBar ********************************/
 body {
     font-family: 'Roboto', sans-serif;

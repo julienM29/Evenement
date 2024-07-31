@@ -1,71 +1,97 @@
-<div class="w-100 min-vh-100 d-flex">
-    <div class="sidebar d-flex flex-column shadow" style="width:14%;">
+<div class="w-100 min-vh-100 d-flex spacingNavBarre">
+    <div class="sidebar d-flex flex-column shadow position-fixed" style="width:14%; top: 0; left: 0; height: 100vh; background-color: #fff;">
         <ul class="sidebar-nav nav-pills nav-stacked border-bottom mb-3" id="menu">
-            <li class="active mt-4">
-                <a href="/" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                            class="fa fa-home fa-stack-1x "></i></span> Accueil</a>
+            <li class="active spacingContentNavBarre">
+                <a href="/" class="fs-5">
+                    <span class="fa-stack fa-lg pull-left"><i class="fa fa-home fa-stack-1x"></i></span> Accueil
+                </a>
             </li>
             <% if (locals.user) { %>
                 <li>
-                    <a href="#" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                                class="fa fa-user fa-stack-1x "></i></span>Profil</a>
+                    <a href="#" class="fs-5">
+                        <span class="fa-stack fa-lg pull-left"><i class="fa fa-user fa-stack-1x"></i></span> Profil
+                    </a>
                     <ul class="nav-pills nav-stacked" style="list-style-type:none;">
-                        <li><a href="/profil/<%= user.id %>" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
-                                        class="fa-solid fa-caret-right fa-stack-1x "></i></span>Afficher le profil  </a></li>
-                        <li><a href="/modification/profil/<%= user.id %>" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
-                                        class="fa-solid fa-caret-right fa-stack-1x "></i></span>Modifier le profil </a></li>
+                        <li>
+                            <a href="/profil/<%= user.id %>" class="fs-6">
+                                <span class="fa-stack fa-lg pull-left"><i class="fa-solid fa-caret-right fa-stack-1x"></i></span> Afficher le profil
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/modification/profil/<%= user.id %>" class="fs-6">
+                                <span class="fa-stack fa-lg pull-left"><i class="fa-solid fa-caret-right fa-stack-1x"></i></span> Modifier le profil
+                            </a>
+                        </li>
                     </ul>
                 </li>
             <% } %>
         </ul>
         <% if (locals.user) { %>
         <ul class="sidebar-nav nav-pills nav-stacked border-bottom pb-3" id="menu">
-            
-                <li>
-                    <a href="/motsCles" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                                class="fa fa-pen fa-stack-1x "></i></span>Ajouter un mot clé</a>
-                </li>
-                <li>
-                    <a href="#" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                                class="fa fa-calendar fa-stack-1x "></i></span>Mes évènements</a>
-                    <ul class="nav-pills nav-stacked" style="list-style-type:none;">
-                        <li><a href="/mesEvenements/actif/<%= user.id %>" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
-                                        class="fa-solid fa-caret-right fa-stack-1x "></i></span>Évènements actifs </a></li>
-                        <li><a href="/mesEvenements/passes/<%= user.id %>" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
-                                        class="fa-solid fa-caret-right fa-stack-1x "></i></span>Évènements passés</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                                class="fa fa-check fa-stack-1x "></i></span>Mes participations</a>
-                    <ul class="nav-pills nav-stacked" style="list-style-type:none;">
-                        <li><a href="/participations/<%= user.id %>" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
-                                    class="fa-solid fa-caret-right fa-stack-1x "></i></span>Participations à venir</a></li>
-                        <li><a href="/mesParticipations/<%= user.id %>" class="fs-6"><span class="fa-stack fa-lg pull-left"><i
-                                        class="fa-solid fa-caret-right fa-stack-1x "></i></span>Mes participations</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="/messagerie/<%= user.id %>" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                                class="fa-solid fa-message fa-stack-1x <% if(nbNotifMessageNonLus > 0){ %> text-danger<% } %>"></i></span>Ma messagerie</a>
-                </li>
-                <li>
-                    <a href="/notification/<%= user.id%>" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                                class="fa-solid fa-envelope fa-stack-1x <% if(nbNotifEventNonLus.nb_notifs > 0){ %> text-danger<% } %>"></i></span>Mes notifications</a>
-                </li>
-            <% } %>
+            <li>
+                <a href="/motsCles" class="fs-5">
+                    <span class="fa-stack fa-lg pull-left"><i class="fa fa-pen fa-stack-1x"></i></span> Ajouter un mot clé
+                </a>
+            </li>
+            <li>
+                <a href="#" class="fs-5">
+                    <span class="fa-stack fa-lg pull-left"><i class="fa fa-calendar fa-stack-1x"></i></span> Mes évènements
+                </a>
+                <ul class="nav-pills nav-stacked" style="list-style-type:none;">
+                    <li>
+                        <a href="/mesEvenements/actif/<%= user.id %>" class="fs-6">
+                            <span class="fa-stack fa-lg pull-left"><i class="fa-solid fa-caret-right fa-stack-1x"></i></span> Évènements actifs
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/mesEvenements/passes/<%= user.id %>" class="fs-6">
+                            <span class="fa-stack fa-lg pull-left"><i class="fa-solid fa-caret-right fa-stack-1x"></i></span> Évènements passés
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="#" class="fs-5">
+                    <span class="fa-stack fa-lg pull-left"><i class="fa fa-check fa-stack-1x"></i></span> Mes participations
+                </a>
+                <ul class="nav-pills nav-stacked" style="list-style-type:none;">
+                    <li>
+                        <a href="/participations/<%= user.id %>" class="fs-6">
+                            <span class="fa-stack fa-lg pull-left"><i class="fa-solid fa-caret-right fa-stack-1x"></i></span> Participations à venir
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/mesParticipations/<%= user.id %>" class="fs-6">
+                            <span class="fa-stack fa-lg pull-left"><i class="fa-solid fa-caret-right fa-stack-1x"></i></span> Mes participations
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <a href="/messagerie/<%= user.id %>" class="fs-5">
+                    <span class="fa-stack fa-lg pull-left"><i class="fa-solid fa-message fa-stack-1x <% if(nbNotifMessageNonLus > 0){ %> text-danger<% } %>"></i></span> Ma messagerie
+                </a>
+            </li>
+            <li>
+                <a href="/notification/<%= user.id %>" class="fs-5">
+                    <span class="fa-stack fa-lg pull-left"><i class="fa-solid fa-envelope fa-stack-1x <% if(nbNotifEventNonLus.nb_notifs > 0){ %> text-danger<% } %>"></i></span> Mes notifications
+                </a>
+            </li>
+        <% } %>
         </ul>
         <ul class="sidebar-nav nav-pills nav-stacked" id="menu">
             <% if (locals.user) { %>
                 <li>
-                    <a href="/logout" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                                class="fa-solid fa-right-from-bracket fa-stack-1x "></i></span>Déconnexion</a>
+                    <a href="/logout" class="fs-5">
+                        <span class="fa-stack fa-lg pull-left"><i class="fa-solid fa-right-from-bracket fa-stack-1x"></i></span> Déconnexion
+                    </a>
                 </li>
             <% } %>
             <% if (!locals.user) { %>
                 <li>
-                    <a href="/login" class="fs-5"><span class="fa-stack fa-lg pull-left"><i
-                                        class="fa-solid fa-right-from-bracket fa-stack-1x "></i></span>Connexion</a>
+                    <a href="/login" class="fs-5">
+                        <span class="fa-stack fa-lg pull-left"><i class="fa-solid fa-right-from-bracket fa-stack-1x"></i></span> Connexion
+                    </a>
                 </li>
             <% } %>
         </ul>
