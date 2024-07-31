@@ -125,7 +125,11 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
 // Page d'accueil listant les évènements
 export const listeEvent = async (req, res) => {
     const user = req.session.get('user')
-    const user_id = user.id
+    let user_id
+    if(user){
+     user_id = user.id
+    }
+   
     try {
         const nbNotifMessageNonLus = await nbNotifMessage(user_id)
         const nbNotifEventNonLus = await nbNotifEvenement(user_id)
