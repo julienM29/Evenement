@@ -16,9 +16,25 @@
                         </div>
                      </div>
                   </div>
-                  <div
-                     class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-center fs-5 flex-column">
+                  <div class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-center fs-5 flex-column">
+                     <%  if(evenement.statut_id == 1){%>
+                     <button class="btn btn-primary fs-5 " style="width: 90%;"> 
+                        <a href="/cancel/<%= evenement.id%>" class="text-decoration-none text-white">
+                        Annuler
+                        l'évènement</a></button>
+                        <% } %>
+                     <%  if(evenement.statut_id == 3){%>
 
+                        <button class=" btn btn-primary fs-5 " style="width: 90%;"> 
+                           <a href="/activate/<%= evenement.id%>" class="text-decoration-none text-white">
+                           Réactiver
+                           l'évènement</a></button>
+                        <% } %>
+
+                           <button class="btn btn-primary fs-5 " style="width: 90%;"> 
+                              <a href="/delete/<%= evenement.id%>" class="text-decoration-none text-white">
+                              Supprimer l'évènement
+                              </a></button>
                   </div>
                </div>
                <div class="position-relative containerImg cursor-pointer" style="width:70%; height:100%;"

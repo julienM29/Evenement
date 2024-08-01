@@ -52,7 +52,11 @@ export const showInvitations = async (req, res) => {
         notificationsEvenementNonLus(user_id, 0),
         notificationsEvenementNonLus(user_id, 1),
     ]);
-
+    
+    console.log(nbNotifMessageNonLus)
+    console.log(nbNotifEventNonLus)
+    console.log(notificationsNonLus)
+    console.log(notificationsLus)
     return res.view('templates/invitation.ejs', {
         user: user,
         nbNotifEventNonLus: nbNotifEventNonLus,

@@ -1,86 +1,50 @@
 <%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
-    <div class="min-vh-100 w-100 d-flex justify-content-center" style="background-color: rgb(242, 243, 243); margin-left: 14%;">
+    <div class="min-vh-100 w-100 d-flex justify-content-center"
+        style="background-color: rgb(242, 243, 243); margin-left: 14%;">
         <div class="spacingContentNavBarre w-50  d-flex flex-column ">
-            <% if(notificationsNonLus.length> 0 ){ %>
-                <div id="nouveau" class="mb-4">
-                    <div class="fw-bold fs-2">Nouveau</div>
-                    <div class=" d-flex flex-column align-items-center border rounded  " id="conteneurNotifications">
-                        <% for (const notificationNonLus of notificationsNonLus) { %>
-                            <div class=" text-center nouvellesNotifications  w-100 border-bottom px-4 py-3">
-                                <a href="/validationNotification/<%= notificationNonLus.type%>/<%= notificationNonLus.reference_id%>/<%= notificationNonLus.evenement_id%>"
-                                    class="text-decoration-none text-black">
-                                    <div class="d-flex justify-content-center">
-                                        <div class="d-flex image-containerTest">
-                                            <img class="rounded-circle border border-secondary p-1"
-                                                src="/images/<%=notificationNonLus.photo %>" width="70" height="70">
-                                        </div>
-                                        <div class="w-50 d-flex flex-column justify-content-center px-3">
-                                            <div class="d-flex ">
-                                                <div class="me-2 fw-bold fs-5">
-                                                    <%=notificationNonLus.invitant %>
-                                                </div>
-                                                <% if(notificationNonLus.type==='invitation' ){ %>
-                                                    <div class="fs-5"> vous invite à participer à :</div>
-                                                    <% } %>
-                                                        <% if(notificationNonLus.type==='evaluation' ){ %>
-                                                            <div class="fs-5"> vient d'évaluer votre évènement :</div>
-                                                            <% } %>
-                                            </div>
-                                            <div class="fw-bold d-flex justify-content-start fs-5">
-                                                <%=notificationNonLus.titre %>
-                                            </div>
-                                        </div>
-                                        <div class="fs-5 d-flex flex-column justify-content-center">
-                                            <div>
-                                                <%=notificationNonLus.date.jour %>
-                                                    <%=notificationNonLus.date.moisNom %>
-                                            </div>
-                                            <div class=" fs-5 d-flex aling-items-start">
-                                                <%=notificationNonLus.date.heures %>:<%=notificationNonLus.date.minutes
-                                                        %>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <% } %>
-                    </div>
-                </div>
-                <% } %>
-                    <% if(notificationsLus.length> 0 ){ %>
-                        <div id="ancien">
-                            <div class="fw-bold fs-2">Plus tôt</div>
-                            <div class=" d-flex flex-column align-items-center bg-white border rounded "
+            <% if(notificationsNonLus.length == 0 && notificationsLus.length == 0){ %>
+                <div class="fs-3 w-100 d-flex justify-content-center">Vous n'avez pas encore reçu de notification</div>
+                <%}%>
+                    <% if(notificationsNonLus.length> 0 ){ %>
+                        <div id="nouveau" class="mb-4">
+                            <div class="fw-bold fs-2">Nouveau</div>
+                            <div class=" d-flex flex-column align-items-center border rounded  "
                                 id="conteneurNotifications">
-                                <% for (const notificationLus of notificationsLus) { %>
-                                    <div class=" text-center anciennesNotifications  w-100 border-bottom px-4 py-3">
-                                        <a href="/validationNotification/<%= notificationLus.reference_id%>/<%= notificationLus.evenement_id%>"
+                                <% for (const notificationNonLus of notificationsNonLus) { %>
+                                    <div class=" text-center nouvellesNotifications  w-100 border-bottom px-4 py-3">
+                                        <a href="/validationNotification/<%= notificationNonLus.type%>/<%= notificationNonLus.reference_id%>/<%= notificationNonLus.evenement_id%>"
                                             class="text-decoration-none text-black">
                                             <div class="d-flex justify-content-center">
                                                 <div class="d-flex image-containerTest">
                                                     <img class="rounded-circle border border-secondary p-1"
-                                                        src="/images/<%=notificationLus.photo %>" width="70"
+                                                        src="/images/<%=notificationNonLus.photo %>" width="70"
                                                         height="70">
                                                 </div>
-                                                <div class="w-50 d-flex flex-column justify-content-center px-3">
-                                                    <div class="d-flex ">
+                                                <div class="w-75 d-flex flex-column justify-content-center px-3">
+                                                    <div class="d-flex ms-2">
                                                         <div class="me-2 fw-bold fs-5">
-                                                            <%=notificationLus.invitant %>
+                                                            <%=notificationNonLus.invitant %>
                                                         </div>
-                                                        <div class="fs-5"> vous invite à participer à :</div>
+                                                        <% if(notificationNonLus.type==='invitation' ){ %>
+                                                            <div class="fs-5"> vous invite à participer à :</div>
+                                                            <% } %>
+                                                                <% if(notificationNonLus.type==='evaluation' ){ %>
+                                                                    <div class="fs-5"> vient d'évaluer votre évènement :
+                                                                    </div>
+                                                                    <% } %>
                                                     </div>
                                                     <div class="fw-bold d-flex justify-content-start fs-5">
-                                                        <%=notificationLus.titre %>
+                                                        <%=notificationNonLus.titre %>
                                                     </div>
                                                 </div>
                                                 <div class="fs-5 d-flex flex-column justify-content-center">
                                                     <div>
-                                                        <%=notificationLus.date.jour %>
-                                                            <%=notificationLus.date.moisNom %>
+                                                        <%=notificationNonLus.date.jour %>
+                                                            <%=notificationNonLus.date.moisNom %>
                                                     </div>
                                                     <div class=" fs-5 d-flex aling-items-start">
-                                                        <%=notificationLus.date.heures %>:
-                                                            <%=notificationLus.date.minutes %>
+                                                        <%=notificationNonLus.date.heures %>:
+                                                            <%=notificationNonLus.date.minutes %>
                                                     </div>
                                                 </div>
                                             </div>
@@ -90,6 +54,51 @@
                             </div>
                         </div>
                         <% } %>
+                            <% if(notificationsLus.length> 0 ){ %>
+                                <div id="ancien">
+                                    <div class="fw-bold fs-2">Plus tôt</div>
+                                    <div class=" d-flex flex-column align-items-center bg-white border rounded "
+                                        id="conteneurNotifications">
+                                        <% for (const notificationLus of notificationsLus) { %>
+                                            <div
+                                                class=" text-center anciennesNotifications  w-100 border-bottom px-4 py-3">
+                                                <a href="/validationNotification/<%= notificationLus.reference_id%>/<%= notificationLus.evenement_id%>"
+                                                    class="text-decoration-none text-black">
+                                                    <div class="d-flex justify-content-center">
+                                                        <div class="d-flex image-containerTest">
+                                                            <img class="rounded-circle border border-secondary p-1"
+                                                                src="/images/<%=notificationLus.photo %>" width="70"
+                                                                height="70">
+                                                        </div>
+                                                        <div
+                                                            class="w-75 d-flex flex-column justify-content-center px-3 ms-2">
+                                                            <div class="d-flex ">
+                                                                <div class="me-2 fw-bold fs-5">
+                                                                    <%=notificationLus.invitant %>
+                                                                </div>
+                                                                <div class="fs-5"> vous invite à participer à :</div>
+                                                            </div>
+                                                            <div class="fw-bold d-flex justify-content-start fs-5">
+                                                                <%=notificationLus.titre %>
+                                                            </div>
+                                                        </div>
+                                                        <div class="fs-5 d-flex flex-column justify-content-center">
+                                                            <div>
+                                                                <%=notificationLus.date.jour %>
+                                                                    <%=notificationLus.date.moisNom %>
+                                                            </div>
+                                                            <div class=" fs-5 d-flex aling-items-start">
+                                                                <%=notificationLus.date.heures %>:
+                                                                    <%=notificationLus.date.minutes %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <% } %>
+                                    </div>
+                                </div>
+                                <% } %>
         </div>
     </div>
 

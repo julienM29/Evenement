@@ -1,45 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/style.css" rel="stylesheet">
+    <%- include('./shared/header.ejs')%>
     <link href="/styleFormKeyWord.css" rel="stylesheet">
-    <link href="/styleNavBarre.css" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <title>Document</title>
-
-    <script src="https://kit.fontawesome.com/dd5559ee21.js" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
-        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <!-- Select2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <style>
-        input.form-control {
-            outline: none;
-            box-shadow: none !important
-        }
-
-        #chatNotif {
-            margin-left: -18px;
-        }
-
-        #searchInput {
-            padding-left: 32px;
-        }
-    </style>
-
-
-
-</head>
-<%- include('./shared/navBarre.ejs')%>
-    <%- include('./shared/sideBar.ejs')%>
-
-        <body>
             <div class="min-vh-100 w-100 d-flex justify-content-center flex-column" style="background-color: rgb(242, 243, 243); margin-left: 14%;">
             <% if (error) { %>
                 <div class="alert alert-danger" role="alert">

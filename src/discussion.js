@@ -20,7 +20,8 @@ async function getDiscussions (user_id){
 const [discussions] = await connection.promise().query(
     `SELECT * FROM discussion 
     INNER JOIN discussion_participants ON discussion.id = discussion_participants.discussion_id
-    WHERE discussion_participants.user_id =?`,
+    WHERE discussion_participants.user_id =?
+    ORDER BY created_at DESC`,
     [user_id]
 );
 // Récupérations du dernier message de chaque discussion
@@ -186,6 +187,20 @@ export const showMessagerie = async (req, res) => {
                     'INSERT INTO discussion_participants (discussion_id, user_id) VALUES (?, ?)',
                     [discussionId, participantId]
                 );
+                if(participantId !== user_id){
+                // Création d'une notification
+                await connection.promise().query(`
+                    INSERT INTO notification_messagerie
+                    ( user_id, created_at, is_read, discussion_id)
+                    VALUES(?,?,?,?)`,[participantId, now, 0, discussionId ]
+                    )
+                } else {
+                    await connection.promise().query(`
+                        INSERT INTO notification_messagerie
+                        ( user_id, created_at, is_read, discussion_id)
+                        VALUES(?,?,?,?)`,[participantId, now, 1, discussionId ]
+                        ) 
+                }
             }
         } else {
             discussionId = existingDiscussions[0].discussion_id;
@@ -244,20 +259,28 @@ export const showDiscussion = async (req, res) => {
                 'SELECT user_id FROM discussion_participants WHERE discussion_id = ? AND user_id != ?',
                 [discussion_id,user_id]
             );
-
-            // Préparer les données pour l'insertion des notifications
-            const notificationValues = participants.map(participant => [
-                participant.user_id, // Assurez-vous que `user_id` est correctement extrait
-                discussion_id,
-                now
-            ]);
-
-            // Insérer les notifications pour tous les participants
-            await connection.promise().query(
-                'INSERT INTO notification_messagerie (user_id, discussion_id, created_at) VALUES ?',
-                [notificationValues]
-            );
-
+    
+            for (let i = 0; i < participants.length; i++) {
+                let [discussionExistante] = await connection.promise().query(
+                    'SELECT count(*) as count FROM notification_messagerie WHERE discussion_id = ? AND user_id = ?',
+                    [discussion_id, participants[i].user_id]
+                );
+            
+                if (discussionExistante[0].count === 0) {
+                    // Insérer les notifications pour tous les participants
+                    await connection.promise().query(
+                        'INSERT INTO notification_messagerie (user_id, discussion_id, created_at) VALUES (?, ?, ?)',
+                        [participants[i].user_id, discussion_id, now]
+                    );
+                } else if (discussionExistante[0].count === 1) {
+                    // UPDATE les notifications pour tous les participants en indiquant qu'elle est à voir
+                    await connection.promise().query(
+                        'UPDATE notification_messagerie SET is_read = ?, created_at = ? WHERE user_id = ? AND discussion_id = ?',
+                        [0, now, participants[i].user_id, discussion_id]
+                    );
+                }
+            }
+            
             // Redirection après l'insertion
             if (result) {
                 res.redirect(`/discussion/${discussion_id}`);

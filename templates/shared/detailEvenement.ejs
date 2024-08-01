@@ -15,8 +15,8 @@
             </div>
             <div
                 class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-center fs-5 flex-column">
-                <div style="width: 90%; height: 90%;" class="d-flex flex-nowrap">
-                        <%= evenement.motsCles.join(', ') %>
+                <div style="width: 80%; height: 80%;" class="d-flex flex-nowrap">
+                    <%= evenement.motsCles.join(', ') %>
                                 </div>
                         </div>
                     </div>
@@ -24,122 +24,122 @@
                                         <img src="/images/<%= evenement.photo %>"
                                             class="w-100 h-100 rounded border mx-1 custom-shadow">
                                         <div class="overlay border p-2 border-white">Changer la photo de l' évènement
-                            </div>
-                    </div>
-                </div>
-                <div class="mb-2 w-100 bg-white rounded border px-2 py-3 fw-bold fs-5">
-                    <%= evenement.titre %>
-                </div>
-                <div class="mb-2 w-100 bg-white rounded border px-2 py-3 fs-5">
-                    <%= evenement.lieu %>
-                </div>
-                <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
-                    <label class="border-b mb-2 fw-bold fs-5" for="description">Description de
-                        l'évènement</label>
-                    <div class="p-3 rounded border fs-5">
-                        <%= evenement.description %>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-center mb-2 w-100 bg-white rounded border px-2 py-3">
-                    <div class="w-50 ">
-
-                        <div class="mb-2 px-1 fs-5 fw-bold">
-                            Début de l'évènement :
                         </div>
-                        <div class="w-75 mx-1 p-1  d-flex justify-content-between border" id="dateDebutDiv">
+                </div>
+            </div>
+            <div class="mb-2 w-100 bg-white rounded border px-2 py-3 fw-bold fs-5">
+                <%= evenement.titre %>
+            </div>
+            <div class="mb-2 w-100 bg-white rounded border px-2 py-3 fs-5">
+                <span class="fw-bold">Lieu de l'évènement : </span>
+                <%= evenement.lieu %>
+            </div>
+            <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
+                <label class="border-b mb-2 fw-bold fs-5" for="description">Description de
+                    l'évènement</label>
+                <div class="p-3 rounded border fs-5">
+                    <%= evenement.description %>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center mb-2 w-100 bg-white rounded border px-2 py-3">
+                <div class="w-50 ">
+
+                    <div class="mb-2 px-1 fs-5 fw-bold">
+                        Début de l'évènement :
+                    </div>
+                    <div class="w-75 mx-1 p-1  d-flex justify-content-between border" id="dateDebutDiv">
+                        <div class="w-25 d-flex justify-content-center align-items-center fs-1 fw-bold "
+                            id="debutEvenementJour">
+                            <%= evenement.date_debut_evenement.jour %>
+                        </div>
+                        <div class="w-75 d-flex flex-column justify-content-center ">
+                            <div class="fw-bold fs-5" id="debutEvenementMois">
+                                <%= evenement.date_debut_evenement.moisNom %>
+                                    <%= evenement.date_final_inscription.annee %>
+                            </div>
+                            <div id="debutEvenementHeure">
+                                <%= evenement.date_debut_evenement.heures %>:<%= evenement.date_debut_evenement.minutes
+                                        %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-50">
+
+                    <div class="mb-2 px-1 fs-5 fw-bold">
+                        Fin de l'évènement :
+                    </div>
+                    <div class="w-75 mx-1 p-1  d-flex justify-content-between border" id="dateFinalDiv">
+
+                        <div class="w-25 d-flex justify-content-center align-items-center fs-1 fw-bold "
+                            id="finEvenementJour">
+                            <%= evenement.date_fin_evenement.jour %>
+                        </div>
+                        <div class="w-75 d-flex flex-column justify-content-center ">
+                            <div class="fw-bold fs-5" id="finEvenementMois">
+                                <%= evenement.date_fin_evenement.moisNom %>
+                                    <%= evenement.date_fin_evenement.annee %>
+                            </div>
+                            <div id="finEvenementHeure " class="fs-6">
+                                <%= evenement.date_fin_evenement.heures %>:<%= evenement.date_fin_evenement.minutes %>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex flex-column justify-content-center mb-2 w-100 bg-white rounded border px-2 py-3 mb-1">
+                <div class="w-100 d-flex">
+                    <div class="w-50 ">
+                        <div class="mb-2 px-1 fs-5 fw-bold">
+                            Date limite d'inscription :
+                        </div>
+                        <div class="w-75 mx-1 p-1 d-flex justify-content-between border" id="dateInscriptionDiv">
+
                             <div class="w-25 d-flex justify-content-center align-items-center fs-1 fw-bold "
-                                id="debutEvenementJour">
-                                <%= evenement.date_debut_evenement.jour %>
+                                id="inscriptionEvenementJour">
+                                <%= evenement.date_final_inscription.jour %>
                             </div>
                             <div class="w-75 d-flex flex-column justify-content-center ">
-                                <div class="fw-bold fs-5" id="debutEvenementMois">
-                                    <%= evenement.date_debut_evenement.moisNom %>
+                                <div class="fw-bold fs-5" id="inscriptionEvenementMois">
+                                    <%= evenement.date_final_inscription.moisNom %>
                                         <%= evenement.date_final_inscription.annee %>
                                 </div>
-                                <div id="debutEvenementHeure">
-                                    <%= evenement.date_debut_evenement.heures %>:<%=
-                                            evenement.date_debut_evenement.minutes %>
+                                <div id="inscriptionEvenementHeure">
+                                    <%= evenement.date_final_inscription.heures %>:<%=
+                                            evenement.date_final_inscription.minutes %>
                                 </div>
+
                             </div>
                         </div>
                     </div>
                     <div class="w-50">
 
                         <div class="mb-2 px-1 fs-5 fw-bold">
-                            Fin de l'évènement :
+                            Places maximum :
                         </div>
-                        <div class="w-75 mx-1 p-1  d-flex justify-content-between border" id="dateFinalDiv">
 
-                            <div class="w-25 d-flex justify-content-center align-items-center fs-1 fw-bold "
-                                id="finEvenementJour">
-                                <%= evenement.date_fin_evenement.jour %>
-                            </div>
-                            <div class="w-75 d-flex flex-column justify-content-center ">
-                                <div class="fw-bold fs-5" id="finEvenementMois">
-                                    <%= evenement.date_fin_evenement.moisNom %>
-                                        <%= evenement.date_fin_evenement.annee %>
-                                </div>
-                                <div id="finEvenementHeure " class="fs-6">
-                                    <%= evenement.date_fin_evenement.heures %>:<%= evenement.date_fin_evenement.minutes
-                                            %>
-                                </div>
-
-                            </div>
+                        <div class="w-75 mx-1 p-1 border d-flex fs-1">
+                            <%= evenement.nb_participants_max %>
                         </div>
                     </div>
                 </div>
-                <div
-                    class="d-flex flex-column justify-content-center mb-2 w-100 bg-white rounded border px-2 py-3 mb-1">
-                    <div class="w-100 d-flex">
-                        <div class="w-50 ">
-                            <div class="mb-2 px-1 fs-5 fw-bold">
-                                Date limite d'inscription :
-                            </div>
-                            <div class="w-75 mx-1 p-1 d-flex justify-content-between border" id="dateInscriptionDiv">
+                <% if (locals.user.id===evenement.organisateur_id) { %>
+                    <div class="d-flex justify-content-center align-items-center w-100 bg-white  border-top mt-4">
+                        <button class="w-50 btn btn-primary mt-4 mb-2 fs-4 ">
+                            <a href="/modifier/evenement/<%= evenement.id%>" class="text-decoration-none text-white">
+                                Modifier
+                                l'évènement
+                            </a>
+                        </button>
 
-                                <div class="w-25 d-flex justify-content-center align-items-center fs-1 fw-bold "
-                                    id="inscriptionEvenementJour">
-                                    <%= evenement.date_final_inscription.jour %>
-                                </div>
-                                <div class="w-75 d-flex flex-column justify-content-center ">
-                                    <div class="fw-bold fs-5" id="inscriptionEvenementMois">
-                                        <%= evenement.date_final_inscription.moisNom %>
-                                            <%= evenement.date_final_inscription.annee %>
-                                    </div>
-                                    <div id="inscriptionEvenementHeure">
-                                        <%= evenement.date_final_inscription.heures %>:<%=
-                                                evenement.date_final_inscription.minutes %>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w-50">
-
-                            <div class="mb-2 px-1 fs-5 fw-bold">
-                                Places maximum :
-                            </div>
-
-                            <div class="w-75 mx-1 p-1 border d-flex fs-1">
-                                <%= evenement.nb_participants_max %>
-                            </div>
-                        </div>
                     </div>
-                    <% if (locals.user.id===evenement.organisateur_id) { %>
-                        <div class="d-flex justify-content-center align-items-center w-100 bg-white  border-top mt-4">
-                            <button class="w-50 btn btn-primary mt-4 mb-2 fs-4 ">
-                                <a href="/modifier/evenement/<%= evenement.id%>"
-                                    class="text-decoration-none text-white">
-                                    Modifier
-                                    l'évènement
-                                </a>
-                            </button>
+                    <% } else { %>
+                        <div class="w-100 d-flex justify-content-center  border-top mt-4 ">
 
-                        </div>
-                        <% } else { %>
-                            <div class="w-100 d-flex justify-content-center  border-top mt-4 ">
+                            <div class="d-flex justify-content-around w-75 bg-white mt-2">
+                                <% if ( evenement.statut_id !==2) {%>
 
-                                <div class="d-flex justify-content-around w-75 bg-white mt-2">
                                     <% if (participation===false) {%>
                                         <a href="/participation/<%= evenement.id %>"
                                             class="optionEventForm text-decoration-none mt-3 mb-2 px-3 py-2  rounded-pill border-dashed-inscription  fs-4 fw-bold text-dark d-flex align-items-center">
@@ -153,39 +153,42 @@
                                                     Se désinscrire
                                                 </a>
                                                 <% } %>
+
+
                                                     <button type="button" id="btnModalMessage"
                                                         class="optionEventForm text-decoration-none mt-3 mb-2 px-3 rounded-pill border-dashed-inscription  fs-4 fw-bold text-dark d-flex align-items-center"
                                                         data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                                        Envoyer un message
+                                                        Partager
                                                         <span class="fa-stack"> <i
                                                                 class="fa-solid fa-share-from-square fa-stack-1x"></i>
                                                         </span>
                                                     </button>
-                                </div>
-
+                                                    <% } %>
                             </div>
-                            <% } %>
-                </div>
+
+                        </div>
+                        <% } %>
             </div>
         </div>
-        <% if (locals.user.id!==evenement.organisateur_id) { %>
-            <!-- Modal -->
-            <%- include('./modalEvenement.ejs') %>
-                <% } %>
-
     </div>
-    <script>
-        $(document).ready(function () {
-            $('#usersSelect').select2({ placeholder: "Rechercher un utilisateur...", allowClear: true });
-            $('#usersSelect').select2({
-                dropdownParent: $('#exampleModal')
-            });
-            // Ouvrir le modal lorsque le bouton est cliqué
-            $('#btnModalMessage').on('click', function () {
-                $('#exampleModal').modal('show');
+    <% if (locals.user.id!==evenement.organisateur_id) { %>
+        <!-- Modal -->
+        <%- include('./modalEvenement.ejs') %>
+            <% } %>
 
-                let displayText = `Partager l'évènement : <%= evenement.titre%>`
-                $('#titreModal').text(displayText);
-            });
+</div>
+<script>
+    $(document).ready(function () {
+        $('#usersSelect').select2({ placeholder: "Rechercher un utilisateur...", allowClear: true });
+        $('#usersSelect').select2({
+            dropdownParent: $('#exampleModal')
         });
-    </script>
+        // Ouvrir le modal lorsque le bouton est cliqué
+        $('#btnModalMessage').on('click', function () {
+            $('#exampleModal').modal('show');
+
+            let displayText = `Partager l'évènement : <%= evenement.titre%>`
+            $('#titreModal').text(displayText);
+        });
+    });
+</script>

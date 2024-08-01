@@ -34,7 +34,7 @@ export const createAccount = async (req, res) => {
             }
             const { nom, prenom, email, password } = fields; // Déstructuration pour récupérer les valeurs du formulaire
             const hashPasswordUser = await argon2.hash(password) // Hashage du mot de passe en passant par argon2
-            await connection.promise().query('INSERT INTO user (nom, prenom, password, email, photo,notification) VALUES (?, ?, ?, ?, ?, ?)', [nom, prenom, hashPasswordUser, email, photoFileName, false]);
+            await connection.promise().query('INSERT INTO user (nom, prenom, password, email, photo) VALUES (?, ?, ?, ?, ?)', [nom, prenom, hashPasswordUser, email, photoFileName]);
             console.log('Utilisateur créé avec succès');
             res.redirect(`/login`)
         } catch (err) {

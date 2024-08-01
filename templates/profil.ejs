@@ -1,7 +1,8 @@
 <%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
 
 
-    <div class="min-vh-100 w-100 d-flex justify-content-center " style="background-color: rgb(242, 243, 243); margin-left: 14%;">
+    <div class="min-vh-100 w-100 d-flex justify-content-center "
+        style="background-color: rgb(242, 243, 243); margin-left: 14%;">
         <div class="w-50 d-flex flex-column spacingContentNavBarre">
             <div class=" w-100 d-flex justify-content-center">
                 <img src="/images/<%=userProfil.photo %>" width="200" height="200"
@@ -19,16 +20,25 @@
                             <%=userProfil.email %>
                         </div>
                     </div>
-                    <div class="<% if(user.id === userProfil.id){ %> invisible <% } %>">
-                        <button class="btn btn-success fs-6 btn-custom" id="btnModalMessage" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal">
-                            Envoyer un message
-                            <span class="fa-stack fa-lg">
-                                <i class="fas fa-pen-to-square fa-stack-1x"></i>
-                            </span>
+                    <% if(user.id===userProfil.id){ %>
+                        <div class="">
+                            <button class="btn btn-success fs-5 p-1 btn-custom" >
+                                <a href="/modification/profil/<%= userProfil.id%>" class="text-decoration-none text-white">
+                                Modifier son profil</a>
+                            </button>
+                        </div>
+                        <% } else {%>
+                            <div class="">
+                                <button class="btn btn-success fs-6 btn-custom" id="btnModalMessage"
+                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    Envoyer un message
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-pen-to-square fa-stack-1x"></i>
+                                    </span>
 
-                        </button>
-                    </div>
+                                </button>
+                            </div>
+                            <% } %>
                 </div>
             </div>
             <div class=" d-flex mt-3" style="height: 700px;">
