@@ -138,14 +138,12 @@
                         <div class="w-100 d-flex justify-content-center  border-top mt-4 ">
 
                             <div class="d-flex justify-content-around w-75 bg-white mt-2">
-                                <% if ( evenement.statut_id !==2) {%>
-
+                                <% if ( evenement.statut_id !==2 && evenement.statut_id !==5) {%>
                                     <% if (participation===false) {%>
                                         <a href="/participation/<%= evenement.id %>"
                                             class="optionEventForm text-decoration-none mt-3 mb-2 px-3 py-2  rounded-pill border-dashed-inscription  fs-4 fw-bold text-dark d-flex align-items-center">
                                             S'inscrire
                                         </a>
-
                                         <% } %>
                                             <% if (participation===true) {%>
                                                 <a href="/desinscription/<%= evenement.id %>"
@@ -153,8 +151,6 @@
                                                     Se désinscrire
                                                 </a>
                                                 <% } %>
-
-
                                                     <button type="button" id="btnModalMessage"
                                                         class="optionEventForm text-decoration-none mt-3 mb-2 px-3 rounded-pill border-dashed-inscription  fs-4 fw-bold text-dark d-flex align-items-center"
                                                         data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -164,6 +160,13 @@
                                                         </span>
                                                     </button>
                                                     <% } %>
+                                                        <% if ( evenement.statut_id === 2 ){%>
+                                                            <div class="fs-4 fw-bold">L'évènement est terminé.</div>
+                                                            <% } %>
+                                                                <% if ( evenement.statut_id === 5 ) {%>
+                                                                    <div>L'évènement est en cours.</div>
+
+                                                                    <% } %>
                             </div>
 
                         </div>

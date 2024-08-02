@@ -41,7 +41,7 @@ export const formatDateInput = (dateString) => {
     const annee = dateObj.getFullYear();
     const heures = dateObj.getHours().toString().padStart(2, '0');
     const minutes = dateObj.getMinutes().toString().padStart(2, '0');
-    
+
 
     return `${annee}-${mois}-${jour}T${heures}:${minutes}`;
 };
@@ -126,10 +126,10 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
 export const listeEvent = async (req, res) => {
     const user = req.session.get('user')
     let user_id
-    if(user){
-     user_id = user.id
+    if (user) {
+        user_id = user.id
     }
-   
+
     try {
         const nbNotifMessageNonLus = await nbNotifMessage(user_id)
         const nbNotifEventNonLus = await nbNotifEvenement(user_id)
@@ -177,10 +177,9 @@ export const showEvent = async (req, res) => {
                  INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
                  INNER JOIN mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
                  INNER JOIN user ON user.id = evenement.organisateur_id
-                 WHERE evenement.id = ? 
-                 GROUP BY evenement.id`, [eventId]
+                 WHERE evenement.id = ?`, [eventId]
         );
-        console.log(evenements)
+        verifyDateEvent(evenements[0])
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
             const dateFinalInscription = formatDate(evenement.date_final_inscription);
             const dateDebutEvenement = formatDate(evenement.date_debut_evenement);
@@ -201,7 +200,7 @@ export const showEvent = async (req, res) => {
             };
         }));
         const [search] = await connection.promise().query('SELECT * FROM participation WHERE evenement_id =? AND user_id =?', [eventId, userId])
-        
+
         let participation = false // Permet d'afficher ou d'enlever le bouton de participation à l'évènement
         if (search.length > 0) {
             participation = true
@@ -313,7 +312,7 @@ export const participyEvent = async (req, res) => {
                 [eventId, user.id]
             );
             await connection.promise().query('UPDATE evenement SET nbParticipants = nbParticipants - 1  WHERE id = ?',
-                [ eventId]
+                [eventId]
             )
             res.redirect('/'); // Redirection après la création de l'événement
         } catch (error) {
@@ -328,26 +327,26 @@ export const participyEvent = async (req, res) => {
 // Lorsque l'utilisateur appuye sur le bouton pour valider sa participation sur la page showEvent
 export const unsubscribeEvent = async (req, res) => {
 
-        try {
-            const eventId = req.params.id
-            const user = req.session.get('user');
-            const userId = user.id
-            if (!user) {
-                return res.status(401).send('Utilisateur non authentifié');
-            }
-
-            await connection.promise().query(
-                'DELETE FROM participation WHERE evenement_id =? AND user_id = ?',
-                [eventId, userId]
-            );
-            await connection.promise().query('UPDATE evenement SET nbParticipants = nbParticipants + 1  WHERE id = ?',
-                [ eventId]
-            )
-            res.redirect('/'); // Redirection après la création de l'événement
-        } catch (error) {
-            console.error('Erreur lors de la suppression de la participation :', error);
-            return res.status(500).send('Erreur interne du serveur');
+    try {
+        const eventId = req.params.id
+        const user = req.session.get('user');
+        const userId = user.id
+        if (!user) {
+            return res.status(401).send('Utilisateur non authentifié');
         }
+
+        await connection.promise().query(
+            'DELETE FROM participation WHERE evenement_id =? AND user_id = ?',
+            [eventId, userId]
+        );
+        await connection.promise().query('UPDATE evenement SET nbParticipants = nbParticipants + 1  WHERE id = ?',
+            [eventId]
+        )
+        res.redirect('/'); // Redirection après la création de l'événement
+    } catch (error) {
+        console.error('Erreur lors de la suppression de la participation :', error);
+        return res.status(500).send('Erreur interne du serveur');
+    }
 }
 /////////////////////////////////////////////////////// CREATION ET MODIFICATION //////////////////////////////////////////////////////
 
@@ -452,7 +451,7 @@ export const modifierEvenement = async (req, res) => {
         res.redirect('/')
     }
 }
-export const cancelEvent = async (req,res)=>{
+export const cancelEvent = async (req, res) => {
     try {
         const eventId = req.params.id
         const user = req.session.get('user');
@@ -462,7 +461,7 @@ export const cancelEvent = async (req,res)=>{
         }
 
         await connection.promise().query('UPDATE evenement SET statut_id =  3  WHERE id = ?',
-            [ eventId]
+            [eventId]
         )
         res.redirect('/'); // Redirection après la création de l'événement
     } catch (error) {
@@ -470,7 +469,7 @@ export const cancelEvent = async (req,res)=>{
         return res.status(500).send('Erreur interne du serveur');
     }
 }
-export const activateEvent = async (req,res)=>{
+export const activateEvent = async (req, res) => {
     try {
         const eventId = req.params.id
         const user = req.session.get('user');
@@ -480,7 +479,7 @@ export const activateEvent = async (req,res)=>{
         }
 
         await connection.promise().query('UPDATE evenement SET statut_id =  1  WHERE id = ?',
-            [ eventId]
+            [eventId]
         )
         res.redirect('/'); // Redirection après la création de l'événement
     } catch (error) {
@@ -488,7 +487,7 @@ export const activateEvent = async (req,res)=>{
         return res.status(500).send('Erreur interne du serveur');
     }
 }
-export const deleteEvent = async (req,res)=>{
+export const deleteEvent = async (req, res) => {
     try {
         const eventId = req.params.id
         const user = req.session.get('user');
@@ -498,7 +497,7 @@ export const deleteEvent = async (req,res)=>{
         }
 
         await connection.promise().query('UPDATE evenement SET statut_id =  4  WHERE id = ?',
-            [ eventId]
+            [eventId]
         )
         res.redirect('/'); // Redirection après la création de l'événement
     } catch (error) {
@@ -518,11 +517,12 @@ export const createKeyWords = async (req, res) => {
     const nbNotifEventNonLus = await nbNotifEvenement(userId)
 
     if (req.method === 'GET') { // Affichage
-        return res.view('templates/motsCles.ejs', 
-             { user:user,
+        return res.view('templates/motsCles.ejs',
+            {
+                user: user,
                 nbNotifMessageNonLus: nbNotifMessageNonLus,
                 nbNotifEventNonLus: nbNotifEventNonLus,
-                error: null 
+                error: null
             });
     }
     if (req.method === 'POST') { // Soumission du formulaire
@@ -549,7 +549,7 @@ export const getTest = async (req, res) => {
 
     if (req.method === 'GET') { // Requete GET affichage de la page
         const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
-        
+
         return res.view('templates/test.ejs', {
             motsCles: motsCles,
             nbNotifMessageNonLus: nbNotifMessageNonLus,
@@ -557,7 +557,7 @@ export const getTest = async (req, res) => {
             user: user
         })
     }
-    if(req.method === 'POST'){
+    if (req.method === 'POST') {
         const parts = req.parts(); // Récupère les parties du formulaire utilisant multipart fastify
         console.log(parts.id)
         const modify = false
@@ -601,4 +601,19 @@ export const apiListeEvent = async (req, res) => {
     }
 };
 
+export const verifyDateEvent = async (event) => {
+    const now = new Date();
+    const dateFinEvent = event.date_fin_evenement
+    const dateDebutEvent = event.date_debut_evenement
+    if (now < dateFinEvent && now > dateDebutEvent) {
+        console.log('event en cours')
+        await connection.promise().query(`
+    UPDATE evenement SET statut_id= 5 WHERE id= ? `, [event.id])
+    }
+    if (now > dateFinEvent) {
+        console.log('event fini')
+        await connection.promise().query(`
+        UPDATE evenement SET statut_id= 2 WHERE id= ? `, [event.id])
+    }
+}
 
