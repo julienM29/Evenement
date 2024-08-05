@@ -1,6 +1,4 @@
 <%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
-
-
     <div class="min-vh-100 w-100 d-flex justify-content-center "
         style="background-color: rgb(242, 243, 243); margin-left: 14%;">
         <div class="w-50 d-flex flex-column spacingContentNavBarre">
@@ -22,36 +20,38 @@
                     </div>
                     <% if(user.id===userProfil.id){ %>
                         <div class="">
-                            <button class="btn btn-success fs-5 p-1 btn-custom" >
-                                <a href="/modification/profil/<%= userProfil.id%>" class="text-decoration-none text-white">
-                                Modifier son profil</a>
+                            <button class="btn btn-success fs-5 p-1">
+                                <a href="/modification/profil/<%= userProfil.id%>"
+                                    class="text-decoration-none text-white">
+                                    Modifier son profil</a>
                             </button>
                         </div>
                         <% } else {%>
                             <div class="">
-                                <button class="btn btn-success fs-6 btn-custom" id="btnModalMessage"
+                                <button class="btn btn-success fs-6 border p-2" id="btnModalMessage"
                                     data-bs-toggle="modal" data-bs-target="#exampleModal">
                                     Envoyer un message
-                                    <span class="fa-stack fa-lg">
-                                        <i class="fas fa-pen-to-square fa-stack-1x"></i>
-                                    </span>
-
+                                    <i class="fas fa-pen-to-square fa-lg ms-1 "></i>
                                 </button>
                             </div>
                             <% } %>
                 </div>
             </div>
             <div class=" d-flex mt-3" style="height: 700px;">
-                <div class="w-50 h-100 border me-3 bg-white rounded p-3 d-flex flex-column" id="1">
+                <div class="w-50 h-100 border me-3 bg-white rounded p-2 d-flex flex-column" id="1">
                     <div class="d-flex flex-column h-100">
-                        <div class="d-flex flex-column mb-3 h-50">
-                            <div class=" fs-3 titreProfil d-flex align-items-center" style="height: 25%;">Ses évènements
-                                actifs
+                        <div class="d-flex border-bottom" style="height: 12%;">
+                            <div class="titreProfil fs-3 d-flex align-items-center w-50">Ses évènements</div>
+                            <div class="d-flex align-items-center w-50 justify-content-around">
+                                <button class="btn btn-choice-event actif fs-5 fw-bold" id="actifBtn">Actif</button>
+                                <div class="fs-5">ou</div>
+                                <button class="btn btn-choice-event inactif fs-5 fw-bold" id="pastBtn">Passés</button>
                             </div>
-                            <div class="d-flex flex-column">
-
+                        </div>
+                        <div style="height: 88%;">
+                            <div class="h-100 d-flex flex-column vh-100-max overflow-auto" id="ActiveEventContent">
                                 <% for (const eventActif of evenementsActifs){ %>
-                                    <div class="d-flex w-100 pb-2 pt-3 border-top">
+                                    <div class="d-flex w-100 pb-2 pt-3 border-bottom">
                                         <div class="d-flex flex-column" style="width: 65%;">
                                             <div class=" d-flex align-items-center fw-bold fs-5 fst-italic">
                                                 <%= eventActif.titre %>
@@ -79,13 +79,9 @@
                                     </div>
                                     <% } %>
                             </div>
-                        </div>
-                        <div class="d-flex flex-column mb-3 h-50">
-                            <div class="mb-4 fs-3 titreProfil">Ses évènements passés</div>
-                            <div class="d-flex flex-column">
-
+                            <div class="h-100 d-flex flex-column d-none" id="pastEventContent">
                                 <% for (const eventFini of evenementsFinis){ %>
-                                    <div class="d-flex w-100 pb-2 pt-3 border-top">
+                                    <div class="d-flex w-100 pb-2 pt-3 border-bottom">
                                         <div class="d-flex flex-column" style="width: 65%;">
                                             <div class=" d-flex align-items-center fw-bold fs-5 fst-italic">
                                                 <%= eventFini.titre %>
@@ -116,10 +112,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="w-50 h-100 border bg-white rounded p-3 d-flex flex-column" id="1">
-                    <div class="titreProfil fs-3 d-flex align-items-center" style="height: 12%;">Ses évaluations</div>
+                <div class="w-50 h-100 border bg-white rounded p-2 d-flex flex-column" id="1">
+                    <div class="titreProfil fs-3 d-flex align-items-center border-bottom" style="height: 12%;">Évènements auxquels il a participé</div>
                     <% for(const eval of evaluations){ %>
-                        <div class="d-flex w-100 mb-3 border-top pb-2 pt-3">
+                        <div class="d-flex w-100 mb-3 border-bottom pb-2 pt-3">
                             <div class="me-3 d-flex flex-column" style="width: 20%;">
                                 <div class="fw-bold d-flex justify-content-center fs-4">
                                     <%= eval.evaluation%>
@@ -172,5 +168,28 @@
                     $('#titreModal').text(displayText);
                 });
             });
+        </script>
+        <script>
+            let actifBtn = document.getElementById('actifBtn');
+            let pastBtn = document.getElementById('pastBtn');
+            let activContent = document.getElementById('ActiveEventContent');
+            let pastContent = document.getElementById('pastEventContent');
+
+            actifBtn.addEventListener('click', () => {
+                if (!actifBtn.classList.contains('actif')) {
+                    actifBtn.classList.replace('inactif', 'actif')
+                    pastBtn.classList.replace('actif', 'inactif')
+                    activContent.classList.remove('d-none')
+                    pastContent.classList.add('d-none')
+                }
+            })
+            pastBtn.addEventListener('click', () => {
+                if (!pastBtn.classList.contains('actif')) {
+                    pastBtn.classList.replace('inactif', 'actif')
+                    actifBtn.classList.replace('actif', 'inactif')
+                    activContent.classList.add('d-none')
+                    pastContent.classList.remove('d-none')
+                }
+            })
         </script>
         <%- include('./shared/footer.ejs')%>

@@ -11,7 +11,7 @@ import formbody from '@fastify/formbody';
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyMultipart from '@fastify/multipart';
 
-import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, showMyEventActive, unsubscribeEvent, cancelEvent, activateEvent, showMyEventPasted, deleteEvent, apiListeEvent } from "./actions/evenement.js";
+import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, unsubscribeEvent, cancelEvent, activateEvent, deleteEvent, apiListeEvent, showMyEvent } from "./actions/evenement.js";
 import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
 import { modifyProfil, showProfil } from "./actions/profil.js";
 import { showMyParticipations, showParticipations } from "./actions/participation.js";
@@ -77,10 +77,7 @@ app.get('/modifier/evenement/:id', modifierEvenement);
 app.post('/modifier/evenement/:id', modifierEvenement);
 
 // Page Mes évènements actifs
-app.get('/mesEvenements/actif/:id', showMyEventActive)
-// Page Mes évènements passés
-app.get('/mesEvenements/passes/:id', showMyEventPasted)
-
+app.get('/mesEvenements/:id', showMyEvent)
 // Page des participations
 app.get('/participations/:id', showParticipations)
 // Inscription à un évènement
@@ -143,7 +140,7 @@ app.get('/api/events/:id', async (req, res) => {
     }
 });
 // Page API Liste Event
-app.get('/search/:lieu/:nom/:actif', apiListeEvent)
+app.get('/search/:lieu/:nom/:actif/:userId', apiListeEvent)
 // Page test
 app.get('/test', getTest)
 app.post('/test', getTest)

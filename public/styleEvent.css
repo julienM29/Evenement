@@ -310,3 +310,22 @@ body {
     padding-right: var(--bs-btn-padding-x);
     padding-left: var(--bs-btn-padding-x);
 }
+
+.btn-choice-event.actif  {
+    background-color: #69f5ff;
+    border: solid 1px #797979;
+    padding: 3px 10px 3px 10px;
+    color: #000000;
+}
+.btn-choice-event.inactif  {
+    background-color: #acacac;
+    border: solid 1px #797979;
+    padding: 3px 10px 3px 10px;
+    color: #000000;
+}
+.btn-choice-event:hover {
+    background-color: #adf6fc;
+    color: #464646;
+    border: solid 1px #797979;
+
+}

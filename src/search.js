@@ -1,10 +1,24 @@
 function initSearch() {
     document.getElementById('toggleSwitchEvent').addEventListener('change', switchTextToggle)
     document.getElementById('searchButton').addEventListener('click', searchEvent)
+    verifyUrl()
+
 }
 
 window.initSearch = initSearch;
 
+let userId = 0
+function verifyUrl() {
+
+    let url = new URL(window.location.href)
+    const pathSegments = url.pathname.split('/');
+    const idUser = pathSegments[pathSegments.length - 1];
+    let nomPage = pathSegments[pathSegments.length - 2];
+    if (nomPage === 'mesEvenements') {
+        console.log('id user : ' + userId)
+        userId = idUser
+    }
+}
 function switchTextToggle() {
     let toggle = document.getElementById('textToggleSwitchEvent')
     let toggleText = toggle.innerText
@@ -18,23 +32,24 @@ function switchTextToggle() {
 }
 
 async function searchEvent() {
+    console.log('user id : ' + userId)
     let nomRechercher = document.getElementById('nomEvenement').value;
     let lieuRechercher = document.getElementById('lieuEvenement').value;
     let toggle = document.getElementById('textToggleSwitchEvent')
     let toggleText = toggle.innerText
-    let statut_id 
-    if(toggleText === 'À venir'){
+    let statut_id
+    if (toggleText === 'À venir') {
         statut_id = 1
     }
-    if(toggleText === 'Passé'){
+    if (toggleText === 'Passé') {
         statut_id = 2
     }
     let body = document.getElementById('dataEvent');
     body.innerHTML = '';
-    
+
 
     try {
-        const response = await fetch(`/search/${lieuRechercher}/${nomRechercher}/${statut_id}`);
+        const response = await fetch(`/search/${lieuRechercher}/${nomRechercher}/${statut_id}/${userId}`);
         const data = await response.json();
 
         for (let i = 0; i < data.length; i++) {

@@ -218,9 +218,9 @@ export const showEvent = async (req, res) => {
 }
 
 //Page affichant ces évènements actifs
-export const showMyEventActive = async (req, res) => {
+export const showMyEvent = async (req, res) => {
     const user = req.session.get('user')
-    const userId = req.params.id
+    const userId = user.id
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
     const nbNotifEventNonLus = await nbNotifEvenement(userId)
     try {
@@ -230,45 +230,7 @@ export const showMyEventActive = async (req, res) => {
              FROM evenement.evenement 
              INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
              INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
-             WHERE evenement.organisateur_id = ? AND evenement.statut_id = 1
-             GROUP BY evenement.id`, [userId])
-        const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
-            const motsClesArray = evenement.motsCles.split(',');
-            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
-                ...evenement,
-                date_final_inscription: formatDate(evenement.date_final_inscription),
-                date_debut_evenement: formatDate(evenement.date_debut_evenement),
-                date_fin_evenement: formatDate(evenement.date_fin_evenement),
-                motsCles: motsClesArray.map(mot => mot.trim())
-            };
-        }));
-        return res.view('templates/showMyActiveEvent.ejs',
-            {
-                user: user,
-                evenements: evenementsAvecDetails,
-                nbNotifMessageNonLus: nbNotifMessageNonLus,
-                nbNotifEventNonLus: nbNotifEventNonLus
-            }
-        )
-    } catch (error) {
-        console.error('Erreur lors de la récupération des événements :', error);
-        return res.status(500).send('Erreur interne du serveur');
-    }
-}
-//Page affichant ces évènements passes
-export const showMyEventPasted = async (req, res) => {
-    const user = req.session.get('user')
-    const userId = req.params.id
-    const nbNotifMessageNonLus = await nbNotifMessage(userId)
-    const nbNotifEventNonLus = await nbNotifEvenement(userId)
-    try {
-        const [evenements] = await connection.promise().query(
-            `SELECT evenement.*, 
-             GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles 
-             FROM evenement.evenement 
-             INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
-             INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
-             WHERE evenement.organisateur_id = ? AND evenement.statut_id = 2
+             WHERE evenement.organisateur_id = ? and evenement.statut_id != 3 and  evenement.statut_id != 4
              GROUP BY evenement.id`, [userId])
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
             const motsClesArray = evenement.motsCles.split(',');
@@ -569,6 +531,7 @@ export const getTest = async (req, res) => {
 export const apiListeEvent = async (req, res) => {
     let { lieu, nom } = req.params;
     const statut_id = req.params.actif;
+    const user_id = req.params.userId;
 
     // Construction de la requête SQL
     let requete = "SELECT * FROM evenement WHERE statut_id = ?";
@@ -583,7 +546,10 @@ export const apiListeEvent = async (req, res) => {
         requete += " AND evenement.lieu LIKE ?";
         params.push(`%${lieu}%`);
     }
-
+    if(user_id != 0 ){
+        console.log('user diff 0')
+        requete += " AND evenement.organisateur_id ="+user_id;
+    }
     try {
         const [evenementsSansDates] = await connection.promise().query(requete, params);
         const evenements = await Promise.all(evenementsSansDates.map(async evenement => {
