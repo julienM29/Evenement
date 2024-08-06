@@ -207,11 +207,11 @@
 
             </div>
             <input type="file" id="fileInput" name="photo" style="display: none;">
-            <input type="datetime-local" id="dateDebutInput" name="dateDebut" class="invisible"
+            <input type="datetime-local" id="dateDebutInput" name="dateDebut" class=""
                value="<%= evenement.dateDebutEvenementInput%>">
-            <input type="datetime-local" id="dateFinalInput" name="dateFin" class="invisible"
+            <input type="datetime-local" id="dateFinalInput" name="dateFin" class=""
                value="<%= evenement.dateFinEvenementInput%>">
-            <input type="datetime-local" id="dateInscriptionInput" name="dateInscription" class="invisible"
+            <input type="datetime-local" id="dateInscriptionInput" name="dateInscription" class=""
                value="<%= evenement.dateFinalInscriptionInput%>">
          </form>
 
@@ -239,6 +239,7 @@
                   // Convertir la date sélectionnée au format datetime-local
                   const formattedDate = instance.formatDate(selectedDates[0], 'Y-m-dTH:i');
                   document.getElementById('dateDebutInput').value = formattedDate;
+                  changeDebutInput()
                }
             });
             flatpickr('#datePickerFin', {
@@ -249,7 +250,8 @@
                onChange: function (selectedDates, dateStr, instance) {
                   // Convertir la date sélectionnée au format datetime-local
                   const formattedDate = instance.formatDate(selectedDates[0], 'Y-m-dTH:i');
-                  document.getElementById('dateFinInput').value = formattedDate;
+                  document.getElementById('dateFinalInput').value = formattedDate;
+                  changeFinInput()
                }
             });
             flatpickr('#datePickerInscription', {
@@ -261,6 +263,7 @@
                   // Convertir la date sélectionnée au format datetime-local
                   const formattedDate = instance.formatDate(selectedDates[0], 'Y-m-dTH:i');
                   document.getElementById('dateInscriptionInput').value = formattedDate;
+                  changeInscriptionInput()
                }
             });
          });
