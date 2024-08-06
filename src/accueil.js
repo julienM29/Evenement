@@ -1,3 +1,4 @@
+
 // Fonction servant pour la page de modification d'un évènement
 function initAccueil() {
     // Input file
@@ -7,18 +8,19 @@ function initAccueil() {
         });
         //Input date début évènement
         document.getElementById('dateDebutDiv').addEventListener('click', function () {
-            document.getElementById('dateDebutInput').showPicker()
+            document.getElementById('datePickerDebut').click()
         });
-        document.getElementById('dateDebutInput').addEventListener('change', changeDebutInput)
         // Input date fin évènement
         document.getElementById('dateFinalDiv').addEventListener('click', function () {
-            document.getElementById('dateFinalInput').showPicker()
+            document.getElementById('datePickerFin').click()
         });
-        document.getElementById('dateFinalInput').addEventListener('change', changeFinInput)
-        // Date fin inscription
+        // Input date limite d'inscription
         document.getElementById('dateInscriptionDiv').addEventListener('click', function () {
-            document.getElementById('dateInscriptionInput').showPicker()
+            document.getElementById('datePickerInscription').click()
         });
+
+        document.getElementById('dateDebutInput').addEventListener('change', changeDebutInput)
+        document.getElementById('dateFinalInput').addEventListener('change', changeFinInput)
         document.getElementById('dateInscriptionInput').addEventListener('change', changeInscriptionInput)
 
     });
