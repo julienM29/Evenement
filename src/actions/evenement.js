@@ -138,6 +138,7 @@ export const listeEvent = async (req, res) => {
             `SELECT * 
              FROM evenement
              WHERE evenement.statut_id = 1
+             order by date_debut_evenement ASC
             `)
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
             return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
@@ -534,7 +535,7 @@ export const apiListeEvent = async (req, res) => {
     const user_id = req.params.userId;
 
     // Construction de la requête SQL
-    let requete = "SELECT * FROM evenement WHERE statut_id = ?";
+    let requete = "SELECT * FROM evenement WHERE statut_id = ? ";
     let params = [statut_id];
 
     if (nom) {
@@ -550,6 +551,7 @@ export const apiListeEvent = async (req, res) => {
         console.log('user diff 0')
         requete += " AND evenement.organisateur_id ="+user_id;
     }
+    requete += " order by date_debut_evenement ASC";
     try {
         const [evenementsSansDates] = await connection.promise().query(requete, params);
         const evenements = await Promise.all(evenementsSansDates.map(async evenement => {

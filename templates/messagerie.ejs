@@ -75,11 +75,11 @@
                 </select>
             </div>
             <div class="mb-2 w-100 d-flex justify-content-center" id="alertSelect">
-                <div id="selectionStatus" class="text-muted mb-2" style="width: 90%;">Sélectionnez au moins un utilisateur pour pouvoir écrire un message</div>
+                <div id="selectionStatus" class="text-muted mb-4 fw-bold" style="width: 90%;">Sélectionnez au moins un utilisateur pour pouvoir écrire un message</div>
             </div>
 
             <% discussions.forEach(discussion => { %>
-                <a href="/discussion/<%= discussion.id %>" class="mb-2 d-flex w-100 mb-3 mt-5 lienDiscussion text-black text-decoration-none">
+                <a href="/discussion/<%= discussion.id %>" class="mb-3 d-flex w-100 mt-2 lienDiscussion text-black text-decoration-none">
                     <% if (discussion.participants.length === 2) { %>
                         <% discussion.participants.forEach(participant => { %>
                             <% if (participant.id !== user.id) { %>

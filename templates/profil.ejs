@@ -54,7 +54,8 @@
                                     <div class="d-flex w-100 pb-2 pt-3 border-bottom">
                                         <div class="d-flex flex-column" style="width: 65%;">
                                             <div class=" d-flex align-items-center fw-bold fs-5 fst-italic">
-                                                <%= eventActif.titre %>
+                                                <a href="/evenement/<%=eventActif.id %>" class="text-decoration-none lienTitreEvent">
+                                                <%= eventActif.titre %></a>
                                             </div>
 
                                             <div class="w-75 d-flex justify-content-center align-items-center">
@@ -84,7 +85,8 @@
                                     <div class="d-flex w-100 pb-2 pt-3 border-bottom">
                                         <div class="d-flex flex-column" style="width: 65%;">
                                             <div class=" d-flex align-items-center fw-bold fs-5 fst-italic">
-                                                <%= eventFini.titre %>
+                                                <a href="/evenement/<%=eventFini.id %>" class="text-decoration-none lienTitreEvent">
+                                                    <%= eventFini.titre %></a>
                                             </div>
 
                                             <div class="w-75 d-flex justify-content-center align-items-center">
@@ -138,7 +140,8 @@
                                 </div>
                                 <div class="mt-2 d-flex flex-column">
                                     <div class="fw-bold fs-5 mb-2">
-                                        <%= eval.titre%>
+                                        <a href="/evenement/<%=eval.evenement_id %>" class="text-decoration-none lienTitreEvent">
+                                            <%= eval.titre%></a>
                                     </div>
                                     <div>
                                         <%= eval.commentaire%>

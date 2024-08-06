@@ -18,10 +18,12 @@ function getFormattedDate() {
 async function getDiscussions (user_id){
 // Récupération des discussions de l'utilisateur
 const [discussions] = await connection.promise().query(
-    `SELECT * FROM discussion 
-    INNER JOIN discussion_participants ON discussion.id = discussion_participants.discussion_id
-    WHERE discussion_participants.user_id =?
-    ORDER BY created_at DESC`,
+    `SELECT d.id, d.created_at , nm.is_read 
+	FROM discussion d
+    INNER JOIN discussion_participants dp ON d.id = dp.discussion_id
+    inner join notification_messagerie nm  on nm.user_id =1 and d.id = nm.discussion_id 
+    WHERE dp.user_id =1
+    ORDER BY nm.is_read asc ,d.created_at desc`,
     [user_id]
 );
 // Récupérations du dernier message de chaque discussion

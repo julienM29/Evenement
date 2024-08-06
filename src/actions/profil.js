@@ -25,13 +25,13 @@ export const showProfil = async (req, res) => {
         where user_id = ?
         `, [user_id])
     const [evenementsActifs] = await connection.promise().query(`
-        SELECT  titre, lieu, description, photo, date_final_inscription, organisateur_id, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id
+        SELECT  id, titre, lieu, description, photo, date_final_inscription, organisateur_id, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id
         FROM evenement.evenement
-        where organisateur_id = ? and statut_id = 1 ;`, [user_id])
+        where organisateur_id = ? and statut_id = 1 order by date_debut_evenement ASC;`, [user_id])
     const [evenementsFinis] = await connection.promise().query(`
-        SELECT  titre, lieu, description, photo, date_final_inscription, organisateur_id, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id
+        SELECT  id, titre, lieu, description, photo, date_final_inscription, organisateur_id, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id
         FROM evenement.evenement
-        where organisateur_id = ? and statut_id = 2 ;`, [user_id])
+        where organisateur_id = ? and statut_id = 2 order by date_debut_evenement ASC;`, [user_id])
         const evaluationsAvecDate = await Promise.all(evaluations.map(async evaluation => {
             const dateEvaluation = formatDate(evaluation.date);
             return { 
@@ -66,7 +66,6 @@ export const showProfil = async (req, res) => {
         evaluations: evaluationsAvecDate,
         evenementsActifs: evenementsActifsAvecDate,
         evenementsFinis: evenementsFinisAvecDate
-
     })
 }
 // Page de modification d'un profil

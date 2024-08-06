@@ -62,7 +62,7 @@ body {
 .sidebar-nav li a:hover {
     color: #fff;
     background: rgba(92, 67, 67, 0.2);
-    border-left: 2px solid red;
+    border-left: 3px solid rgb(0, 255, 255);
 }
 
 .sidebar-nav li a:focus {
@@ -79,11 +79,11 @@ body {
 
 /*******************************  NavBarre ***************************/
 .border-dashed-success {
-    border: 1px dashed #28a745; /* Couleur de bordure verte */
+    border: 1px dashed #00fff2; /* Couleur de bordure verte */
 }
 
 .border-dashed-success:hover{
-    background-color: #28a745 ;
+    background-color: #00fff2 ;
     border: 2px dashed #000000;
     color : white;
 }
@@ -200,11 +200,18 @@ body {
 .buttonDiscussion:hover{
     background-color: #b7f3f5;
 }
-.messageDiscussion{
+.messageDiscussionUser{
     background-color: #ffffff;
     border: 1px solid #5f5f5f;
-}
+    border-radius: 12px 12px 12px 0; /* Format : top-left top-right bottom-right bottom-left */
 
+}
+.messageDiscussionAutre{
+    background-color: #ffffff;
+    border: 1px solid #5f5f5f;
+    border-radius: 12px 12px 0 12px; /* Format : top-left top-right bottom-right bottom-left */
+
+}
 /****************************** CSS SELECT2 PAGE MESSAGERIE ************************/
 
 .select2-container--default .select2-selection--multiple {
@@ -247,6 +254,10 @@ body {
 
 
 /********************   Page de discussion ************************/
+.bg-discussion{
+    background-color: #e0e0e0;
+    border: solid 2px #919191;
+}
 .conteneurMessage {
     position: relative; /* Ensure the parent has position relative */
 }
@@ -258,12 +269,16 @@ body {
     width: 100%; /* Ensure the form takes the full width of the parent */
     padding: 10px; /* Optional: for spacing */
 }
-.messageDiscussion {
+.messageDiscussionUser {
     max-width: 650px; /* Définir la largeur maximale du conteneur de texte */
     word-wrap: break-word; /* Permet de renvoyer à la ligne si un mot dépasse la largeur */
     white-space: normal; /* Permet au texte de revenir à la ligne normalement */
 }
-
+.messageDiscussionAutre {
+    max-width: 650px; /* Définir la largeur maximale du conteneur de texte */
+    word-wrap: break-word; /* Permet de renvoyer à la ligne si un mot dépasse la largeur */
+    white-space: normal; /* Permet au texte de revenir à la ligne normalement */
+}
 /********************* */
 .lienNotificationMessage {
     position: relative;
@@ -328,4 +343,10 @@ body {
     color: #464646;
     border: solid 1px #797979;
 
+}
+.lienTitreEvent{
+color: #000;
+}
+.lienTitreEvent:hover{
+color: #224bff;
 }

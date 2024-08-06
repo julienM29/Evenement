@@ -47,11 +47,11 @@ body {
 NavBarre
 */
 .border-dashed-success {
-    border: 1px dashed #28a745; /* Couleur de bordure verte */
+    border: 1px dashed #00fff2; /* Couleur de bordure verte */
 }
 
 .border-dashed-success:hover{
-    background-color: #28a745 ;
+    background-color: #00fff2 ;
     border: 2px dashed #000000;
     color : white;
 }
