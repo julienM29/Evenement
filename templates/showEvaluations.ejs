@@ -34,9 +34,11 @@
             width: var(--partial-width, 0%);
         }
     </style>
-    <div class="min-vh-100 w-100 d-flex justify-content-center" style="background-color: rgb(242, 243, 243); margin-left: 14%;">
+    <div class="min-vh-100 w-100 d-flex justify-content-center"
+        style="background-color: rgb(242, 243, 243); margin-left: 14%;">
         <% if(evenement.statut_id !==2){%>
-            <div class="w-100 align-items-center d-flex justify-content-center spacingContentNavBarre fs-4"> L'évènement : "<b>
+            <div class="w-100 align-items-center d-flex justify-content-center spacingContentNavBarre fs-4"> L'évènement
+                : "<b>
                     <%= evenement.titre %>
                 </b>"n'est pas terminé donc il n'y a pas encore d'évaluations</div>
             <% }%>
@@ -61,11 +63,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-center fs-5 flex-column">
+                                <div
+                                    class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-center fs-5 flex-column">
                                     <div class="w-75 h-25 d-flex justify-content-center align-items-center">
-                                        <div class="mb-2 px-1 fs-6 d-flex">
-                                            <div class="fw-bold me-2">Début :</div>
-                                            <div>
+                                        <div class="mb-2 px-1 fs-5 d-flex">
+                                            <div class="fw-bold me-2 ">Début :</div>
+                                            <div class="">
                                                 <%= evenement.dateDebutEvenement.jour %>
 
                                                     <%= evenement.dateDebutEvenement.moisNom %>
@@ -76,8 +79,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="w-75 h-25  d-flex justify-content-center align-items-center flex-column">
-                                        <div class="mb-2 px-1 fs-6 d-flex">
+                                    <div
+                                        class="w-75 h-25  d-flex justify-content-center align-items-center flex-column">
+                                        <div class="mb-2 px-1 fs-5 d-flex">
                                             <div class="fw-bold me-2">Fin :</div>
                                             <div>
                                                 <%= evenement.dateFinEvenement.jour %>
@@ -90,8 +94,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="w-75 h-25  d-flex justify-content-center align-items-center flex-column">
-                                        <div class="mb-2 px-1 fs-6 d-flex">
+                                    <div
+                                        class="w-75 h-25  d-flex justify-content-center align-items-center flex-column">
+                                        <div class="mb-2 px-1 fs-5 d-flex">
                                             <div class="fw-bold me-2">Participants :</div>
                                             <div>
                                                 <%= evenement.nbParticipants %>
@@ -152,7 +157,9 @@
                                         <div class="d-flex flex-column w-50">
                                             <div class="d-flex ">
                                                 <div class="fw-bold me-2 ">
-                                                    <a href="/profil/<%= eval.user_id%>" class="text-decoration-none"><%= eval.identite%></a>
+                                                    <a href="/profil/<%= eval.user_id%>" class="text-decoration-none">
+                                                        <%= eval.identite%>
+                                                    </a>
                                                 </div>
                                             </div>
                                             <div class="mt-2">
@@ -166,7 +173,9 @@
                                         </div>
                                     </div>
                                     <% } %>
-
+                                        <% if(evaluations.length==0){%>
+                                            <div class="fs-4 fw-bold fst-italic"> Il n'y a pas encore d'évaluations de faites.</div>
+                                            <%}%>
                             </div>
                         </div>
                         <% }%>

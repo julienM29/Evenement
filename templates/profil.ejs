@@ -120,7 +120,9 @@
                         <div class="d-flex w-100 mb-3 border-bottom pb-2 pt-3">
                             <div class="me-3 d-flex flex-column" style="width: 20%;">
                                 <div class="fw-bold d-flex justify-content-center fs-4">
-                                    <%= eval.evaluation%>
+                                    <div><%= eval.evaluation%></div>
+                                    <div class="me-1 ms-1"> / </div>
+                                    <div>5</div>
                                 </div>
                                 <div class="d-flex justify-content-center">
                                     <% for (let i=0 ; i < 5; i++){ %>
@@ -148,7 +150,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="w-25 d-flex justify-content-center align-items-center">
+                            <div class="w-25 d-flex justify-content-center align-items-center fw-bold">
                                 <%= eval.dateEvaluation.jour %>
                                     <%= eval.dateEvaluation.moisNom %>
                                         <%= eval.dateEvaluation.annee %>

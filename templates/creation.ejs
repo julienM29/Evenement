@@ -1,5 +1,9 @@
 <%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
-
+   <!-- Inclure le CSS de Flatpickr depuis un CDN -->
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+   <!-- Inclure le CSS de Flatpickr en Français depuis un CDN -->
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+   <link rel="stylesheet" href="/styleSlider.css">
 
    <div class="min-vh-100 w-100 d-flex justify-content-center "
       style="background-color: rgb(242, 243, 243); margin-left: 14%;">
@@ -20,7 +24,22 @@
                      </div>
                   </div>
                   <div
-                     class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-center fs-5 flex-column">
+                     class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-center fs-6 flex-column">
+                     <div class="w-100 p-1">
+                        <div class="h-50 d-flex align-items-center text-center fs-5 fw-bold mb-2">
+                           <label for="allow_registration_during_event ">Permettre l'inscription pendant l'événement
+                              :</label>
+                        </div>
+                        <div class="h-50 w-100 d-flex justify-content-center align-items-center">
+                           <li class="list-group-item border-0">
+                              <label class="switch ">
+                                 <input type="checkbox" id="checkboxInscription" class="default "
+                                    name="inscriptionEnCours" onchange="handleCheckboxChange()" value="false">
+                                 <span class="slider"></span>
+                              </label>
+                           </li>
+                        </div>
+                     </div>
 
                   </div>
                </div>
@@ -65,8 +84,12 @@
             <div class="d-flex justify-content-center mb-2 w-100 bg-white rounded border px-2 py-3">
                <div class="w-50 d-flex flex-column">
                   <div>
-                     <div class="mb-2 px-1 fs-5 fw-bold">
-                        Début de l'évènement :
+                     <div class="mb-2 px-1 fs-5 fw-bold d-flex">
+                        <div>Début de l'évènement :</div>
+                        <div>
+                           <input type="text" id="datePickerDebut" class="form-control invisible">
+                        </div>
+
                      </div>
                      <div class="w-75 mx-1 p-1  d-flex justify-content-between  cursor-pointer dateForm"
                         id="dateDebutDiv">
@@ -88,13 +111,18 @@
                         </div>
                      </div>
                   </div>
-                  <div class="p-1 text-danger fw-bold fs-6 d-none" id="messageDateDebut">La date doit être inférieure à celle de fin d'évènement
+                  <div class="p-1 text-danger fw-bold fs-6 d-none" id="messageDateDebut">La date doit être inférieure à
+                     celle de fin d'évènement
                   </div>
                </div>
                <div class="w-50 d-flex flex-column">
                   <div>
-                     <div class="mb-2 px-1 fs-5 fw-bold">
-                        Fin de l'évènement :
+                     <div class="mb-2 px-1 fs-5 fw-bold d-flex">
+                        <div>Fin de l'évènement :</div>
+                        <div>
+                           <input type="text" id="datePickerFin" class="form-control invisible">
+                        </div>
+
                      </div>
                      <div class="w-75 mx-1 p-1  d-flex justify-content-between cursor-pointer dateForm "
                         id="dateFinalDiv">
@@ -118,16 +146,30 @@
                         </div>
                      </div>
                   </div>
-                  <div class="p-1 text-danger fw-bold fs-6 d-none" id="messageDateFin">La date doit être inférieure à celle de fin d'évènement
+                  <div class="p-1 text-danger fw-bold fs-6 d-none" id="messageDateFin">La date doit être inférieure à
+                     celle de fin d'évènement
                   </div>
                </div>
             </div>
-            <div class="d-flex flex-column justify-content-center mb-2 w-100 bg-white rounded border px-2 py-3 mb-1">
+            <div class="d-flex flex-column justify-content-center mb-2 w-100 bg-white rounded border px-2 py-3 mb-1 ">
                <div class="w-100 d-flex">
-                  <div class="w-50 d-flex flex-column">
-                     <div>
-                        <div class="mb-2 px-1 fs-5 fw-bold">
-                           Date limite d'inscription :
+                  <div class="w-50">
+
+                     <div class="mb-2 px-1 fs-5 fw-bold">
+                        Places maximum :
+                     </div>
+                     <div class="w-75 mx-1 p-1 cursor-pointer ">
+                        <input type="number" class="w-75 p-1  fs-1 position-relative bottom-0" name="nbParticipants"
+                           id="nbParticipants">
+                     </div>
+                  </div>
+                  <div class="w-50 d-flex flex-column ">
+                     <div class="" id="date_limite_inscription_div">
+                        <div class="mb-2 px-1 fs-5 fw-bold d-flex">
+                           <div>Date limite d'inscription :</div>
+                           <div>
+                              <input type="text" id="datePickerInscription" class="form-control invisible">
+                           </div>
                         </div>
                         <div class="w-75 mx-1 p-1 d-flex justify-content-between cursor-pointer dateForm "
                            id="dateInscriptionDiv">
@@ -151,16 +193,10 @@
                            </div>
                         </div>
                      </div>
-                     <div class="p-1 text-danger fw-bold fs-6 d-none" id="messageDateLimite"  >La date doit être inférieure à celle de fin d'évènement
+                     <div class="p-1 text-danger fw-bold fs-6 d-none" id="messageDateLimite">La date doit être
+                        inférieure à celle de fin d'évènement
                      </div>
 
-                  </div>
-                  <div class="w-50">
-
-                     <div class="mb-2 px-1 fs-5 fw-bold">
-                        Places maximum :
-                     </div>
-                     <input type="number" class="w-75 mx-1 p-1  fs-1" name="nbParticipants" id="nbParticipants">
                   </div>
                </div>
                <div class="d-flex justify-content-center w-100 bg-white  border-top mt-4">
@@ -173,19 +209,78 @@
             <input type="file" id="fileInput" name="photo" style="display: none;">
             <input type="datetime-local" id="dateDebutInput" name="dateDebut" class="invisible">
             <input type="datetime-local" id="dateFinalInput" name="dateFin" class="invisible">
-            <input type="datetime-local" id="dateInscriptionInput" name="dateInscription" class="invisible">
-
+            <input type="datetime-local" id="dateInscriptionInput" name="dateInscription" class="invisible"
+               value="null">
+            <input type="text" class="invisible" id="inscriptionCheckbox" name="inscriptionCheckbox" >
          </form>
-
-
-
       </div>
+
+      <!-- Inclure le JS de Flatpickr depuis un CDN -->
+      <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+      <!-- Inclure le fichier de langue français pour Flatpickr depuis un CDN -->
+      <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+
+      <!-- Initialiser Flatpickr avec la langue française -->
       <script>
-         document.getElementById('modifyForm').addEventListener('submit', function (e) {
-            // Vérifier si la touche pressée est "Entrée"
-            if (e.key === 'Enter') {
-               e.preventDefault(); // Empêcher la soumission du formulaire
+         document.addEventListener('DOMContentLoaded', function () {
+            let startPicker = flatpickr('#datePickerDebut', {
+               enableTime: true,
+               dateFormat: 'Y-m-d H:i',
+               locale: 'fr',
+               defaultDate: document.getElementById('datePickerDebut').innerText,
+               onChange: function (selectedDates, dateStr, instance) {
+                  const formattedDate = instance.formatDate(selectedDates[0], 'Y-m-dTH:i');
+                  document.getElementById('dateDebutInput').value = formattedDate;
+                  changeDebutInput();
+                  limitPicker.set('maxDate', dateStr);
+                  endPicker.set('minDate', dateStr);
+               }
+            });
+
+            let endPicker = flatpickr('#datePickerFin', {
+               enableTime: true,
+               dateFormat: 'Y-m-d H:i',
+               locale: 'fr',
+               defaultDate: document.getElementById('datePickerFin').innerText,
+               onChange: function (selectedDates, dateStr, instance) {
+                  const formattedDate = instance.formatDate(selectedDates[0], 'Y-m-dTH:i');
+                  document.getElementById('dateFinalInput').value = formattedDate;
+                  changeFinInput();
+                  startPicker.set('maxDate', dateStr);
+               }
+            });
+
+            let limitPicker = flatpickr('#datePickerInscription', {
+               enableTime: true,
+               dateFormat: 'Y-m-d H:i',
+               locale: 'fr',
+               defaultDate: document.getElementById('datePickerInscription').innerText,
+               onChange: function (selectedDates, dateStr, instance) {
+                  const formattedDate = instance.formatDate(selectedDates[0], 'Y-m-dTH:i');
+                  document.getElementById('dateInscriptionInput').value = formattedDate;
+                  changeInscriptionInput();
+                  startPicker.set('maxDate', dateStr);
+               }
+            });
+         });
+
+         function handleCheckboxChange() {
+            var checkbox = document.getElementById('checkboxInscription');
+            var dateLimiteDiv = document.getElementById('date_limite_inscription_div');
+            var inputValueCheckbox = document.getElementById('inscriptionCheckbox');
+
+            if (checkbox.checked) {
+               dateLimiteDiv.classList.add('invisible');
+               inputValueCheckbox.value = "true";
+            } else {
+               dateLimiteDiv.classList.remove('invisible');
+               inputValueCheckbox.value = "false";
             }
+         }
+
+         document.getElementById('modifyForm').addEventListener('submit', function (e) {
+            // Assurez-vous que ce code n'est pas bloqué par la validation des éléments de formulaire
+            e.preventDefault(); // Empêcher la soumission du formulaire pour déboguer
          });
 
          $(document).ready(function () {
@@ -194,6 +289,7 @@
                allowClear: true
             });
          });
+
          document.getElementById('fileInput').addEventListener('change', function (event) {
             const file = event.target.files[0];
             if (file) {
@@ -207,6 +303,7 @@
             }
          });
       </script>
+
       <script src="/accueil.js" onload="initAccueil()"></script>
    </div>
 

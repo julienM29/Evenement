@@ -128,13 +128,12 @@ export const showEvaluations = async (req,res)=>{
             FROM evaluation e
             WHERE e.evenement_id = ?
             `, [eventId])
-        let moyenne 
-            if(moyenneEval.moyenne === null){
+        let moyenne = 0
+            if(moyenneEval[0].moyenne === null){
                 moyenne = 0
             } else {
                moyenne = (parseFloat(moyenneEval[0].moyenne)).toFixed(2) 
             }
-         
         const [nbEvalByNote] = await connection.promise().query(`
             SELECT e.evaluation, COUNT(*) AS count
             FROM evaluation e

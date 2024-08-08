@@ -52,8 +52,8 @@ function changeDebutInput() {
     document.getElementById('debutEvenementMois').textContent = moisNom[mois]
     document.getElementById('debutEvenementHeure').textContent = heure
     document.getElementById('debutEvenementAnnee').textContent = annee
-    updateLimitsValueInput()
 }
+
 function changeFinInput() {
     const valueInput = document.getElementById('dateFinalInput').value;
     const tabHoraire = valueInput.split(/[-T]/)
@@ -66,7 +66,6 @@ function changeFinInput() {
     document.getElementById('finEvenementMois').textContent = moisNom[mois]
     document.getElementById('finEvenementHeure').textContent = heure
     document.getElementById('finEvenementAnnee').textContent = annee
-    updateLimitsValueInput()
 
 }
 function changeInscriptionInput() {
@@ -81,46 +80,5 @@ function changeInscriptionInput() {
     document.getElementById('inscriptionEvenementMois').textContent = moisNom[mois]
     document.getElementById('inscriptionEvenementHeure').textContent = heure
     document.getElementById('inscriptionEvenementAnnee').textContent = annee
-    updateLimitsValueInput()
-
 }
 
-function updateLimitsValueInput() {
-    const endRegistration = document.getElementById('dateInscriptionInput');
-    const startEvent = document.getElementById('dateDebutInput');
-    const endEvent = document.getElementById('dateFinalInput');
-
-    const endRegistrationValue = new Date(endRegistration.value);
-    const startEventValue = new Date(startEvent.value);
-    const endEventValue = new Date(endEvent.value);
-
-    // Mise à jour des limites pour la date de début d'évènement
-    if (endRegistration.value) {
-        startEvent.min = endRegistration.value;
-    } else {
-        startEvent.min = "";
-    }
-
-    // Mise à jour des limites pour la date de fin d'évènement
-    if (startEvent.value) {
-        endEvent.min = startEvent.value;
-    } else {
-        endEvent.min = "";
-    }
-
-    // Mise à jour des limites pour la date de fin d'inscription
-    if (startEvent.value) {
-        endRegistration.max = startEvent.value;
-    } else {
-        endRegistration.max = "";
-    }
-
-    // Validation des dates pour s'assurer qu'elles respectent les contraintes
-    if (endRegistrationValue > startEventValue) {
-        endRegistration.value = '';
-    }
-
-    if (startEventValue > endEventValue) {
-        endEvent.value = '';
-    }
-}

@@ -51,7 +51,6 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
     let fields = {}; // Contient les champs textes
     let photoFileName = null; // Stocke le nom de la photo
     let motsClesIds = []; // Tableau pour stocker les IDs des mots clés
-
     try {
         for await (const part of parts) {
             if (part.file) { // Si la partie est un fichier
@@ -72,16 +71,26 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
             }
         }
 
-        const { titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants } = fields; // Déstructuration pour récupérer les valeurs du formulaire
+        const { titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants, inscriptionCheckbox } = fields; // Déstructuration pour récupérer les valeurs du formulaire
         let descriptionSansEspaces = description.trim();
-
+        let booleanPendantEvenement = 0
+        if(inscriptionCheckbox == "true"){
+            booleanPendantEvenement = 1
+        }
+        // Variables d'insertion
+        let values
+        if(booleanPendantEvenement === 1){
+            values = [titre, lieu, descriptionSansEspaces, photoFileName, null, dateDebut, dateFin, nbParticipants, 0, 1, userId, booleanPendantEvenement]
+        } else {
+            values = [titre, lieu, descriptionSansEspaces, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, 0, 1, userId, booleanPendantEvenement]
+        }
+       
         if (!modify) { // Cas d'une insertion
-            // Insertion de l'événement dans la table evenement
-            const [event] = await connection.promise().query(
-                'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id, organisateur_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                [titre, lieu, descriptionSansEspaces, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, 0, 1, userId]
-            );
-
+             // Insertion de l'événement dans la table evenement
+                const [event] = await connection.promise().query(
+                    'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id, organisateur_id, participation_pendant_evenement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                   values
+                );
             eventId = event.insertId;
             console.log('Événement créé avec succès. ID :', eventId);
         } else { // Cas d'une modification
@@ -92,8 +101,8 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
                 );
             } else {
                 await connection.promise().query(
-                    'UPDATE evenement SET titre = ?, lieu = ?, description = ?, photo = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement = ?, nb_participants_max = ? WHERE id = ?',
-                    [titre, lieu, descriptionSansEspaces, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, eventId]
+                    'UPDATE evenement SET titre = ?, lieu = ?, description = ?, photo = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement = ?, nb_participants_max = ?, participation_pendant_evenement = ? WHERE id = ?',
+                    [titre, lieu, descriptionSansEspaces, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, booleanPendantEvenement, eventId]
                 );
             }
 
@@ -137,7 +146,7 @@ export const listeEvent = async (req, res) => {
         const [evenements] = await connection.promise().query(
             `SELECT * 
              FROM evenement
-             WHERE evenement.statut_id = 1
+             WHERE evenement.statut_id = 1 or evenement.statut_id = 5 and evenement.participation_pendant_evenement = 1
              order by date_debut_evenement ASC
             `)
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
@@ -180,7 +189,7 @@ export const showEvent = async (req, res) => {
                  INNER JOIN user ON user.id = evenement.organisateur_id
                  WHERE evenement.id = ?`, [eventId]
         );
-        verifyDateEvent(evenements[0])
+        let enCours = await verifyDateEvent(evenements[0])
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
             const dateFinalInscription = formatDate(evenement.date_final_inscription);
             const dateDebutEvenement = formatDate(evenement.date_debut_evenement);
@@ -201,7 +210,7 @@ export const showEvent = async (req, res) => {
             };
         }));
         const [search] = await connection.promise().query('SELECT * FROM participation WHERE evenement_id =? AND user_id =?', [eventId, userId])
-
+        
         let participation = false // Permet d'afficher ou d'enlever le bouton de participation à l'évènement
         if (search.length > 0) {
             participation = true
@@ -210,6 +219,7 @@ export const showEvent = async (req, res) => {
             evenement: evenementsAvecDetails[0],
             motsCles: motsCles,
             participation: participation,
+            enCours: enCours,
             nbNotifMessageNonLus: nbNotifMessageNonLus,
             nbNotifEventNonLus: nbNotifEventNonLus,
             user: user,
@@ -274,7 +284,7 @@ export const participyEvent = async (req, res) => {
                 'INSERT INTO participation (evenement_id, user_id) VALUES (?, ?)',
                 [eventId, user.id]
             );
-            await connection.promise().query('UPDATE evenement SET nbParticipants = nbParticipants - 1  WHERE id = ?',
+            await connection.promise().query('UPDATE evenement SET nbParticipants = nbParticipants + 1  WHERE id = ?',
                 [eventId]
             )
             res.redirect('/'); // Redirection après la création de l'événement
@@ -571,9 +581,11 @@ export const apiListeEvent = async (req, res) => {
 
 export const verifyDateEvent = async (event) => {
     const now = new Date();
+    let enCours = false
     const dateFinEvent = event.date_fin_evenement
     const dateDebutEvent = event.date_debut_evenement
     if (now < dateFinEvent && now > dateDebutEvent) {
+        enCours = true
         console.log('event en cours')
         await connection.promise().query(`
     UPDATE evenement SET statut_id= 5 WHERE id= ? `, [event.id])
@@ -583,5 +595,6 @@ export const verifyDateEvent = async (event) => {
         await connection.promise().query(`
         UPDATE evenement SET statut_id= 2 WHERE id= ? `, [event.id])
     }
+    return enCours
 }
 

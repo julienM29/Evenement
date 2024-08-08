@@ -38,8 +38,10 @@
                             <div class=" px-3 py-2 messageDiscussionAutre"><%= message.message_text %></div>
                         </div>
                         <div class="me-3 fs-5 align-items-end d-flex">
+                            <a href="/profil/<%= message.sender_id%>">
                             <img src="/images/<%= message.photo %>" width="50" height="50" class="rounded-circle border border-secondary p-1 bg-white ">
-                        </div>
+                        </a>
+                    </div>
                         <div class="fs-5 d-flex align-items-end me-3">
                             <div class="fw-bold me-1">⸱</div>
                             <div><%= message.sent_at.heures %>:<%= message.sent_at.minutes %></div>

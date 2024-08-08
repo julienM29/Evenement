@@ -1,27 +1,19 @@
 <nav>
-    <div class="navbar navbar-light navbar-expand-md px-3 shadow position-fixed w-100 z-2"
+    <div class="navbar navbar-light navbar-expand-md px-2 shadow position-fixed w-100 z-2"
         style="background-color: rgb(255, 255, 255); top: 0; left: 0;">
-        <div style="width: 10%;">
-            <a href="/" class="navbar-brand">
-                <img src="/images/Event1.png" alt="" width="235px" height="70px" />
+        <div style="width: 15%;">
+            <a href="/" class="navbar-brand d-flex justify-content-center">
+                <img src="/images/Event1.png" alt="" width="235px" height="65px" />
             </a>
         </div>
-
-        <div style="width: 30%;">
-            <div class="ms-2 input-icons position-relative">
-                <i
-                    class="fa-solid fa-magnifying-glass position-absolute translate-bottom mt-2 ms-2 ps-1 text-secondary"></i>
-                <input class="form-control" id="searchInput" type="text" />
-            </div>
-        </div>
-        <div class="d-flex justify-content-end align-items-center" style="width: 60%;" id="menu">
-            <div class="h-100 d-flex justify-content-around align-items-center me-5" style="width: 50%;">
+        <div class="d-flex justify-content-end align-items-center" style="width: 85%;" id="menu">
+            <div class="h-100 d-flex justify-content-around align-items-center me-5" style="width: 40%;">
                 <% if (locals.user) { %>
                     <div class="" id="ajout">
                         <li
                             class="h-100 fw-bolder navButton px-3 py-1 rounded-pill border-dashed-create d-flex align-items-center">
-                            <img src="/images/plus.png" width="24" height="24">
-                            <a href="/creation" class="nav-link fs-4 text-dark ms-2 align-items-center">Ajouter un
+                            <img src="/images/plus.png" width="26" height="26">
+                            <a href="/creation" class="nav-link fs-3 text-dark ms-2 align-items-center">Ajouter un
                                 évènement</a>
                         </li>
                     </div>
@@ -78,11 +70,11 @@
                                                     <% } %>
 
                                                         <li
-                                                            class="fw-bolder navButton px-2 rounded-pill d-flex align-items-center">
+                                                            class="fw-bolder navButton rounded-pill d-flex align-items-center">
                                                             <a href="/profil/<%= user.id %>">
                                                                 <img class="rounded-circle border border-2 border-secondary p-1"
-                                                                    src="/images/<%= user.photo %>" width="60"
-                                                                    height="60">
+                                                                    src="/images/<%= user.photo %>" width="65"
+                                                                    height="65">
                                                             </a>
                                                         </li>
                                                         <% } %>
