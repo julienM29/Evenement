@@ -249,7 +249,7 @@
                value="<%= evenement.dateFinEvenementInput%>">
             <input type="datetime-local" id="dateInscriptionInput" name="dateInscription" class="invisible"
                value="<%= evenement.dateFinalInscriptionInput%>">
-               <input type="text" class="invisible" id="inscriptionCheckbox" name="inscriptionCheckbox">
+               <input type="text" class="invisible" id="inscriptionCheckbox" name="inscriptionCheckbox" value="<%if(evenement.participation_pendant_evenement == 1){%>true<% } else {%>false<%}%>">
 
          </form>
 

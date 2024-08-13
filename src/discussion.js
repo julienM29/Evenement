@@ -22,7 +22,7 @@ const [discussions] = await connection.promise().query(
 	FROM discussion d
     INNER JOIN discussion_participants dp ON d.id = dp.discussion_id
     inner join notification_messagerie nm  on nm.user_id =1 and d.id = nm.discussion_id 
-    WHERE dp.user_id =1
+    WHERE dp.user_id = ?
     ORDER BY nm.is_read asc ,d.created_at desc`,
     [user_id]
 );
@@ -33,6 +33,7 @@ const discussionsWithMessages = await Promise.all(discussions.map(async discussi
          FROM message m
          JOIN user u ON m.sender_id = u.id
          WHERE m.discussion_id = ?
+         order by sent_at DESC
          LIMIT 1`,
         [discussion.id]
     );

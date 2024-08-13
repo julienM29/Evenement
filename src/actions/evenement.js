@@ -74,38 +74,51 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
         const { titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants, inscriptionCheckbox } = fields; // Déstructuration pour récupérer les valeurs du formulaire
         let descriptionSansEspaces = description.trim();
         let booleanPendantEvenement = 0
-        if(inscriptionCheckbox == "true"){
+        if (inscriptionCheckbox === "true") {
             booleanPendantEvenement = 1
         }
+        console.log(inscriptionCheckbox)
+        console.log(booleanPendantEvenement)
         // Variables d'insertion
-        let values
-        if(booleanPendantEvenement === 1){
-            values = [titre, lieu, descriptionSansEspaces, photoFileName, null, dateDebut, dateFin, nbParticipants, 0, 1, userId, booleanPendantEvenement]
+        let valuesInsert
+        if (booleanPendantEvenement === 1) {
+            valuesInsert = [titre, lieu, descriptionSansEspaces, photoFileName, null, dateDebut, dateFin, nbParticipants, 0, 1, userId, booleanPendantEvenement]
         } else {
-            values = [titre, lieu, descriptionSansEspaces, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, 0, 1, userId, booleanPendantEvenement]
+            valuesInsert = [titre, lieu, descriptionSansEspaces, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, 0, 1, userId, booleanPendantEvenement]
         }
-       
+
         if (!modify) { // Cas d'une insertion
-             // Insertion de l'événement dans la table evenement
-                const [event] = await connection.promise().query(
-                    'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id, organisateur_id, participation_pendant_evenement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                   values
-                );
+            // Insertion de l'événement dans la table evenement
+            const [event] = await connection.promise().query(
+                'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id, organisateur_id, participation_pendant_evenement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                valuesInsert
+            );
             eventId = event.insertId;
             console.log('Événement créé avec succès. ID :', eventId);
+            verifyDateEvent();
         } else { // Cas d'une modification
+            let valuesUpdate
             if (photoFileName === null) {
+                if (booleanPendantEvenement === 1) {
+                    valuesUpdate = [titre, lieu, descriptionSansEspaces, null, dateDebut, dateFin, nbParticipants, booleanPendantEvenement, eventId]
+                } else {
+                    valuesUpdate = [titre, lieu, descriptionSansEspaces, dateInscription, dateDebut, dateFin, nbParticipants, booleanPendantEvenement, eventId]
+                }
                 await connection.promise().query(
-                    'UPDATE evenement SET titre = ?, lieu = ?, description = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement = ?, nb_participants_max = ? WHERE id = ?',
-                    [titre, lieu, descriptionSansEspaces, dateInscription, dateDebut, dateFin, nbParticipants, eventId]
+                    'UPDATE evenement SET titre = ?, lieu = ?, description = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement = ?, nb_participants_max = ?, participation_pendant_evenement = ? WHERE id = ?',
+                    valuesUpdate
                 );
             } else {
+                if (booleanPendantEvenement === 1) {
+                    valuesUpdate = [titre, lieu, descriptionSansEspaces, photoFileName, null, dateDebut, dateFin, nbParticipants, booleanPendantEvenement, eventId]
+                } else {
+                    valuesUpdate = [titre, lieu, descriptionSansEspaces, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, booleanPendantEvenement, eventId]
+                }
                 await connection.promise().query(
                     'UPDATE evenement SET titre = ?, lieu = ?, description = ?, photo = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement = ?, nb_participants_max = ?, participation_pendant_evenement = ? WHERE id = ?',
-                    [titre, lieu, descriptionSansEspaces, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, booleanPendantEvenement, eventId]
+                    valuesUpdate
                 );
             }
-
             await connection.promise().query(
                 'DELETE FROM evenement_mots_cles WHERE evenement_id = ?',
                 [eventId]
@@ -210,7 +223,7 @@ export const showEvent = async (req, res) => {
             };
         }));
         const [search] = await connection.promise().query('SELECT * FROM participation WHERE evenement_id =? AND user_id =?', [eventId, userId])
-        
+
         let participation = false // Permet d'afficher ou d'enlever le bouton de participation à l'évènement
         if (search.length > 0) {
             participation = true
@@ -543,6 +556,8 @@ export const apiListeEvent = async (req, res) => {
     let { lieu, nom } = req.params;
     const statut_id = req.params.actif;
     const user_id = req.params.userId;
+    const actif = req.params.actif
+    console.log(actif)
 
     // Construction de la requête SQL
     let requete = "SELECT * FROM evenement WHERE statut_id = ? ";
@@ -557,11 +572,17 @@ export const apiListeEvent = async (req, res) => {
         requete += " AND evenement.lieu LIKE ?";
         params.push(`%${lieu}%`);
     }
-    if(user_id != 0 ){
+    if (user_id != 0) {
         console.log('user diff 0')
-        requete += " AND evenement.organisateur_id ="+user_id;
+        requete += " AND evenement.organisateur_id =" + user_id;
     }
-    requete += " order by date_debut_evenement ASC";
+    if (actif === "1") {
+        requete += " order by date_debut_evenement ASC";
+    }
+    if (actif === "2" ) {
+        requete += " order by date_debut_evenement DESC";
+    }
+
     try {
         const [evenementsSansDates] = await connection.promise().query(requete, params);
         const evenements = await Promise.all(evenementsSansDates.map(async evenement => {

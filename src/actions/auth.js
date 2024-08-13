@@ -47,23 +47,39 @@ export const createAccount = async (req, res) => {
 // Fonction de connexion 
 export const loginAction = async (req, res) => {
     if (req.method === 'POST') {
-        const email = req.body.email
-        const motDePasse = req.body.password
-        const [user] = await connection.promise().query('SELECT * FROM user WHERE email = ?', [email]);
-        const user_id = user[0].id
-        if (await argon2.verify(user[0].password, motDePasse)) { // Vérification du mot de passe avec le hashage grâce à argon2
-            req.session.set('user', {
-                id: user_id,
-                nom: user[0].nom,
-                prenom: user[0].prenom,
-                photo: user[0].photo
-            })
-            return res.redirect('/')
+        const email = req.body.email;
+        const motDePasse = req.body.password;
+        try {
+            const [rows] = await connection.promise().query('SELECT * FROM user WHERE email = ?', [email]);
+            if (rows.length === 0) {
+                // Aucun utilisateur trouvé avec cet e-mail
+                console.log('pas de user trouvé')
+                return res.view('templates/login.ejs', { errorEmail: 'Adresse e-mail incorrect.', errorMDP: null, email: null });
+                
+            }
+
+            const user = rows[0];
+            if (await argon2.verify(user.password, motDePasse)) {
+                // Authentification réussie
+                req.session.set('user', {
+                    id: user.id,
+                    nom: user.nom,
+                    prenom: user.prenom,
+                    photo: user.photo
+                });
+                return res.redirect('/');
+            } else {
+                // Mot de passe incorrect
+                return res.view('templates/login.ejs', { errorEmail: null,errorMDP: 'Mot de passe incorrect.', email: email });
+            }
+        } catch (err) {
+            // Gestion des erreurs
+            console.error(err);
+            return res.view('templates/login.ejs', { error: 'Une erreur est survenue. Veuillez réessayer plus tard.' });
         }
     } else {
-        return res.view('templates/login.ejs')
-    }
-}
+        return res.view('templates/login.ejs', { errorEmail: null, errorMDP: null, email: null });    }
+};
 // Fonction de déconnexion
 export const logoutAction = (req, res) => {
     req.session.delete() // On efface le cookie avec les infos user
