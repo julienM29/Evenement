@@ -197,6 +197,9 @@ body {
 }
 
 /************************************* PAGE DE DISCUSSION *****************************/
+.indicationJourDiscussion{
+    color: #524646;
+}
 .buttonDiscussion{
     background-color: #3df9ff;
 }
@@ -352,4 +355,11 @@ color: #000;
 }
 .lienTitreEvent:hover{
 color: #224bff;
+}
+
+.lienModifMDP {
+    color: #2af1ff;
+}
+.lienModifMDP:hover {
+    color: #00adb3;
 }
