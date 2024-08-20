@@ -36,9 +36,10 @@
                                         <div class="valid-feedback">Photo field is valid!</div>
                                         <div class="invalid-feedback">Photo field cannot be blank!</div>
                                     </div>
-                                    <div class="col-md-12 mt-2">
-                                        <a href="/" class="fs-5 fw-bold lienModifMDP">Modifier le mot de passe</a>
+                                    <div class="col-md-12 mt-3">
+                                        <a href="#" class="fs-5 fw-bold lienModifMDP" id="btnModalMessage">Modifier le mot de passe</a>
                                     </div>
+                                    <span id="idUser" class="d-none"><%= user.id %></span>
                                     <div class="form-button mt-3">
                                         <button id="submit" type="submit" class="btn btn-primary fs-5">Modifier les
                                             informations</button>
@@ -51,4 +52,13 @@
             </div>
 
     </div>
+    <script>
+        $(document).ready(function () {
+            // Ouvrir le modal lorsque le bouton est cliqué
+            $('#btnModalMessage').on('click', function () {
+                $('#exampleModal').modal('show');
+            });
+        });
+    </script>
+    <%- include('./shared/modalMotDePasse.ejs') %>
     <%- include('./shared/footer.ejs')%>

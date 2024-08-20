@@ -3,6 +3,7 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import ejs from 'ejs'
 import { readFileSync } from "node:fs";
+import argon2 from "argon2";
 
 import fastify from "fastify";
 import fastifyView from "@fastify/view"
@@ -13,7 +14,7 @@ import fastifyMultipart from '@fastify/multipart';
 
 import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, unsubscribeEvent, cancelEvent, activateEvent, deleteEvent, apiListeEvent, showMyEvent } from "./actions/evenement.js";
 import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
-import { modifyProfil, showProfil } from "./actions/profil.js";
+import { modifyProfil, modifyProfilPassword, showProfil } from "./actions/profil.js";
 import { showMyParticipations, showParticipations } from "./actions/participation.js";
 import connection from "./database.js";
 import { showDiscussion, showMessagerie } from "./discussion.js";
@@ -103,7 +104,30 @@ app.get('/profil/:id', showProfil);
 // Page de modification de profil
 app.get('/modification/profil/:id', modifyProfil)
 app.post('/modification/profil/:id', modifyProfil)
+app.post('/modification/profil/motDePasse/:id', modifyProfilPassword)
+app.post('/verifier-mot-de-passe', async (req, reply) => {
+    console.log('je passe ici')
+    const { userId, ancienMotDePasse } = req.body;
+    console.log(userId)
+    console.log(ancienMotDePasse)
 
+    // Récupérer l'utilisateur depuis la base de données
+    const [profil] = await connection.promise().query('SELECT * FROM user WHERE id = ?', [userId]);
+    const user = profil[0];
+    console.log(user)
+    let isMatch = true
+    console.log('isMatch = ' + isMatch)
+    // Vérifier le mot de passe avec argon2
+    if (!await argon2.verify(user.password, ancienMotDePasse)){
+        isMatch = false
+    } 
+    console.log('après : ' + isMatch)
+    if (isMatch == true) {
+        return reply.send({ success: true });
+    } else {
+        return reply.status(400).send({ success: false, message: 'Mot de passe incorrect' });
+    }
+});
 //Page de messagerie
 app.get('/messagerie/:id', showMessagerie)
 app.post('/messagerie/:id', showMessagerie)

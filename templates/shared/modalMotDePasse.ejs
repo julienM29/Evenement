@@ -1,0 +1,87 @@
+<!-- EJS - Page avec la modal -->
+<div class="modal fade" id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="height: 430px; width: 600px;">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold fs-4" id="titreModal">Modifier le mot de passe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body h-100">
+                <form id="passwordChangeForm" method="POST" action="/modification/profil/motDePasse/<%= user.id %>">
+                    <!-- Ancien mot de passe -->
+                    <div class="mb-3">
+                        <label class="fs-5 fw-bold" for="ancienMotDePasse">Ancien mot de passe</label>
+                        <input type="password" name="ancienMotDePasse" class="form-control" id="ancienMotDePasse" required>
+                        <div class="text-danger fs-6 d-none" id="alertMDPExistant">Le mot de passe ne correspond pas</div>
+                    </div>
+                    <!-- Nouveau mot de passe -->
+                    <div class="mb-3">
+                        <label class="fs-5 fw-bold" for="nouveauMotDePasse">Nouveau mot de passe</label>
+                        <input type="password" name="nouveauMotDePasse" class="form-control" id="nouveauMotDePasse" required>
+                    </div>
+                    <!-- Confirmation du nouveau mot de passe -->
+                    <div class="mb-3">
+                        <label class="fs-5 fw-bold" for="confirmationMotDePasse">Confirmer le nouveau mot de passe</label>
+                        <input type="password" name="confirmationMotDePasse" class="form-control" id="confirmationMotDePasse" required>
+                        <div class="text-danger fs-6 d-none" id="alertConfirmMDP">Le mot de passe ne correspond pas au précédent</div>
+                    </div>
+                    <!-- Bouton de soumission -->
+                    <div class="modal-footer mt-4 mb-2 w-100 d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary fs-5">Modifier le mot de passe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('passwordChangeForm').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Empêche la soumission du formulaire par défaut
+
+    // Récupérer les variables
+    const ancienMotDePasse = document.getElementById('ancienMotDePasse').value;
+    const nouveauMotDePasse = document.getElementById('nouveauMotDePasse').value;
+    const confirmationMotDePasse = document.getElementById('confirmationMotDePasse').value;
+    const userId = document.getElementById('idUser').textContent.trim();
+
+    // Réinitialiser les messages d'alerte
+    document.getElementById('alertMDPExistant').classList.add('d-none');
+    document.getElementById('alertConfirmMDP').classList.add('d-none');
+
+    try {
+        // Envoyer la requête pour vérifier l'ancien mot de passe
+        const response = await fetch('/verifier-mot-de-passe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId, ancienMotDePasse })
+        });
+
+        const result = await response.json();
+
+        // Si l'ancien mot de passe est incorrect
+        if (!result.success) {
+            document.getElementById('alertMDPExistant').classList.remove('d-none');
+            return;
+        }
+
+        // Validation des nouveaux mots de passe côté client
+        if (nouveauMotDePasse !== confirmationMotDePasse) {
+            document.getElementById('alertConfirmMDP').classList.remove('d-none');
+            return;
+        }
+
+
+        // Tout est correct, tu peux procéder à la soumission ou à une autre action
+        
+        document.getElementById('passwordChangeForm').submit(); // Soumission manuelle
+
+    } catch (error) {
+        console.error('Une erreur est survenue:', error);
+        alert('Une erreur est survenue lors de la modification du mot de passe.');
+    }
+});
+
+</script>

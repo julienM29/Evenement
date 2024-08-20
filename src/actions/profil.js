@@ -5,6 +5,7 @@ import fs from "node:fs";
 import { pipeline } from "stream/promises"; // Utilisation de pipeline pour la copie du fichier
 import { nbNotifEvenement, nbNotifMessage } from "../discussion.js";
 import { formatDate } from "./evenement.js";
+import argon2 from "argon2";
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
 const imagesDir = join(rootDir, 'public', 'images');
@@ -129,3 +130,30 @@ export const modifyProfil = async (req, res) => {
     }
 
 }
+export const modifyProfilPassword = async (req, res) => {
+    const id = req.params.id;
+    const { ancienMotDePasse, nouveauMotDePasse, confirmationMotDePasse } = req.body;
+
+    const [profil] = await connection.promise().query('SELECT * FROM user WHERE id = ?', [id]);
+    const user = profil[0];
+
+    // Vérification de l'ancien mot de passe
+    const isMatch = await argon2.verify(user.password, ancienMotDePasse);
+    
+    if (!isMatch) {
+        // Retourne une erreur si l'ancien mot de passe ne correspond pas
+        return reply.status(400).send({ error: 'L\'ancien mot de passe est incorrect' });
+    }
+
+    // Vérification de la correspondance des nouveaux mots de passe
+    if (nouveauMotDePasse !== confirmationMotDePasse) {
+        return reply.status(400).send({ error: 'Les nouveaux mots de passe ne correspondent pas' });
+    }
+
+    // Hacher le nouveau mot de passe et le sauvegarder
+    const hashedPassword = await argon2.hash(nouveauMotDePasse);
+    await connection.promise().query('UPDATE user SET password = ? WHERE id = ?', [hashedPassword, id]);
+
+    // Rediriger vers la page de profil après succès
+    return res.redirect(`/profil/${id}`);
+};
