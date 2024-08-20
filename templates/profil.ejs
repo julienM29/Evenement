@@ -10,7 +10,7 @@
                 <%=userProfil.nom %>
                     <%=userProfil.prenom %>
             </h1>
-            <div class="w-100 d-flex justify-content-center">
+            <div class="w-100 d-flex justify-content-center mb-1">
                 <div class="d-flex w-50 justify-content-around">
                     <div class="d-flex align-items-center">
                         <div class="fw-bold fs-5 me-2">Email :</div>
@@ -35,9 +35,10 @@
                                 </button>
                             </div>
                             <% } %>
+
                 </div>
             </div>
-            <div class=" d-flex mt-3" style="height: 700px;">
+            <div class=" d-flex mt-1" style="height: 700px;">
                 <div class="w-50 h-100 border me-3 bg-white rounded p-2 d-flex flex-column" id="1">
                     <div class="d-flex flex-column h-100">
                         <div class="d-flex border-bottom" style="height: 12%;">
@@ -54,8 +55,10 @@
                                     <div class="d-flex w-100 pb-2 pt-3 border-bottom">
                                         <div class="d-flex flex-column" style="width: 65%;">
                                             <div class=" d-flex align-items-center fw-bold fs-5 fst-italic">
-                                                <a href="/evenement/<%=eventActif.id %>" class="text-decoration-none lienTitreEvent">
-                                                <%= eventActif.titre %></a>
+                                                <a href="/evenement/<%=eventActif.id %>"
+                                                    class="text-decoration-none lienTitreEvent">
+                                                    <%= eventActif.titre %>
+                                                </a>
                                             </div>
 
                                             <div class="w-75 d-flex justify-content-center align-items-center">
@@ -85,8 +88,10 @@
                                     <div class="d-flex w-100 pb-2 pt-3 border-bottom">
                                         <div class="d-flex flex-column" style="width: 65%;">
                                             <div class=" d-flex align-items-center fw-bold fs-5 fst-italic">
-                                                <a href="/evenement/<%=eventFini.id %>" class="text-decoration-none lienTitreEvent">
-                                                    <%= eventFini.titre %></a>
+                                                <a href="/evenement/<%=eventFini.id %>"
+                                                    class="text-decoration-none lienTitreEvent">
+                                                    <%= eventFini.titre %>
+                                                </a>
                                             </div>
 
                                             <div class="w-75 d-flex justify-content-center align-items-center">
@@ -115,12 +120,15 @@
                     </div>
                 </div>
                 <div class="w-50 h-100 border bg-white rounded p-2 d-flex flex-column" id="1">
-                    <div class="titreProfil fs-3 d-flex align-items-center border-bottom" style="height: 12%;">Évènements auxquels il a participé</div>
+                    <div class="titreProfil fs-3 d-flex align-items-center border-bottom" style="height: 12%;">
+                        Évènements auxquels il a participé</div>
                     <% for(const eval of evaluations){ %>
                         <div class="d-flex w-100 mb-3 border-bottom pb-2 pt-3">
                             <div class="me-3 d-flex flex-column" style="width: 20%;">
                                 <div class="fw-bold d-flex justify-content-center fs-4">
-                                    <div><%= eval.evaluation%></div>
+                                    <div>
+                                        <%= eval.evaluation%>
+                                    </div>
                                     <div class="me-1 ms-1"> / </div>
                                     <div>5</div>
                                 </div>
@@ -142,8 +150,10 @@
                                 </div>
                                 <div class="mt-2 d-flex flex-column">
                                     <div class="fw-bold fs-5 mb-2">
-                                        <a href="/evenement/<%=eval.evenement_id %>" class="text-decoration-none lienTitreEvent">
-                                            <%= eval.titre%></a>
+                                        <a href="/evenement/<%=eval.evenement_id %>"
+                                            class="text-decoration-none lienTitreEvent">
+                                            <%= eval.titre%>
+                                        </a>
                                     </div>
                                     <div>
                                         <%= eval.commentaire%>
@@ -197,5 +207,5 @@
                 }
             })
         </script>
-        
+
         <%- include('./shared/footer.ejs')%>
