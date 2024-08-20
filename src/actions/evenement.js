@@ -17,7 +17,6 @@ export const formatDate = (dateString) => {
     const jour = dateObj.getDate().toString().padStart(2, '0');
     const moisNoms = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
     const moisNom = moisNoms[(dateObj.getMonth())];
-
     const mois = (dateObj.getMonth() + 1).toString().padStart(2, '0');
     const annee = dateObj.getFullYear();
     const heures = dateObj.getHours().toString().padStart(2, '0');
@@ -41,8 +40,6 @@ export const formatDateInput = (dateString) => {
     const annee = dateObj.getFullYear();
     const heures = dateObj.getHours().toString().padStart(2, '0');
     const minutes = dateObj.getMinutes().toString().padStart(2, '0');
-
-
     return `${annee}-${mois}-${jour}T${heures}:${minutes}`;
 };
 
@@ -77,8 +74,6 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
         if (inscriptionCheckbox === "true") {
             booleanPendantEvenement = 1
         }
-        console.log(inscriptionCheckbox)
-        console.log(booleanPendantEvenement)
         // Variables d'insertion
         let valuesInsert
         if (booleanPendantEvenement === 1) {
@@ -254,7 +249,7 @@ export const showMyEvent = async (req, res) => {
              FROM evenement.evenement 
              INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
              INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
-             WHERE evenement.organisateur_id = ? and evenement.statut_id != 3 and  evenement.statut_id != 4
+             WHERE evenement.organisateur_id = ? and (evenement.statut_id = 1 or  evenement.statut_id = 5)
              GROUP BY evenement.id`, [userId])
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
             const motsClesArray = evenement.motsCles.split(',');
@@ -292,7 +287,6 @@ export const participyEvent = async (req, res) => {
             if (!user) {
                 return res.status(401).send('Utilisateur non authentifié');
             }
-
             await connection.promise().query(
                 'INSERT INTO participation (evenement_id, user_id) VALUES (?, ?)',
                 [eventId, user.id]
@@ -557,10 +551,16 @@ export const apiListeEvent = async (req, res) => {
     const statut_id = req.params.actif;
     const user_id = req.params.userId;
     const actif = req.params.actif
-    console.log(actif)
+    console.log('actif = '+actif)
+    console.log('user_id = '+ user_id)
+    let requete ;
 
     // Construction de la requête SQL
-    let requete = "SELECT * FROM evenement WHERE statut_id = ? ";
+    if(actif === "1"){
+     requete = "SELECT * FROM evenement WHERE (statut_id = ? or statut_id = 5 )";
+    } else {
+        requete = "SELECT * FROM evenement WHERE statut_id = ? "; 
+    }
     let params = [statut_id];
 
     if (nom) {
@@ -582,7 +582,8 @@ export const apiListeEvent = async (req, res) => {
     if (actif === "2" ) {
         requete += " order by date_debut_evenement DESC";
     }
-
+    console.log(requete)
+    console.log(params)
     try {
         const [evenementsSansDates] = await connection.promise().query(requete, params);
         const evenements = await Promise.all(evenementsSansDates.map(async evenement => {

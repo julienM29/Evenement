@@ -9,7 +9,7 @@
         </h2>
         </div>
         <div class="w-50 d-flex flex-column align-items-center position-relative  bg-discussion"
-            id="conteneurMessage" style="max-height: 910px; overflow-y: auto; padding: 10px;">
+            id="conteneurMessage" style="max-height: 910px; height: 910px ;overflow-y: auto; padding: 10px;">
             
         <div class="d-flex flex-column w-100">
             <% let jourMessageAvant = null; let moisMessageAvant = null; %>
@@ -27,7 +27,7 @@
                         <div class="me-3 fs-5 d-flex align-items-end">
                             <div class=" px-3 py-2 messageDiscussionUser"><%= message.message_text %></div>
                         </div>
-                        <div class="fs-5 d-flex align-items-end me-3">
+                        <div class="fs-5 d-flex align-items-end me-3 ">
                             <div class="fw-bold me-1">⸱</div>
                             <div><%= message.sent_at.heures %>:<%= message.sent_at.minutes %></div>
                         </div>

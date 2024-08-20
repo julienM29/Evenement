@@ -62,7 +62,7 @@
                                         <% for (const notificationLus of notificationsLus) { %>
                                             <div
                                                 class=" text-center anciennesNotifications  w-100 border-bottom px-4 py-3">
-                                                <a href="/validationNotification/<%= notificationLus.reference_id%>/<%= notificationLus.evenement_id%>"
+                                                <a href="/validationNotification/<%= notificationLus.type%>/<%= notificationLus.reference_id%>/<%= notificationLus.evenement_id%>"
                                                     class="text-decoration-none text-black">
                                                     <div class="d-flex justify-content-center">
                                                         <div class="d-flex image-containerTest">
@@ -70,13 +70,18 @@
                                                                 src="/images/<%=notificationLus.photo %>" width="70"
                                                                 height="70">
                                                         </div>
-                                                        <div
-                                                            class="w-75 d-flex flex-column justify-content-center px-3 ms-2">
+                                                        <div class="w-75 d-flex flex-column justify-content-center px-3">
                                                             <div class="d-flex ">
                                                                 <div class="me-2 fw-bold fs-5">
                                                                     <%=notificationLus.invitant %>
                                                                 </div>
-                                                                <div class="fs-5"> vous invite à participer à :</div>
+                                                                <% if(notificationLus.type==='invitation' ){ %>
+                                                                    <div class="fs-5"> vous invite à participer à :</div>
+                                                                    <% } %>
+                                                                        <% if(notificationLus.type==='evaluation' ){ %>
+                                                                            <div class="fs-5"> vient d'évaluer votre évènement :
+                                                                            </div>
+                                                                            <% } %>
                                                             </div>
                                                             <div class="fw-bold d-flex justify-content-start fs-5">
                                                                 <%=notificationLus.titre %>

@@ -7,7 +7,7 @@
             </div>
             <div class="modal-body h-100">
                 <form id="invitationForm" action="/notification/<%= evenement.id%>" method="post">
-                    <label class="mb-3 fs-5 fw-bold" for="users">Sélectionner des personnes à inviter : </label>
+                    <label class="mb-4 fs-5 fw-bold" for="users">Sélectionner des personnes à inviter : </label>
                     <div class="w-100 d-flex justify-content-center">
                     <select class="form-select form-select-solid fs-5 mb-4" id="usersSelect" name="users" multiple="multiple" style="width: 90%" data-hide-search="true">
                         <% for (const user of users) { %>
@@ -17,8 +17,8 @@
                         <% } %>
                     </select>
                 </div>
-                    <div class="modal-footer mt-5 mb-3 w-100 d-flex justify-content-center">
-                        <button type="submit" class="btn btn-primary">Envoyer l'invitation</button>
+                    <div class="modal-footer mt-5 w-100 d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary fs-5">Envoyer l'invitation</button>
                     </div>
                 </form>
             </div>

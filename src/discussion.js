@@ -15,7 +15,7 @@ function getFormattedDate() {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 // Récupérer les données des discussions pour en faire une variable contenant les informations des tables concernées
-async function getDiscussions (user_id){
+async function getDiscussions1 (user_id){
 // Récupération des discussions de l'utilisateur
 const [discussions] = await connection.promise().query(
     `SELECT d.id, d.created_at , nm.is_read 
@@ -59,6 +59,110 @@ const discussionsWithMessages = await Promise.all(discussions.map(async discussi
 }));
 return discussionsWithMessages
 }
+async function getDiscussions(user_id) {
+    // Requête SQL combinée
+    const [discussionsWithMessages] = await connection.promise().query(
+        `
+        SELECT 
+            d.id AS discussion_id, 
+            d.created_at, 
+            nm.is_read,
+            (
+                SELECT COUNT(*) 
+                FROM evenement.notification_messagerie nm_inner 
+                WHERE nm_inner.user_id = ? 
+                  AND nm_inner.is_read = 0 
+                  AND nm_inner.discussion_id = d.id
+            ) AS notification_count,
+            m.sender_id, 
+            m.message_text, 
+            m.sent_at, 
+            u.nom, 
+            u.prenom,
+            p.user_id AS participant_id,
+            p.nom AS participant_nom,
+            p.prenom AS participant_prenom,
+            p.photo AS participant_photo
+        FROM 
+            discussion d
+        INNER JOIN 
+            discussion_participants dp ON d.id = dp.discussion_id
+        INNER JOIN 
+            notification_messagerie nm ON nm.user_id = ? AND d.id = nm.discussion_id
+        LEFT JOIN 
+            (
+                SELECT 
+                    m.discussion_id, 
+                    m.sender_id, 
+                    m.message_text, 
+                    m.sent_at
+                FROM 
+                    message m
+                WHERE 
+                    m.sent_at = (
+                        SELECT MAX(sent_at) 
+                        FROM message m2 
+                        WHERE m2.discussion_id = m.discussion_id
+                    )
+            ) AS m ON d.id = m.discussion_id
+        LEFT JOIN 
+            user u ON m.sender_id = u.id
+        LEFT JOIN 
+            (
+                SELECT 
+                    dp.discussion_id, 
+                    u.id AS user_id,
+                    u.nom AS nom,
+                    u.prenom AS prenom,
+                    u.photo AS photo
+                FROM 
+                    discussion_participants dp
+                INNER JOIN 
+                    user u ON dp.user_id = u.id
+            ) AS p ON d.id = p.discussion_id
+        WHERE 
+            dp.user_id = ?
+        ORDER BY 
+            nm.is_read ASC, 
+            m.sent_at DESC
+        `,
+        [user_id, user_id, user_id]
+    );
+
+    // Structurer les résultats pour avoir des discussions distinctes avec les participants et messages associés
+    const discussionsMap = new Map();
+
+    discussionsWithMessages.forEach(row => {
+        const discussionId = row.discussion_id;
+        
+        if (!discussionsMap.has(discussionId)) {
+            discussionsMap.set(discussionId, {
+                id: discussionId,
+                created_at: row.created_at,
+                is_read: row.is_read,
+                notificationCount: row.notification_count,
+                messages: row.message_text ? [{
+                    sender_id: row.sender_id,
+                    message_text: row.message_text,
+                    sent_at: row.sent_at,
+                    nom: row.nom,
+                    prenom: row.prenom
+                }] : [],
+                participants: []
+            });
+        }
+
+        discussionsMap.get(discussionId).participants.push({
+            id: row.participant_id,
+            nom: row.participant_nom,
+            prenom: row.participant_prenom,
+            photo: row.participant_photo
+        });
+    });
+
+    return Array.from(discussionsMap.values());
+}
+
 // Fonction pour récupérer les informations d'une discussion
 async function getDiscussion (discussion_id, user_id){
     // Récupération des discussions de l'utilisateur
