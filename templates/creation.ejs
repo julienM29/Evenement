@@ -57,11 +57,25 @@
                   placeholder="Choisir un nom pour votre évènement">
             </div>
             <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
-               <label class="border-b mb-2 fw-bold fs-5" for="lieu">Lieu de l'évènement :</label>
-               <input type="text" class=" w-100 bg-white rounded border px-2 py-3 fs-5" name="lieu" id="lieu"
-                  placeholder="Choisissez le lieu de votre évènement">
+               <div class="d-flex justify-content-around">
+                  <label class="border-b mb-2 fw-bold fs-5" for="lieu">Lieu de l'évènement :</label>
+                  <label class="border-b mb-2 fw-bold fs-5" for="lieu">Sélectionner le lieu :</label>
+               </div>
+               <div class="d-flex justify-content-around">
+                  <div style="width: 40%;">
+                     <input type="text" class=" w-100 bg-white rounded border px-2 py-3 fs-6" name="lieu" id="lieu"
+                        placeholder="Écriver le nom du lieu de l'évènement">
+                  </div>
+                  <div style="width: 40%;">
+                     <select class="form-select h-100 w-100" aria-label="Default select example" id="selectVille">
+                        <option selected>Sélectionner un lieu</option>
+                     </select>
+                  </div>
+               </div>
             </div>
-
+            <input type="text" name="ville" id="ville" class="d-none">
+            <input type="text" name="longitude" id="longitude" class="d-none">
+            <input type="text" name="latitude" id="latitude" class="d-none">
             <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
                <label class="border-b mb-2 fw-bold fs-5" for="motsCles">Mots clés associés à
                   l'évènement
@@ -200,7 +214,7 @@
                   </div>
                </div>
                <div class="d-flex justify-content-center w-100 bg-white  border-top mt-4">
-                  <button class="w-50 mt-3 btn btn-primary mb-3 fs-4 "> Ajouter
+                  <button class="w-50 mt-3 btn btn-primary mb-3 fs-4 " id="submitButton"> Ajouter
                      l'évènement</button>
 
                </div>
@@ -211,7 +225,7 @@
             <input type="datetime-local" id="dateFinalInput" name="dateFin" class="invisible">
             <input type="datetime-local" id="dateInscriptionInput" name="dateInscription" class="invisible"
                value="null">
-            <input type="text" class="invisible" id="inscriptionCheckbox" name="inscriptionCheckbox" >
+            <input type="text" class="invisible" id="inscriptionCheckbox" name="inscriptionCheckbox">
          </form>
       </div>
 
@@ -222,48 +236,21 @@
 
       <!-- Initialiser Flatpickr avec la langue française -->
       <script>
-         document.addEventListener('DOMContentLoaded', function () {
-            let startPicker = flatpickr('#datePickerDebut', {
-               enableTime: true,
-               dateFormat: 'Y-m-d H:i',
-               locale: 'fr',
-               defaultDate: document.getElementById('datePickerDebut').innerText,
-               onChange: function (selectedDates, dateStr, instance) {
-                  const formattedDate = instance.formatDate(selectedDates[0], 'Y-m-dTH:i');
-                  document.getElementById('dateDebutInput').value = formattedDate;
-                  changeDebutInput();
-                  limitPicker.set('maxDate', dateStr);
-                  endPicker.set('minDate', dateStr);
-               }
-            });
-
-            let endPicker = flatpickr('#datePickerFin', {
-               enableTime: true,
-               dateFormat: 'Y-m-d H:i',
-               locale: 'fr',
-               defaultDate: document.getElementById('datePickerFin').innerText,
-               onChange: function (selectedDates, dateStr, instance) {
-                  const formattedDate = instance.formatDate(selectedDates[0], 'Y-m-dTH:i');
-                  document.getElementById('dateFinalInput').value = formattedDate;
-                  changeFinInput();
-                  startPicker.set('maxDate', dateStr);
-               }
-            });
-
-            let limitPicker = flatpickr('#datePickerInscription', {
-               enableTime: true,
-               dateFormat: 'Y-m-d H:i',
-               locale: 'fr',
-               defaultDate: document.getElementById('datePickerInscription').innerText,
-               onChange: function (selectedDates, dateStr, instance) {
-                  const formattedDate = instance.formatDate(selectedDates[0], 'Y-m-dTH:i');
-                  document.getElementById('dateInscriptionInput').value = formattedDate;
-                  changeInscriptionInput();
-                  startPicker.set('maxDate', dateStr);
+         document.querySelectorAll("input").forEach(function (input) {
+            input.addEventListener("keydown", function (e) {
+               if (e.key === "Enter") {
+                  e.preventDefault(); // Empêche l'action par défaut pour "Entrée"
                }
             });
          });
 
+         document.getElementById('modifyForm').addEventListener('submit', function (e) {
+            // Assurez-vous que ce code n'est pas bloqué par la validation des éléments de formulaire
+            e.preventDefault(); // Empêcher la soumission du formulaire pour déboguer
+         });
+         document.getElementById('submitButton').addEventListener('click', function () {
+            document.getElementById('modifyForm').submit(); // Soumission manuelle
+         })
          function handleCheckboxChange() {
             var checkbox = document.getElementById('checkboxInscription');
             var dateLimiteDiv = document.getElementById('date_limite_inscription_div');
@@ -277,30 +264,11 @@
                inputValueCheckbox.value = "false";
             }
          }
-
-         document.getElementById('modifyForm').addEventListener('submit', function (e) {
-            // Assurez-vous que ce code n'est pas bloqué par la validation des éléments de formulaire
-            // e.preventDefault(); // Empêcher la soumission du formulaire pour déboguer
-         });
-
          $(document).ready(function () {
             $('#motsCles').select2({
                placeholder: "Selectionner des mots clés",
                allowClear: true
             });
-         });
-
-         document.getElementById('fileInput').addEventListener('change', function (event) {
-            const file = event.target.files[0];
-            if (file) {
-               const reader = new FileReader();
-               reader.onload = function (e) {
-                  const preview = document.getElementById('imagePreview');
-                  preview.src = e.target.result;
-                  preview.style.display = 'block';
-               }
-               reader.readAsDataURL(file);
-            }
          });
       </script>
 

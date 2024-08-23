@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url"
 import fs from "node:fs";
 import { pipeline } from "stream/promises"; // Utilisation de pipeline pour la copie du fichier
 import { nbNotifEvenement, nbNotifMessage } from "../discussion.js";
+import { Console } from "node:console";
 
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
@@ -68,56 +69,70 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
             }
         }
 
-        const { titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants, inscriptionCheckbox } = fields; // Déstructuration pour récupérer les valeurs du formulaire
+        const { titre, lieu, description, dateInscription, dateDebut, dateFin, nbParticipants, inscriptionCheckbox, latitude, longitude, ville } = fields; // Déstructuration pour récupérer les valeurs du formulaire
         let descriptionSansEspaces = description.trim();
         let booleanPendantEvenement = 0
         if (inscriptionCheckbox === "true") {
             booleanPendantEvenement = 1
         }
         // Variables d'insertion
-        let valuesInsert
+        let valueDateInscription
         if (booleanPendantEvenement === 1) {
-            valuesInsert = [titre, lieu, descriptionSansEspaces, photoFileName, null, dateDebut, dateFin, nbParticipants, 0, 1, userId, booleanPendantEvenement]
+            valueDateInscription = null
         } else {
-            valuesInsert = [titre, lieu, descriptionSansEspaces, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, 0, 1, userId, booleanPendantEvenement]
+            valueDateInscription = dateInscription
         }
+        console.log("lat : " + latitude)
+        console.log("lon : " + longitude)
+        console.log("ville : " + ville)
+        console.log("lieu : " + lieu)
+        console.log("valeurs : " + titre, descriptionSansEspaces, dateInscription, dateDebut, dateFin, nbParticipants, 0, 1, userId, booleanPendantEvenement)
+        // Verif lieu existant
+        let lieuId;
 
+        const [lieuExistant] = await connection.promise().query(`
+            SELECT id 
+            FROM evenement.lieu
+            WHERE nom_ville = ?
+        `, [ville]);
+        if(lieuExistant.length >= 1){
+            lieuId = lieuExistant[0].id;
+        } else {
+          const [lieuDB] = await connection.promise().query(
+            'INSERT INTO lieu (nom_ville, adresse, latitude, longitude) VALUES (?, ?, ?, ?)',
+            [ville,lieu,latitude, longitude ]
+        );  
+        lieuId = lieuDB.insertId 
+        }
+        // Insertion ou modification 
         if (!modify) { // Cas d'une insertion
+            if(photoFileName === null){
+                photoFileName = "illustration.jpg"
+            }
             // Insertion de l'événement dans la table evenement
             const [event] = await connection.promise().query(
-                'INSERT INTO evenement (titre, lieu, description, photo, date_final_inscription, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id, organisateur_id, participation_pendant_evenement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                valuesInsert
+                'INSERT INTO evenement (titre, lieu_id, description, photo, date_final_inscription, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id, organisateur_id, participation_pendant_evenement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                [titre, lieuId, descriptionSansEspaces, photoFileName, valueDateInscription, dateDebut, dateFin, nbParticipants, 0, 1, userId, booleanPendantEvenement]
             );
             eventId = event.insertId;
             console.log('Événement créé avec succès. ID :', eventId);
-            verifyDateEvent();
         } else { // Cas d'une modification
-            let valuesUpdate
             if (photoFileName === null) {
-                if (booleanPendantEvenement === 1) {
-                    valuesUpdate = [titre, lieu, descriptionSansEspaces, null, dateDebut, dateFin, nbParticipants, booleanPendantEvenement, eventId]
-                } else {
-                    valuesUpdate = [titre, lieu, descriptionSansEspaces, dateInscription, dateDebut, dateFin, nbParticipants, booleanPendantEvenement, eventId]
-                }
                 await connection.promise().query(
-                    'UPDATE evenement SET titre = ?, lieu = ?, description = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement = ?, nb_participants_max = ?, participation_pendant_evenement = ? WHERE id = ?',
-                    valuesUpdate
+                    'UPDATE evenement SET titre = ?, lieu_id = ?, description = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement = ?, nb_participants_max = ?, participation_pendant_evenement = ? WHERE id = ?',
+                    [titre, lieuId, descriptionSansEspaces, valueDateInscription, dateDebut, dateFin, nbParticipants, booleanPendantEvenement, eventId]
                 );
             } else {
-                if (booleanPendantEvenement === 1) {
-                    valuesUpdate = [titre, lieu, descriptionSansEspaces, photoFileName, null, dateDebut, dateFin, nbParticipants, booleanPendantEvenement, eventId]
-                } else {
-                    valuesUpdate = [titre, lieu, descriptionSansEspaces, photoFileName, dateInscription, dateDebut, dateFin, nbParticipants, booleanPendantEvenement, eventId]
-                }
                 await connection.promise().query(
-                    'UPDATE evenement SET titre = ?, lieu = ?, description = ?, photo = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement = ?, nb_participants_max = ?, participation_pendant_evenement = ? WHERE id = ?',
-                    valuesUpdate
+                    'UPDATE evenement SET titre = ?, lieu_id = ?, description = ?, photo = ?, date_final_inscription = ?, date_debut_evenement = ?, date_fin_evenement = ?, nb_participants_max = ?, participation_pendant_evenement = ? WHERE id = ?',
+                    [titre, lieuId, descriptionSansEspaces, photoFileName, valueDateInscription, dateDebut, dateFin, nbParticipants, booleanPendantEvenement, eventId]
                 );
             }
             await connection.promise().query(
                 'DELETE FROM evenement_mots_cles WHERE evenement_id = ?',
                 [eventId]
             );
+            console.log('Événement modifié avec succès. ID :', eventId);
         }
 
         // Insertion des relations dans la table evenement_mots_cles
@@ -152,10 +167,11 @@ export const listeEvent = async (req, res) => {
         const nbNotifEventNonLus = await nbNotifEvenement(user_id)
         // Récupérer tous les événements
         const [evenements] = await connection.promise().query(
-            `SELECT * 
-             FROM evenement
-             WHERE evenement.statut_id = 1 or evenement.statut_id = 5 and evenement.participation_pendant_evenement = 1
-             order by date_debut_evenement ASC
+            `SELECT e.* , l.nom_ville
+             FROM evenement e
+             inner join lieu l on l.id = e.lieu_id
+             WHERE e.statut_id = 1 or e.statut_id = 5 and e.participation_pendant_evenement = 1
+             order by e.date_debut_evenement ASC
             `)
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
             return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
@@ -190,12 +206,15 @@ export const showEvent = async (req, res) => {
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
                  GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
-                 user.prenom AS organisateurPrenom, user.nom AS organisateurNom
+                 user.prenom AS organisateurPrenom, user.nom AS organisateurNom,
+                 l.*
                  FROM evenement 
                  INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
                  INNER JOIN mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
                  INNER JOIN user ON user.id = evenement.organisateur_id
-                 WHERE evenement.id = ?`, [eventId]
+                 INNER JOIN lieu l on l.id = evenement.lieu_id
+                 WHERE evenement.id = ?
+                 GROUP BY evenement.id`, [eventId]
         );
         let enCours = await verifyDateEvent(evenements[0])
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
@@ -245,10 +264,12 @@ export const showMyEvent = async (req, res) => {
     try {
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
-             GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles 
+             GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
+                 l.* 
              FROM evenement.evenement 
              INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
              INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
+             INNER JOIN lieu l on l.id = evenement.lieu_id
              WHERE evenement.organisateur_id = ? and (evenement.statut_id = 1 or  evenement.statut_id = 5)
              GROUP BY evenement.id`, [userId])
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
@@ -387,11 +408,13 @@ export const modifierEvenement = async (req, res) => {
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
                  GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
-                 user.prenom AS organisateurPrenom, user.nom AS organisateurNom
+                 user.prenom AS organisateurPrenom, user.nom AS organisateurNom,
+                 l.*
                  FROM evenement 
                  INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
                  INNER JOIN mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
                  INNER JOIN user ON user.id = evenement.organisateur_id
+                 INNER JOIN lieu l on l.id = evenement.lieu_id
                  WHERE evenement.id = ?
                  GROUP BY evenement.id`, [eventId]
         );
@@ -557,9 +580,9 @@ export const apiListeEvent = async (req, res) => {
 
     // Construction de la requête SQL
     if(actif === "1"){
-     requete = "SELECT * FROM evenement WHERE (statut_id = ? or statut_id = 5 )";
+     requete = "SELECT evenement.*, l.* FROM evenement inner join lieu l on l.id = evenement.lieu_id WHERE (evenement.statut_id = ? or evenement.statut_id = 5 )";
     } else {
-        requete = "SELECT * FROM evenement WHERE statut_id = ? "; 
+        requete = "SELECT evenement.*, l.* FROM evenement inner join lieu l on l.id = evenement.lieu_id WHERE evenement.statut_id = ? "; 
     }
     let params = [statut_id];
 
