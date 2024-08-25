@@ -1,0 +1,33 @@
+.star-rating {
+            display: flex;
+            direction: ltr;
+        }
+
+        .star {
+            width: 40px;
+            height: 40px;
+            background-image: url('/images/etoile-blanche.png');
+            background-size: cover;
+            position: relative;
+        }
+
+        .star::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background-image: url('/images/etoile.png');
+            background-size: cover;
+            z-index: 1;
+            width: 0;
+        }
+
+        .star.full::before {
+            width: 100%;
+        }
+
+        .star.partial::before {
+            width: var(--partial-width, 0%);
+        }

@@ -1,0 +1,47 @@
+<div class="modal fade" id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content" style="height: 415px; width: 600px;">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold fs-4" id="titreModal"><%= evenement.titre %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body h-100">
+                <form id="evaluationForm" action="/evaluations/evenement/<%= evenement.id%>" method="post">
+                    <div class="d-flex fs-5 justify-content-start align-items-center mb-3 mt-3 w-100">
+                        <div class="fw-bold me-3"> Note : </div>
+                        <div class="d-flex">
+                            <% for(let i=1; i <=5; i++) { %>
+                                <div>
+                                    <!-- Remplacez l'URL de l'image selon la note sélectionnée -->
+                                    <img src="/images/etoile-blanche.png" alt="Étoile <%= i %>" id="Etoile<%=i%>"
+                                        width="40" height="40" data-rating="<%= i %>" class="star ms-1"
+                                        style="cursor: pointer;">
+                                </div>
+                                <% } %>
+                        </div>
+                    </div>
+                    <div class="mt-4 fs-5 mb-2">
+                        <label for="commentaire" class="fw-bold mb-2">Commentaire :</label>
+                        <% if (evaluation !==null) { %>
+                            <textarea name="commentaire" id="commentaire" class="form-control" rows="3"
+                                required><%= evaluation.commentaire %></textarea>
+                            <% } else {%>
+                                <textarea name="commentaire" id="commentaire" class="form-control" rows="3"
+                                    required></textarea>
+                                <% } %>
+                    </div>
+                    <!-- Champ de sélection de note -->
+                    <% if (evaluation !==null) { %>
+                        <input type="number" name="evaluation" id="rating" class="d-none"
+                            value="<%= evaluation.evaluation %>">
+                        <% } else {%>
+                            <input type="number" name="evaluation" id="rating" class="d-none" value="1">
+                            <% } %>
+                                <div class="modal-footer mt-5 w-100 d-flex justify-content-center">
+                                    <button type="submit" class="btn btn-primary fs-5">Évaluer l'évènement</button>
+                                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

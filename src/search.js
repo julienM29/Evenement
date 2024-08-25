@@ -81,7 +81,7 @@ function createEventCard(evenement) {
     card.innerHTML = `
         <div class="w-100 hover-zoom-bg">
             <div class="w-100 position-relative overflow-hidden hover-zoom-bg image-container">
-                <img src="http://localhost:3000/images/${evenement.photo}" class="hover-zoom" style="max-height: 300px;">
+                <img src="http://localhost:3000/images/${evenement.photo}" class="hover-zoom" style="max-height: 300px; min-height: 300px;">
             </div>
             <h5 class="card-title mt-3 mb-3 text-center fw-bold fs-3">
                 ${evenement.titre}

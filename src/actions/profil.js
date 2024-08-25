@@ -20,18 +20,21 @@ export const showProfil = async (req, res) => {
     const [results] = await connection.promise().query('SELECT * FROM user WHERE id =? ', [profilId]);
     const userProfil = results[0] // On récupère les résultats SQL dans un tableau donc obligé de passer par une variable tableau
     const [evaluations] = await connection.promise().query(`
-        SELECT eval.evenement_id, eval.evaluation, eval.commentaire, eval.date, event.titre 
+        SELECT eval.evenement_id, eval.evaluation, eval.commentaire, eval.date, event.titre , l.nom_ville 
         FROM evenement.evaluation eval 
         inner join evenement event on event.id = eval.evenement_id 
+        inner join lieu l on event.lieu_id = l.id
         where user_id = ?
         `, [user_id])
     const [evenementsActifs] = await connection.promise().query(`
-        SELECT  id, titre, lieu, description, photo, date_final_inscription, organisateur_id, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id
-        FROM evenement.evenement
+        SELECT titre, description, photo, date_final_inscription, organisateur_id, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id , l.nom_ville
+        FROM evenement e
+        inner join lieu l on l.id = e.lieu_id
         where organisateur_id = ? and statut_id = 1 order by date_debut_evenement ASC;`, [user_id])
     const [evenementsFinis] = await connection.promise().query(`
-        SELECT  id, titre, lieu, description, photo, date_final_inscription, organisateur_id, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id
-        FROM evenement.evenement
+        SELECT titre, description, photo, date_final_inscription, organisateur_id, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id, l.nom_ville
+        FROM evenement e
+        inner join lieu l on l.id = e.lieu_id
         where organisateur_id = ? and statut_id = 2 order by date_debut_evenement ASC;`, [user_id])
         const evaluationsAvecDate = await Promise.all(evaluations.map(async evaluation => {
             const dateEvaluation = formatDate(evaluation.date);

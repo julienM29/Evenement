@@ -4,7 +4,6 @@ import { fileURLToPath } from "node:url"
 import fs from "node:fs";
 import { pipeline } from "stream/promises"; // Utilisation de pipeline pour la copie du fichier
 import { nbNotifEvenement, nbNotifMessage } from "../discussion.js";
-import { Console } from "node:console";
 
 
 const rootDir = dirname(dirname(dirname(fileURLToPath(import.meta.url))))
@@ -82,14 +81,8 @@ const addOrModifyEvent = async (parts, userId, modify, eventId) => {
         } else {
             valueDateInscription = dateInscription
         }
-        console.log("lat : " + latitude)
-        console.log("lon : " + longitude)
-        console.log("ville : " + ville)
-        console.log("lieu : " + lieu)
-        console.log("valeurs : " + titre, descriptionSansEspaces, dateInscription, dateDebut, dateFin, nbParticipants, 0, 1, userId, booleanPendantEvenement)
         // Verif lieu existant
         let lieuId;
-
         const [lieuExistant] = await connection.promise().query(`
             SELECT id 
             FROM evenement.lieu
@@ -163,6 +156,7 @@ export const listeEvent = async (req, res) => {
     }
 
     try {
+        // Notification barre de navigation
         const nbNotifMessageNonLus = await nbNotifMessage(user_id)
         const nbNotifEventNonLus = await nbNotifEvenement(user_id)
         // Récupérer tous les événements
@@ -173,6 +167,7 @@ export const listeEvent = async (req, res) => {
              WHERE e.statut_id = 1 or e.statut_id = 5 and e.participation_pendant_evenement = 1
              order by e.date_debut_evenement ASC
             `)
+            await updateEventStatut(evenements) // Parcout tous les évèments pour mettre à jour le statut en fonction des dates de début et de fin
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
             return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
                 ...evenement,
@@ -196,18 +191,19 @@ export const listeEvent = async (req, res) => {
 // Permet d'afficher un évènement et de le modifier si tu es organisateur
 export const showEvent = async (req, res) => {
     const eventId = req.params.id
+    console.log(eventId)
     const user = req.session.get('user')
     const userId = user.id;
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
     const nbNotifEventNonLus = await nbNotifEvenement(userId)
-    const [users] = await connection.promise().query('SELECT * FROM user');
+    const [users] = await connection.promise().query('SELECT * FROM user where user.id != ?',[userId]); // Liste des utilisateurs pour partager l'évènement
     if (req.method === 'GET') { // Requete GET affichage de la page
         const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
                  GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
                  user.prenom AS organisateurPrenom, user.nom AS organisateurNom,
-                 l.*
+                 l.id as lieu_id, l.nom_ville as nom_ville, l.adresse as adresse, l.latitude as latitude, l.longitude as longitude
                  FROM evenement 
                  INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
                  INNER JOIN mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
@@ -216,7 +212,7 @@ export const showEvent = async (req, res) => {
                  WHERE evenement.id = ?
                  GROUP BY evenement.id`, [eventId]
         );
-        let enCours = await verifyDateEvent(evenements[0])
+        let enCours = await verifyDateEvent(evenements[0]) 
         const evenementsAvecDetails = await Promise.all(evenements.map(async evenement => {
             const dateFinalInscription = formatDate(evenement.date_final_inscription);
             const dateDebutEvenement = formatDate(evenement.date_debut_evenement);
@@ -265,7 +261,7 @@ export const showMyEvent = async (req, res) => {
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
              GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
-                 l.* 
+             l.id as lieu_id, l.nom_ville as nom_ville, l.adresse as adresse, l.latitude as latitude, l.longitude as longitude
              FROM evenement.evenement 
              INNER JOIN evenement.evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
              INNER JOIN evenement.mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
@@ -310,7 +306,7 @@ export const participyEvent = async (req, res) => {
             }
             await connection.promise().query(
                 'INSERT INTO participation (evenement_id, user_id) VALUES (?, ?)',
-                [eventId, user.id]
+                [eventId, userId]
             );
             await connection.promise().query('UPDATE evenement SET nbParticipants = nbParticipants + 1  WHERE id = ?',
                 [eventId]
@@ -340,7 +336,7 @@ export const unsubscribeEvent = async (req, res) => {
             'DELETE FROM participation WHERE evenement_id =? AND user_id = ?',
             [eventId, userId]
         );
-        await connection.promise().query('UPDATE evenement SET nbParticipants = nbParticipants + 1  WHERE id = ?',
+        await connection.promise().query('UPDATE evenement SET nbParticipants = nbParticipants - 1  WHERE id = ?',
             [eventId]
         )
         res.redirect('/'); // Redirection après la création de l'événement
@@ -353,7 +349,6 @@ export const unsubscribeEvent = async (req, res) => {
 
 // Page de création d'un évènement
 export const createEvent = async (req, res) => {
-    const eventId = null
     const user = req.session.get('user')
     const userId = user.id
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
@@ -363,7 +358,7 @@ export const createEvent = async (req, res) => {
         try {
             const [motsCles] = await connection.promise().query('SELECT * FROM mots_cles');
             return res.view('templates/creation.ejs', {
-                user: req.session.get('user'),
+                user: user,
                 motsCles: motsCles,
                 nbNotifMessageNonLus: nbNotifMessageNonLus,
                 nbNotifEventNonLus: nbNotifEventNonLus
@@ -384,7 +379,7 @@ export const createEvent = async (req, res) => {
             }
 
             const parts = req.parts(); // Récupère les parties du formulaire utilisant multipart fastify
-            const modify = false
+            const modify = false // Permet de passer dans la création d'un évènement
             await addOrModifyEvent(parts, userId, modify, eventId) // Appel de la fonction qui envoie en base de donnée
 
             res.redirect('/'); // Redirection après la création de l'événement
@@ -437,6 +432,7 @@ export const modifierEvenement = async (req, res) => {
                 motsCles: motsClesArray.map(mot => mot.trim())
             };
         }));
+        console.log(evenementsAvecDetails.statut_id)
         return res.view('templates/modifierEvenement.ejs', {
             evenement: evenementsAvecDetails[0],
             motsCles: motsCles,
@@ -449,7 +445,7 @@ export const modifierEvenement = async (req, res) => {
         const user = req.session.get('user')
         const userId = user.id;
         const parts = req.parts(); // Récupère les parties du formulaire utilisant multipart fastify
-        const modify = true
+        const modify = true // Modification d'un évènement
         await addOrModifyEvent(parts, userId, modify, eventId)
         res.redirect('/')
     }
@@ -457,54 +453,36 @@ export const modifierEvenement = async (req, res) => {
 export const cancelEvent = async (req, res) => {
     try {
         const eventId = req.params.id
-        const user = req.session.get('user');
-        const userId = user.id
-        if (!user) {
-            return res.status(401).send('Utilisateur non authentifié');
-        }
-
         await connection.promise().query('UPDATE evenement SET statut_id =  3  WHERE id = ?',
             [eventId]
         )
         res.redirect('/'); // Redirection après la création de l'événement
     } catch (error) {
-        console.error('Erreur lors de la suppression de la participation :', error);
+        console.error('Erreur lors de l annulation de l evenement :', error);
         return res.status(500).send('Erreur interne du serveur');
     }
 }
 export const activateEvent = async (req, res) => {
     try {
         const eventId = req.params.id
-        const user = req.session.get('user');
-        const userId = user.id
-        if (!user) {
-            return res.status(401).send('Utilisateur non authentifié');
-        }
-
         await connection.promise().query('UPDATE evenement SET statut_id =  1  WHERE id = ?',
             [eventId]
         )
         res.redirect('/'); // Redirection après la création de l'événement
     } catch (error) {
-        console.error('Erreur lors de la suppression de la participation :', error);
+        console.error('Erreur lors de l activation d un évènement :', error);
         return res.status(500).send('Erreur interne du serveur');
     }
 }
 export const deleteEvent = async (req, res) => {
     try {
         const eventId = req.params.id
-        const user = req.session.get('user');
-        const userId = user.id
-        if (!user) {
-            return res.status(401).send('Utilisateur non authentifié');
-        }
-
         await connection.promise().query('UPDATE evenement SET statut_id =  4  WHERE id = ?',
             [eventId]
         )
         res.redirect('/'); // Redirection après la création de l'événement
     } catch (error) {
-        console.error('Erreur lors de la suppression de la participation :', error);
+        console.error('Erreur lors de la suppression de l evenement :', error);
         return res.status(500).send('Erreur interne du serveur');
     }
 }
@@ -540,49 +518,19 @@ export const createKeyWords = async (req, res) => {
         }
     }
 }
-
-// Page pour effectuer des tests
-export const getTest = async (req, res) => {
-    const eventId = 0
-    const user = req.session.get('user')
-    const userId = user.id;
-    const nbNotifMessageNonLus = await nbNotifMessage(userId)
-    const nbNotifEventNonLus = await nbNotifEvenement(userId)
-
-
-    if (req.method === 'GET') { // Requete GET affichage de la page
-        const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
-
-        return res.view('templates/test.ejs', {
-            motsCles: motsCles,
-            nbNotifMessageNonLus: nbNotifMessageNonLus,
-            nbNotifEventNonLus: nbNotifEventNonLus,
-            user: user
-        })
-    }
-    if (req.method === 'POST') {
-        const parts = req.parts(); // Récupère les parties du formulaire utilisant multipart fastify
-        console.log(parts.id)
-        const modify = false
-        await addOrModifyEvent(parts, userId, modify, eventId)
-        res.redirect('/')
-    }
-}
-
+// API pour afficher les évènements en fonction de la recherche
 export const apiListeEvent = async (req, res) => {
     let { lieu, nom } = req.params;
     const statut_id = req.params.actif;
     const user_id = req.params.userId;
     const actif = req.params.actif
-    console.log('actif = '+actif)
-    console.log('user_id = '+ user_id)
     let requete ;
 
     // Construction de la requête SQL
     if(actif === "1"){
-     requete = "SELECT evenement.*, l.* FROM evenement inner join lieu l on l.id = evenement.lieu_id WHERE (evenement.statut_id = ? or evenement.statut_id = 5 )";
+     requete = "SELECT evenement.*, l.nom_ville as nom_ville, l.adresse as adresse, l.latitude as latitude, l.longitude as longitude FROM evenement inner join lieu l on l.id = evenement.lieu_id WHERE (evenement.statut_id = ? or evenement.statut_id = 5 )";
     } else {
-        requete = "SELECT evenement.*, l.* FROM evenement inner join lieu l on l.id = evenement.lieu_id WHERE evenement.statut_id = ? "; 
+        requete = "SELECT evenement.*, l.nom_ville as nom_ville, l.adresse as adresse, l.latitude as latitude, l.longitude as longitude FROM evenement inner join lieu l on l.id = evenement.lieu_id WHERE evenement.statut_id = ? "; 
     }
     let params = [statut_id];
 
@@ -605,8 +553,6 @@ export const apiListeEvent = async (req, res) => {
     if (actif === "2" ) {
         requete += " order by date_debut_evenement DESC";
     }
-    console.log(requete)
-    console.log(params)
     try {
         const [evenementsSansDates] = await connection.promise().query(requete, params);
         const evenements = await Promise.all(evenementsSansDates.map(async evenement => {
@@ -623,7 +569,13 @@ export const apiListeEvent = async (req, res) => {
         res.status(500).send({ error: 'Erreur lors de la recherche des événements' });
     }
 };
-
+// Page d'accueil pour mettre à jour tous les évènements à chaque fois
+const updateEventStatut = async (events) => {
+        for (const event of events) {
+            await verifyDateEvent(event);
+        }
+}
+// Fonction pour mettre à jour le statut d'un évènement
 export const verifyDateEvent = async (event) => {
     const now = new Date();
     let enCours = false
@@ -631,12 +583,10 @@ export const verifyDateEvent = async (event) => {
     const dateDebutEvent = event.date_debut_evenement
     if (now < dateFinEvent && now > dateDebutEvent) {
         enCours = true
-        console.log('event en cours')
         await connection.promise().query(`
     UPDATE evenement SET statut_id= 5 WHERE id= ? `, [event.id])
     }
     if (now > dateFinEvent) {
-        console.log('event fini')
         await connection.promise().query(`
         UPDATE evenement SET statut_id= 2 WHERE id= ? `, [event.id])
     }

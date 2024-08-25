@@ -155,8 +155,7 @@ function changeSelectVille() {
     optionDeBase.value = 0; // Vous pouvez utiliser index comme valeur ou une autre valeur unique
     conteneur.appendChild(optionDeBase)
 
-    fetch(`https://nominatim.openstreetmap.org/search?q=${adresseModif}&format=json&addressdetails=1&limit=7
-`)
+    fetch(`https://nominatim.openstreetmap.org/search?q=${adresseModif}&format=json&addressdetails=1&limit=7`)
         .then(res => res.json())
         .then(json => {
             json.forEach((result, index) => {

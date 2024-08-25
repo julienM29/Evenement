@@ -12,7 +12,7 @@ import formbody from '@fastify/formbody';
 import fastifySecureSession from "@fastify/secure-session";
 import fastifyMultipart from '@fastify/multipart';
 
-import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, getTest, participyEvent, unsubscribeEvent, cancelEvent, activateEvent, deleteEvent, apiListeEvent, showMyEvent } from "./actions/evenement.js";
+import { listeEvent, showEvent, createEvent, createKeyWords, modifierEvenement, participyEvent, unsubscribeEvent, cancelEvent, activateEvent, deleteEvent, apiListeEvent, showMyEvent } from "./actions/evenement.js";
 import { createAccount, loginAction, logoutAction } from "./actions/auth.js";
 import { modifyProfil, modifyProfilPassword, showProfil } from "./actions/profil.js";
 import { showMyParticipations, showParticipations } from "./actions/participation.js";
@@ -140,6 +140,7 @@ app.get('/evaluation/:id', makeEvaluation)
 app.post('/evaluation/:id', makeEvaluation)
 // Page affichant les évaluations de ton évènement
 app.get('/evaluations/evenement/:id',showEvaluations)
+app.post('/evaluations/evenement/:id',showEvaluations)
 
 // Page API Event
 app.get('/api/events/:id', async (req, res) => { 
@@ -165,9 +166,7 @@ app.get('/api/events/:id', async (req, res) => {
 });
 // Page API Liste Event
 app.get('/search/:lieu/:nom/:actif/:userId', apiListeEvent)
-// Page test
-app.get('/test', getTest)
-app.post('/test', getTest)
+
 // Lancement du serveur avec le port choisi etc localhost:3000
 const start = async () => {
     try {

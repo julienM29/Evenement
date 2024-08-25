@@ -31,8 +31,8 @@
                 <%= evenement.titre %>
             </div>
             <div class="mb-2 w-100 bg-white rounded border px-2 py-3 fs-5">
-                <span class="fw-bold">Lieu de l'évènement : </span> 
-                <a href="https://www.google.fr/maps/place/<%=evenement.nom_ville %>/" onclick="window.open(this.href); return false;"><%= evenement.nom_ville %></a>
+                <span class="fw-bold me-3">Lieu de l'évènement : </span> 
+                <a href="https://www.google.fr/maps/place/<%=evenement.nom_ville %>/" onclick="window.open(this.href); return false;" class="underline"><%= evenement.nom_ville %></a>
                 
             </div>
             <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
@@ -167,11 +167,11 @@
                                                     </button>
                                                     <% } %>
                                                         <% if ( evenement.statut_id===2 ){%>
-                                                            <div class="d-flex w-100 flex-column align-items-center">
-                                                            <div class="fs-4 fw-bold d-flex justify-content-center">L'évènement est terminé.</div>
+                                                            <div class="d-flex w-100 justify-content-around">
+                                                            <div class="fs-4 fw-bold d-flex align-items-center">L'évènement est terminé.</div>
                                                             <% if (participation===true) {%>
-                                                                <div class="d-flex justify-content-center" style="width: 40%;">
-                                                                <a href="/evaluation/<%= evenement.id %>"
+                                                                <div class="d-flex justify-content-center" style="width: 43%;">
+                                                                <a href="/evaluations/evenement/<%= evenement.id %>"
                                                                     class="optionEventForm text-decoration-none mt-2 mb-1 px-3 py-2  rounded-pill border-dashed-inscription  fs-4 fw-bold text-dark d-flex align-items-center">
                                                                     Évaluer l'évènement
                                                                 </a>

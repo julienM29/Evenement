@@ -35,7 +35,7 @@
                                 <%= evaluation.titre %>
                             </td>
                             <td class="fs-5">
-                                <%= evaluation.lieu %>
+                                <%= evaluation.nom_ville %>
                             </td>
                             <td class="fs-5">
                                 <%= evaluation.date_debut.jour %>
@@ -62,7 +62,7 @@
                                     Évènement en cours
                                     <% } else { %>
                                         
-                                            <a href="/evaluation/<%= evaluation.evenement_id%>">
+                                            <a href="/evaluations/evenement/<%= evaluation.evenement_id%>">
                                                 <% if(evaluation.evaluation_count===1){ %> 
                                                     Évaluation faites
                                                     <% } else {%>

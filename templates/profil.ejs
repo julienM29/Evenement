@@ -1,7 +1,7 @@
 <%- include('./shared/header.ejs', {title: 'Bienvenue sur mon blog' })%>
     <div class="min-vh-100 w-100 d-flex justify-content-center "
         style="background-color: rgb(242, 243, 243); margin-left: 14%;">
-        <div class="w-50 d-flex flex-column spacingContentNavBarre">
+        <div class=" d-flex flex-column spacingContentNavBarre" style="width: 60%;">
             <div class=" w-100 d-flex justify-content-center">
                 <img src="/images/<%=userProfil.photo %>" width="200" height="200"
                     class="img-fluid rounded-circle border border-info p-1 bg-white">
@@ -20,19 +20,16 @@
                     </div>
                     <% if(user.id===userProfil.id){ %>
                         <div class="">
-                            <button class="btn btn-success fs-5 p-1">
-                                <a href="/modification/profil/<%= userProfil.id%>"
-                                    class="text-decoration-none text-white">
-                                    Modifier son profil</a>
-                            </button>
+                            <a href="/modification/profil/<%= userProfil.id%>"
+                                class="underline fs-4 fw-bold">
+                                Modifier son profil</a>
                         </div>
                         <% } else {%>
                             <div class="">
-                                <button class="btn btn-success fs-6 border p-2" id="btnModalMessage"
-                                    data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                    Envoyer un message
-                                    <i class="fas fa-pen-to-square fa-lg ms-1 "></i>
-                                </button>
+                                <div class="fs-6 p-2" >
+                                    <a href="#" class="underline fs-4 fw-bold" id="btnModalMessage" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        <i class="fas fa-pen-to-square fa-lg me-1 "></i>Envoyer un message</a>
+                                </div>
                             </div>
                             <% } %>
 
@@ -64,7 +61,7 @@
                                             <div class="w-75 d-flex justify-content-center align-items-center">
                                                 <img src="http://localhost:3000/images/espace-reserve.png" width="20"
                                                     height="20" class="mx-2">
-                                                <%= eventActif.lieu %>
+                                                <%= eventActif.nom_ville %>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-center align-items-center fs-6"
@@ -97,7 +94,7 @@
                                             <div class="w-75 d-flex justify-content-center align-items-center">
                                                 <img src="http://localhost:3000/images/espace-reserve.png" width="20"
                                                     height="20" class="mx-2">
-                                                <%= eventFini.lieu %>
+                                                <%= eventFini.nom_ville %>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-center align-items-center fs-6"
