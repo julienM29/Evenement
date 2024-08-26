@@ -221,38 +221,36 @@ body {
 
 .select2-container--default .select2-selection--multiple {
     padding: 10px 10px 10px 10px;
-    border: 2px solid #9fa4aa; /* Bordure personnalisée */
+    border: none ;/* Bordure personnalisée */
     border-radius: 8px; /* Rayon des coins arrondi */
-    background-color: #f8f9fa; /* Couleur de fond personnalisée */
 }
 
-/* Modifier la couleur de fond et le texte des éléments sélectionnés */
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-    background-color: #b2b7bd; /* Couleur de fond des éléments sélectionnés */
     color: #ffffff; /* Couleur du texte des éléments sélectionnés */
     border: none; /* Supprimer les bordures des éléments sélectionnés */
     font-weight: bold;
     
 }
 
-/* Modifier la couleur et la taille du texte dans la zone de sélection */
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
-    color: #423c3c; /* Couleur du texte */
-    font-size: 22px; /* Taille de la police */
+    font-size: 16px; /* Taille de la police */
+    color: #000;
 }
 
-/* Modifier l'apparence des options dans le menu déroulant */
-
-
-/* Modifier l'apparence des options sélectionnées dans le menu déroulant */
 .select2-container--default .select2-results__option--highlighted {
     background-color: #007bff; /* Couleur de fond au survol */
-    color: #ffffff; /* Couleur du texte au survol */
 }
 .select2-selection__choice__remove{
     font-size: 24px;
 }
-
+.select2-selection__clear{
+    visibility: hidden;
+}
+.select2-container--default .select2-selection--multiple {
+    padding: 4px 10px 10px 10px;
+    border: none;
+    border-radius: 8px;
+}
 .lienDiscussion:hover .zoneTexteMessage{
  background-color: #ffffff;
 }
@@ -287,7 +285,15 @@ body {
 /********************* */
 .lienNotificationMessage {
     position: relative;
-    display: inline-block; /* Pour que le conteneur s'adapte à la taille de son contenu */
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+.lienNotificationMessage:hover {
+    transform: translateY(-2px); /* Déplace légèrement l'icône vers le haut */
+    
+}
+.lienNotificationMessage:hover i {
+    color: #01c7ce; /* Change la couleur de l'icône au survol (bleu) */
 }
 .badge-notification {
     position: absolute; /* Positionner absolument par rapport au conteneur parent */

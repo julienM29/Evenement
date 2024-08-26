@@ -34,12 +34,16 @@
                     <% if (evaluation !==null) { %>
                         <input type="number" name="evaluation" id="rating" class="d-none"
                             value="<%= evaluation.evaluation %>">
+                            <div class="modal-footer mt-5 w-100 d-flex justify-content-center">
+                                <button type="submit" class="btn btn-primary fs-5">Modifier l'évaluation</button>
+                            </div>
                         <% } else {%>
                             <input type="number" name="evaluation" id="rating" class="d-none" value="1">
-                            <% } %>
+                           
                                 <div class="modal-footer mt-5 w-100 d-flex justify-content-center">
                                     <button type="submit" class="btn btn-primary fs-5">Évaluer l'évènement</button>
                                 </div>
+                                 <% } %>
                 </form>
             </div>
         </div>

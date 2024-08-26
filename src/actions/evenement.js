@@ -159,6 +159,7 @@ export const listeEvent = async (req, res) => {
         // Notification barre de navigation
         const nbNotifMessageNonLus = await nbNotifMessage(user_id)
         const nbNotifEventNonLus = await nbNotifEvenement(user_id)
+        const [motsCles] = await connection.promise().query('SELECT * FROM mots_cles');
         // Récupérer tous les événements
         const [evenements] = await connection.promise().query(
             `SELECT e.* , l.nom_ville
@@ -179,6 +180,7 @@ export const listeEvent = async (req, res) => {
         return res.view('/templates/index.ejs', { // Appel du fichier ejs
             evenements: evenementsAvecDetails || [],
             user: user,
+            motsCles: motsCles,
             nbNotifMessageNonLus: nbNotifMessageNonLus,
             nbNotifEventNonLus: nbNotifEventNonLus
 
@@ -520,43 +522,79 @@ export const createKeyWords = async (req, res) => {
 }
 // API pour afficher les évènements en fonction de la recherche
 export const apiListeEvent = async (req, res) => {
-    let { lieu, nom } = req.params;
+    let { lieu, nom, motsCles } = req.params;
     const statut_id = req.params.actif;
     const user_id = req.params.userId;
-    const actif = req.params.actif
-    let requete ;
+    const actif = req.params.actif;
 
-    // Construction de la requête SQL
-    if(actif === "1"){
-     requete = "SELECT evenement.*, l.nom_ville as nom_ville, l.adresse as adresse, l.latitude as latitude, l.longitude as longitude FROM evenement inner join lieu l on l.id = evenement.lieu_id WHERE (evenement.statut_id = ? or evenement.statut_id = 5 )";
-    } else {
-        requete = "SELECT evenement.*, l.nom_ville as nom_ville, l.adresse as adresse, l.latitude as latitude, l.longitude as longitude FROM evenement inner join lieu l on l.id = evenement.lieu_id WHERE evenement.statut_id = ? "; 
+    // Si motsCles est une chaîne de caractères, convertissez-la en tableau
+    if (typeof motsCles === 'string') {
+        motsCles = motsCles.split(',').map(Number);
     }
+
+    let requete = `
+        SELECT evenement.*, l.nom_ville, l.adresse, l.latitude, l.longitude 
+        FROM evenement 
+        INNER JOIN lieu l ON l.id = evenement.lieu_id`;
+
     let params = [statut_id];
 
+    if (motsCles && motsCles.length > 0) {
+        requete += `
+            INNER JOIN evenement_mots_cles emc ON emc.evenement_id = evenement.id`;
+    }
+
+    // Condition du statut de l'événement
+    if (actif === "1") {
+        requete += " WHERE (evenement.statut_id = ? OR evenement.statut_id = 5)";
+    } else {
+        requete += " WHERE evenement.statut_id = ?";
+    }
+
+    // Filtrage par mots-clés
+    if (motsCles && motsCles.length > 0) {
+        requete += ` AND emc.mot_cle_id IN (${motsCles.map(() => '?').join(', ')})`;
+        params.push(...motsCles);
+    }
+
+    // Filtrage par nom
     if (nom) {
         requete += " AND evenement.titre LIKE ?";
         params.push(`%${nom}%`);
     }
 
+    // Filtrage par lieu
     if (lieu) {
-        requete += " AND evenement.lieu LIKE ?";
+        requete += " AND l.nom_ville LIKE ?";
         params.push(`%${lieu}%`);
     }
+
+    // Filtrage par organisateur (user_id)
     if (user_id != 0) {
-        console.log('user diff 0')
-        requete += " AND evenement.organisateur_id =" + user_id;
+        requete += " AND evenement.organisateur_id = ?";
+        params.push(user_id);
     }
+
+    // Assurez-vous que tous les mots-clés sont présents
+    if (motsCles && motsCles.length > 0) {
+        requete += ` GROUP BY evenement.id HAVING COUNT(DISTINCT emc.mot_cle_id) = ?`;
+        params.push(motsCles.length);
+    }
+
+    // Ajout de l'ordre par date de début
     if (actif === "1") {
-        requete += " order by date_debut_evenement ASC";
+        requete += " ORDER BY date_debut_evenement ASC";
+    } else if (actif === "2") {
+        requete += " ORDER BY date_debut_evenement DESC";
     }
-    if (actif === "2" ) {
-        requete += " order by date_debut_evenement DESC";
-    }
+
+    console.log('Requête SQL :', requete);
+    console.log('Paramètres :', params);
+
     try {
         const [evenementsSansDates] = await connection.promise().query(requete, params);
         const evenements = await Promise.all(evenementsSansDates.map(async evenement => {
-            return { // On modifie les dates et les mots clés ainsi que l'organisateur pour ne pas avoir un id mais des données
+            return {
                 ...evenement,
                 date_final_inscription: formatDate(evenement.date_final_inscription),
                 date_debut_evenement: formatDate(evenement.date_debut_evenement),
@@ -569,6 +607,7 @@ export const apiListeEvent = async (req, res) => {
         res.status(500).send({ error: 'Erreur lors de la recherche des événements' });
     }
 };
+
 // Page d'accueil pour mettre à jour tous les évènements à chaque fois
 const updateEventStatut = async (events) => {
         for (const event of events) {

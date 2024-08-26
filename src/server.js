@@ -19,7 +19,7 @@ import { showMyParticipations, showParticipations } from "./actions/participatio
 import connection from "./database.js";
 import { showDiscussion, showMessagerie } from "./discussion.js";
 import { invitationEvent, showInvitations, validNotifEvent } from "./invitation.js";
-import { makeEvaluation, showEvaluations } from "./actions/evaluation.js";
+import { showEvaluations } from "./actions/evaluation.js";
 
 
 const app = fastify() // Création d'une instance fastify
@@ -135,9 +135,6 @@ app.post('/messagerie/:id', showMessagerie)
 app.get('/discussion/:id', showDiscussion)
 app.post('/discussion/:id', showDiscussion)
 
-// Page évaluation d'un évènement
-app.get('/evaluation/:id', makeEvaluation)
-app.post('/evaluation/:id', makeEvaluation)
 // Page affichant les évaluations de ton évènement
 app.get('/evaluations/evenement/:id',showEvaluations)
 app.post('/evaluations/evenement/:id',showEvaluations)
@@ -165,7 +162,7 @@ app.get('/api/events/:id', async (req, res) => {
     }
 });
 // Page API Liste Event
-app.get('/search/:lieu/:nom/:actif/:userId', apiListeEvent)
+app.get('/search/:motsCles/:lieu/:nom/:actif/:userId', apiListeEvent)
 
 // Lancement du serveur avec le port choisi etc localhost:3000
 const start = async () => {

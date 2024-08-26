@@ -2,9 +2,7 @@ function initSearch() {
     document.getElementById('toggleSwitchEvent').addEventListener('change', switchTextToggle)
     document.getElementById('searchButton').addEventListener('click', searchEvent)
     verifyUrl()
-
 }
-
 window.initSearch = initSearch;
 
 let userId = 0
@@ -32,12 +30,18 @@ function switchTextToggle() {
 }
 
 async function searchEvent() {
-    console.log('user id : ' + userId)
     let nomRechercher = document.getElementById('nomEvenement').value;
     let lieuRechercher = document.getElementById('lieuEvenement').value;
     let toggle = document.getElementById('textToggleSwitchEvent')
     let toggleText = toggle.innerText
     let statut_id
+    let optionsSelect = document.getElementById('motsCles')
+    var selectedOptions = optionsSelect.selectedOptions;
+    var selectedValues = [];
+
+        for (var i = 0; i < selectedOptions.length; i++) {
+            selectedValues.push(selectedOptions[i].value); // Récupère la valeur de chaque option sélectionnée
+        }
     if (toggleText === 'À venir') {
         statut_id = 1
     }
@@ -47,9 +51,8 @@ async function searchEvent() {
     let body = document.getElementById('dataEvent');
     body.innerHTML = '';
 
-
     try {
-        const response = await fetch(`/search/${lieuRechercher}/${nomRechercher}/${statut_id}/${userId}`);
+        const response = await fetch(`/search/${selectedValues}/${lieuRechercher}/${nomRechercher}/${statut_id}/${userId}`);
         const data = await response.json();
 
         for (let i = 0; i < data.length; i++) {

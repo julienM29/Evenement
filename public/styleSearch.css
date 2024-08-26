@@ -15,7 +15,7 @@
     width: 100%;
     padding-left: 34px;
     padding-right: 10px;
-    border-right: 2px solid #eee
+    border-left: 2px solid #eee
 }
 
 .search-1 input:focus {
@@ -46,6 +46,7 @@
     height: 45px;
     border: none;
     width: 100%;
+    border-left: 2px solid #eee;
     padding-left: 18px;
     padding-right: 100px
 }
@@ -84,7 +85,6 @@
 
 @media (max-width:800px) {
     .search-1 input {
-        border-right: none;
         border-bottom: 1px solid #eee
     }
 
