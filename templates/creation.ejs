@@ -4,7 +4,13 @@
    <!-- Inclure le CSS de Flatpickr en Français depuis un CDN -->
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
    <link rel="stylesheet" href="/styleSlider.css">
-
+   <style>
+      .select2-container--default .select2-selection--multiple {
+       padding: 4px 10px 10px 10px;
+       border: solid 2px #c0c0c0 ;
+       border-radius: 8px;
+   }
+   </style>
    <div class="min-vh-100 w-100 d-flex justify-content-center "
       style="background-color: rgb(242, 243, 243); margin-left: 14%;">
       <div class=" d-flex flex-column spacingContentNavBarre" style="width : 45%;">
@@ -15,7 +21,7 @@
                      <div class="w-75">
                         <div class="w-100 text-center mb-2 h-25 d-flex justify-content-around ">
                            <img src="/images/organisateur.png" width="45" height="45">
-                           <div class="fw-bold fs-4 d-flex align-items-center">Organisateur</div>
+                           <div class="fw-bold fs-4 d-flex align-items-center ms-1">Organisateur</div>
                         </div>
                         <div class="text-center h-75 d-flex align-items-center justify-content-center fst-italic fs-5">
                            <%= user.nom %>
@@ -99,8 +105,8 @@
                <div class="w-50 d-flex flex-column">
                   <div>
                      <div class="mb-2 px-1 fs-5 fw-bold d-flex">
-                        <div>Début de l'évènement :</div>
-                        <div>
+                        <div class="w-75">Début de l'évènement :</div>
+                        <div class="w-25">
                            <input type="text" id="datePickerDebut" class="form-control invisible">
                         </div>
 
@@ -132,8 +138,8 @@
                <div class="w-50 d-flex flex-column">
                   <div>
                      <div class="mb-2 px-1 fs-5 fw-bold d-flex">
-                        <div>Fin de l'évènement :</div>
-                        <div>
+                        <div class="w-75">Fin de l'évènement :</div>
+                        <div class="w-25">
                            <input type="text" id="datePickerFin" class="form-control invisible">
                         </div>
 
@@ -173,15 +179,15 @@
                         Places maximum :
                      </div>
                      <div class="w-75 mx-1 p-1 cursor-pointer ">
-                        <input type="number" class="w-100 p-1  fs-1 position-relative bottom-0" name="nbParticipants"
+                        <input type="number" class="w-100 p-1 mt-1 fs-1 position-relative bottom-0" name="nbParticipants"
                            id="nbParticipants">
                      </div>
                   </div>
                   <div class="w-50 d-flex flex-column ">
                      <div class="" id="date_limite_inscription_div">
                         <div class="mb-2 px-1 fs-5 fw-bold d-flex">
-                           <div>Date limite d'inscription :</div>
-                           <div>
+                           <div class="w-75">Date limite d'inscription :</div>
+                           <div class="w-25">
                               <input type="text" id="datePickerInscription" class="form-control invisible">
                            </div>
                         </div>
@@ -214,11 +220,9 @@
                   </div>
                </div>
                <div class="d-flex justify-content-center w-100 bg-white  border-top mt-4">
-                  <button class="w-50 mt-3 btn btn-primary mb-3 fs-4 " id="submitButton"> Ajouter
+                  <button class="btn btn-cool-blues btn-rounded fs-4 fw-bold text-decoration-none mt-3 mb-3 fs-4" id="submitButton"> Ajouter
                      l'évènement</button>
-
                </div>
-
             </div>
             <input type="file" id="fileInput" name="photo" style="display: none;">
             <input type="datetime-local" id="dateDebutInput" name="dateDebut" class="invisible">

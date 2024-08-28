@@ -16,125 +16,19 @@
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <link href="/styleEvent.css" rel="stylesheet">
+    <link href="/styleModal.css" rel="stylesheet">
     <style>
-        input.form-control {
-            outline: none;
-            box-shadow: none !important;
-        }
-
-        #chatNotif {
-            margin-left: -18px;
-        }
-
-        #searchInput {
-            padding-left: 32px;
-        }
-
-        .image-containerTest {
-            width: 75px;
-            height: 75px;
-            position: relative;
-        }
-
-        .image-containerTest img {
-            border-radius: 50%;
-            border: 1px solid #ccc;
-            padding: 5px;
-            background-color: white;
-        }
-    </style>
+        .select2-container--default .select2-selection--multiple {
+         padding: 4px 10px 10px 10px;
+         border: solid 2px #c0c0c0 ;
+         border-radius: 8px;
+     }
+     </style>
 </head>
 
 <body>
     <%- include('./shared/navBarre.ejs') %>
     <%- include('./shared/sideBar.ejs') %>
-    <!-- <div class="min-vh-100 w-100 d-flex justify-content-center " style="background-color: rgb(242, 243, 243); margin-left: 14%;">
-        <div class="spacingContentNavBarre d-flex flex-column" style="width: 40%;">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <a href="#" class="fs-4">
-                        <span class="fa-stack fa-lg pull-left">
-                            <i class="fa-solid fa-bars fa-stack-1x"></i>
-                        </span>
-                    </a>
-                </div>
-                <div class="fw-bold fs-2">Discussion</div>
-                <button type="button" id="btnModalMessage" class="btn border-0 fs-4 text-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" disabled>
-                    <span class="fa-stack fa-lg">
-                        <i class="fa-solid fa-pen-to-square fa-stack-1x"></i>
-                    </span>
-                </button>
-            </div>
-            <div class="mb-2 w-100 d-flex justify-content-center">
-                <select class="form-select form-select-solid fs-5" id="usersSelect" name="users" multiple="multiple" style="width: 90%" data-hide-search="true">
-                    <% for (const user of users) { %>
-                        <option value="<%= user.id %>">
-                            <%= user.nom %> <%= user.prenom %>
-                        </option>
-                    <% } %>
-                </select>
-            </div>
-            <div class="mb-2 w-100 d-flex justify-content-center" id="alertSelect">
-                <div id="selectionStatus" class="text-muted mb-4 fw-bold" style="width: 90%;">Sélectionnez au moins un utilisateur pour pouvoir écrire un message</div>
-            </div>
-
-            <% discussions.forEach(discussion => { %>
-                <a href="/discussion/<%= discussion.id %>" class="mb-3 d-flex w-100 mt-2 lienDiscussion text-black text-decoration-none">
-                    <% if (discussion.participants.length === 2) { %>
-                        <% discussion.participants.forEach(participant => { %>
-                            <% if (participant.id !== user.id) { %>
-                                <div class="d-flex image-containerTest">
-                                    <img class="rounded-circle border border-secondary p-1" src="/images/<%= participant.photo %>" width="70" height="70">
-                                </div>
-                            <% } %>
-                        <% }) %>
-                    <% } %>
-                    <% if (discussion.participants.length > 2) { %>
-                        <% let displayedCount = 0; %>
-                        <div class="d-flex image-containerTest">
-                            <% discussion.participants.forEach(participant => { %>
-                                <% if (participant.id !== user.id && displayedCount < 2) { %>
-                                    <% if (displayedCount === 0) { %>
-                                        <img src="/images/<%= participant.photo %>" class="position-relative top-0 start-0 rounded-circle border border-secondary p-1" alt="Image 1" width="50" height="50" style="z-index: 1;">
-                                    <% } else { %>
-                                        <img src="/images/<%= participant.photo %>" class="position-absolute bottom-0 end-0 rounded-circle border border-secondary p-1 bg-white" alt="Image 2" width="50" height="50" style="z-index: 50;">
-                                    <% } %>
-                                    <% displayedCount++; %>
-                                <% } %>
-                            <% }) %>
-                        </div>
-                    <% } %>
-                    <div class="w-100 d-flex p-2 rounded border-0 zoneTexteMessage ms-2">
-                        <div class="d-flex flex-column justify-content-around" style="width: 95%;">
-                            <div class="fw-bold fs-4">
-                                <% const participantsList = discussion.participants.filter(participant => participant.id !== user.id).map(participant => `${participant.nom} ${participant.prenom}`); %>
-                                <%= participantsList.join(', ') %>
-                            </div>
-                            <div class="d-flex w-100">
-                                <% discussion.messages.forEach(message => { %>
-                                    <div class="me-3 fs-5 <% if (discussion.notificationCount > 0) { %>fst-italic fw-bold <% } %>">
-                                        <%= message.prenom %> :
-                                    </div>
-                                    <div class="me-3 fs-5 <% if (discussion.notificationCount > 0) { %> fw-bold <% } %>">
-                                        <%= message.message_text.length > 50 ? message.message_text.slice(0, 50) + ' ...' : message.message_text %>
-                                    </div>
-                                    <div class="fs-5 <% if (discussion.notificationCount > 0) { %> fw-bold <% } %>">
-                                        ⸱ <%= new Date(message.sent_at).toLocaleString() %>
-                                    </div>
-                                <% }); %>
-                            </div>
-                        </div>
-                        <% if (discussion.notificationCount > 0) { %>
-                            <div class="d-flex justify-content-start align-items-center" style="width: 5%;">
-                                <i class="fa-solid fa-circle text-primary"></i>
-                            </div>
-                        <% } %>
-                    </div>
-                </a>
-            <% }); %>
-            <%- include('./shared/modalMessagerie.ejs') %>
-        </div>
-    </div> -->
     <div class="min-vh-100 w-100 d-flex justify-content-center " style="background-color: rgb(242, 243, 243); margin-left: 14%;">
         <div class="spacingContentNavBarre d-flex flex-column" style="width: 40%;">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -234,7 +128,7 @@
                     $('#btnModalMessage').removeAttr('disabled');
                     var selectedOptions = $('#usersSelect').select2('data');
                     // Mettre à jour la div avec les options sélectionnées
-                    var displayText = 'Envoyer un message à:';
+                    var displayText = 'Envoyer un message à :';
                     let displayIds = [];
                     selectedOptions.forEach(function (option, index) {
                         displayIds.push(option.id);

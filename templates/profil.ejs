@@ -11,7 +11,7 @@
                     <%=userProfil.prenom %>
             </h1>
             <div class="w-100 d-flex justify-content-center mb-1">
-                <div class="d-flex w-50 justify-content-around">
+                <div class="d-flex w-75 justify-content-around">
                     <div class="d-flex align-items-center">
                         <div class="fw-bold fs-5 me-2">Email :</div>
                         <div class="fs-5">
@@ -20,14 +20,14 @@
                     </div>
                     <% if(user.id===userProfil.id){ %>
                         <div class="">
-                            <a href="/modification/profil/<%= userProfil.id%>"
-                                class="underline fs-4 fw-bold">
+                            <a href="/modification/profil/<%= userProfil.id%>" class="btn btn-cool-blues btn-rounded fs-4 fw-bold">
                                 Modifier son profil</a>
                         </div>
                         <% } else {%>
                             <div class="">
-                                <div class="fs-6 p-2" >
-                                    <a href="#" class="underline fs-4 fw-bold" id="btnModalMessage" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                <div class="fs-6 p-2">
+                                    <a href="#" class="underline fs-4 fw-bold" id="btnModalMessage"
+                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
                                         <i class="fas fa-pen-to-square fa-lg me-1 "></i>Envoyer un message</a>
                                 </div>
                             </div>
@@ -35,15 +35,15 @@
 
                 </div>
             </div>
-            <div class=" d-flex mt-1" style="height: 700px;">
+            <div class=" d-flex mt-3" style="height: 700px;">
                 <div class="w-50 h-100 border me-3 bg-white rounded p-2 d-flex flex-column" id="1">
                     <div class="d-flex flex-column h-100">
                         <div class="d-flex border-bottom" style="height: 12%;">
                             <div class="titreProfil fs-3 d-flex align-items-center w-50">Ses évènements</div>
                             <div class="d-flex align-items-center w-50 justify-content-around">
-                                <button class="btn btn-choice-event actif fs-5 fw-bold" id="actifBtn">Actif</button>
+                                <button class="btn btn-cool-blues btn-rounded actif fs-5 fw-bold" id="actifBtn">Actif</button>
                                 <div class="fs-5">ou</div>
-                                <button class="btn btn-choice-event inactif fs-5 fw-bold" id="pastBtn">Passés</button>
+                                <button class="btn btn-cool-blues btn-rounded inactif fs-5 fw-bold" id="pastBtn">Passés</button>
                             </div>
                         </div>
                         <div style="height: 88%;">
@@ -51,21 +51,22 @@
                                 <% for (const eventActif of evenementsActifs){ %>
                                     <div class="d-flex w-100 pb-2 pt-3 border-bottom">
                                         <div class="d-flex flex-column" style="width: 65%;">
-                                            <div class=" d-flex align-items-center fw-bold fs-5 fst-italic">
+                                            <div class=" d-flex align-items-center fw-bold fs-5 fst-italic mb-1">
                                                 <a href="/evenement/<%=eventActif.id %>"
-                                                    class="text-decoration-none lienTitreEvent">
+                                                    class="underline">
                                                     <%= eventActif.titre %>
                                                 </a>
                                             </div>
-
-                                            <div class="w-75 d-flex justify-content-center align-items-center">
-                                                <img src="http://localhost:3000/images/espace-reserve.png" width="20"
-                                                    height="20" class="mx-2">
-                                                <%= eventActif.nom_ville %>
+                                            <div class="w-100 d-flex justify-content-end">
+                                                <div class="w-75 d-flex align-items-center">
+                                                    <img src="http://localhost:3000/images/espace-reserve.png"
+                                                        width="20" height="20" class="mx-2">
+                                                    <%= eventActif.nom_ville %>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-center align-items-center fs-6"
-                                            style="width: 10%;"><i class="fa-solid fa-clock"></i></div>
+                                            style="width: 10%;"><i class="fa-solid fa-clock fa-lg"></i></div>
                                         <div class="d-flex flex-column justify-content-center" style="width: 25%;">
                                             <div class="d-flex justify-content-center ">
                                                 <%= eventActif.dateDebutEvenement.jour %>/<%=
@@ -84,21 +85,22 @@
                                 <% for (const eventFini of evenementsFinis){ %>
                                     <div class="d-flex w-100 pb-2 pt-3 border-bottom">
                                         <div class="d-flex flex-column" style="width: 65%;">
-                                            <div class=" d-flex align-items-center fw-bold fs-5 fst-italic">
+                                            <div class=" d-flex align-items-center fw-bold mb-1 fs-5 fst-italic">
                                                 <a href="/evenement/<%=eventFini.id %>"
-                                                    class="text-decoration-none lienTitreEvent">
+                                                    class="underline">
                                                     <%= eventFini.titre %>
                                                 </a>
                                             </div>
-
-                                            <div class="w-75 d-flex justify-content-center align-items-center">
-                                                <img src="http://localhost:3000/images/espace-reserve.png" width="20"
-                                                    height="20" class="mx-2">
-                                                <%= eventFini.nom_ville %>
+                                            <div class="w-100 d-flex justify-content-end">
+                                                <div class="w-75 d-flex align-items-center">
+                                                    <img src="http://localhost:3000/images/espace-reserve.png"
+                                                        width="20" height="20" class="mx-2">
+                                                    <%= eventFini.nom_ville %>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-center align-items-center fs-6"
-                                            style="width: 10%;"><i class="fa-solid fa-clock"></i></div>
+                                            style="width: 10%;"><i class="fa-solid fa-clock fa-lg"></i></div>
                                         <div class="d-flex flex-column justify-content-center" style="width: 25%;">
                                             <div class="d-flex justify-content-center ">
                                                 <%= eventFini.dateDebutEvenement.jour %>/<%=
@@ -118,10 +120,11 @@
                 </div>
                 <div class="w-50 h-100 border bg-white rounded p-2 d-flex flex-column" id="1">
                     <div class="titreProfil fs-3 d-flex align-items-center border-bottom" style="height: 12%;">
-                        Évènements évalués par <%= userProfil.prenom  %></div>
+                        Évènements évalués par <%= userProfil.prenom %>
+                    </div>
                     <% for(const eval of evaluations){ %>
-                        <div class="d-flex w-100 mb-3 border-bottom pb-2 pt-3">
-                            <div class="me-3 d-flex flex-column" style="width: 20%;">
+                        <div class="d-flex w-100 mb-2 border-bottom pb-3 pt-3">
+                            <div class="me-3 d-flex flex-column justify-content-center" style="width: 20%;">
                                 <div class="fw-bold d-flex justify-content-center fs-4">
                                     <div>
                                         <%= eval.evaluation%>
@@ -145,7 +148,7 @@
                                         <%= eval.identite%>
                                     </div>
                                 </div>
-                                <div class="mt-2 d-flex flex-column">
+                                <div class="d-flex flex-column">
                                     <div class="fw-bold fs-5 mb-2">
                                         <a href="/evenement/<%=eval.evenement_id %>"
                                             class="text-decoration-none lienTitreEvent">

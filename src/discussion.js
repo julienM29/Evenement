@@ -1,7 +1,7 @@
 import { formatDate } from "./actions/evenement.js";
 import connection from "./database.js";
 
-function getFormattedDate() {
+export function getFormattedDate() {
     const now = new Date();
 
     const year = now.getFullYear();
@@ -15,50 +15,6 @@ function getFormattedDate() {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 // Récupérer les données des discussions pour en faire une variable contenant les informations des tables concernées
-async function getDiscussions1 (user_id){
-// Récupération des discussions de l'utilisateur
-const [discussions] = await connection.promise().query(
-    `SELECT d.id, d.created_at , nm.is_read 
-	FROM discussion d
-    INNER JOIN discussion_participants dp ON d.id = dp.discussion_id
-    inner join notification_messagerie nm  on nm.user_id =1 and d.id = nm.discussion_id 
-    WHERE dp.user_id = ?
-    ORDER BY nm.is_read asc ,d.created_at desc`,
-    [user_id]
-);
-// Récupérations du dernier message de chaque discussion
-const discussionsWithMessages = await Promise.all(discussions.map(async discussion => {
-    const [messages] = await connection.promise().query(
-        `SELECT discussion_id, sender_id, message_text, sent_at, u.nom  as nom, u.prenom as prenom
-         FROM message m
-         JOIN user u ON m.sender_id = u.id
-         WHERE m.discussion_id = ?
-         order by sent_at DESC
-         LIMIT 1`,
-        [discussion.id]
-    );
-    const [notification_messagerie] = await connection.promise().query(`SELECT COUNT(*) AS notification_count
-            FROM evenement.notification_messagerie 
-            WHERE user_id = ? AND is_read = 0 AND discussion_id = ?`, [user_id, discussion.id]);
-           const notificationCount = notification_messagerie[0].notification_count
-    // Récupération des informations des participants pour chaque discussion
-    const [participants] = await connection.promise().query(
-        `SELECT *, user.nom AS nom , user.prenom AS prenom , user.photo AS photo, user.id AS id
-        FROM discussion_participants
-        INNER JOIN user ON discussion_participants.user_id = user.id
-        WHERE discussion_id =?`,
-        [discussion.id]
-    );
-    // Nouvelle valeurs pour la variable
-    return {
-        ...discussion,
-        messages: messages,
-        participants: participants,
-        notificationCount: notificationCount
-    };
-}));
-return discussionsWithMessages
-}
 async function getDiscussions(user_id) {
     // Requête SQL combinée
     const [discussionsWithMessages] = await connection.promise().query(
@@ -143,7 +99,7 @@ async function getDiscussions(user_id) {
                 notificationCount: row.notification_count,
                 messages: row.message_text ? [{
                     sender_id: row.sender_id,
-                    message_text: row.message_text,
+                    message_text: row.message_text.length > 40 ? row.message_text.substring(0, 40) + '...' : row.message_text,
                     sent_at: row.sent_at,
                     nom: row.nom,
                     prenom: row.prenom
@@ -217,14 +173,14 @@ async function getDiscussion (discussion_id, user_id){
 export async function nbNotifEvenement  (user_id){
     const [notification_invitation] = await connection.promise().query(`
             SELECT COUNT(*) AS notification_count
-            FROM evenement.notification_evenement 
-            WHERE user_id = ? and is_read = 0 and type = 'invitation'`, [user_id]);
+            FROM evenement.notification_evaluation
+            WHERE user_id = ? and is_read = 0 `, [user_id]);
            const notificationInvitationCount = notification_invitation[0].notification_count
     const [notification_evaluation] = await connection.promise().query(`
             SELECT COUNT(*) AS notification_count
             FROM evenement.evaluation e 
             inner join evenement e2 on e2.id = e.evenement_id 
-            inner join notification_evenement ne on ne.reference_id = e.id 
+            inner join notification_evaluation ne on ne.evaluation_id = e.id 
             where e2.organisateur_id = ? and ne.is_read = 0`, [user_id]);
             const notificationEvaluationCount = notification_evaluation[0].notification_count
             const nb_notifs = notificationEvaluationCount + notificationInvitationCount
@@ -258,68 +214,14 @@ export const showMessagerie = async (req, res) => {
     }
     if (req.method === "POST") {
         const body = req.body
+        const message = body.message
         const now = getFormattedDate()
         const participants = body.selectedUserIds.split(',').map(id => id.trim()); // Assurez-vous que participants est un tableau d'IDs
         participants.push(user_id)
-        const message = body.message
-        let discussionId
-        // Recherche si une discussion entre les ID des utilisateurs sélectionnés existe déjà
-        // La sous requete dans le join permet de récupérer les discussions dont le nombre de participants est égal au nombre de participant qu'il y a dans participants
-        // La requete Join permet d'associer chaque entrée de la table discussion_participants au résultat de la sous requete grâce au dp.discussion_id = d2.discussion_id
-        // Le WHERE permet de filtrer les discussion pour inclure seulement celles où les urser_id sont présent dans la liste
-        // Le group By regroupe les discussion par id
-        // Le having permet d'avoir le nombre de participants spécifié
-        // On récupère l'id de la discussion dont les participants sélectionnés sont les seuls à être présent dedans
-        const [existingDiscussions] = await connection.promise().query(
-            `SELECT dp.discussion_id
-                                FROM discussion_participants dp
-                                JOIN (
-                                    SELECT discussion_id
-                                    FROM discussion_participants
-                                    GROUP BY discussion_id
-                                    HAVING COUNT(user_id) = ?
-                                ) d2 ON dp.discussion_id = d2.discussion_id
-                                WHERE dp.user_id IN (?)
-                                GROUP BY dp.discussion_id
-                                HAVING COUNT(dp.user_id) = ?`,
-            [participants.length, participants, participants.length]
-        );
-        if (existingDiscussions.length === 0) { // Si la discussion n'existe pas
-
-            const [discussion] = await connection.promise().query('INSERT INTO discussion (created_at) VALUES (?)',
-                [now]);
-            discussionId = discussion.insertId;
-            for (const participantId of participants) {
-                await connection.promise().query(
-                    'INSERT INTO discussion_participants (discussion_id, user_id) VALUES (?, ?)',
-                    [discussionId, participantId]
-                );
-                if(participantId !== user_id){
-                // Création d'une notification
-                await connection.promise().query(`
-                    INSERT INTO notification_messagerie
-                    ( user_id, created_at, is_read, discussion_id)
-                    VALUES(?,?,?,?)`,[participantId, now, 0, discussionId ]
-                    )
-                } else {
-                    await connection.promise().query(`
-                        INSERT INTO notification_messagerie
-                        ( user_id, created_at, is_read, discussion_id)
-                        VALUES(?,?,?,?)`,[participantId, now, 1, discussionId ]
-                        ) 
-                }
-            }
-        } else {
-            discussionId = existingDiscussions[0].discussion_id;
-        }
-
-        // Créer un message id id_discussion sender_id message_text sent_at
-        const [result] = await connection.promise().query('INSERT INTO message ( discussion_id, sender_id, message_text, sent_at) VALUES (?,?,?,?)',
-            [discussionId, user_id, message, now]);
+        const result = await verifyAndCreateMessage(participants, now, message, user_id)
         if (result) {
-            res.redirect(`/messagerie/${user_id}`)
+            res.redirect(`/discussion/${result}`)
         }
-
     }
 }
 // Page affichant une discussion
@@ -350,7 +252,6 @@ export const showDiscussion = async (req, res) => {
                 nbNotifEventNonLus: nbNotifEventNonLus
             });
         }
-        
         if (req.method === 'POST') {
             const now = getFormattedDate();
             const message = req.body.message;
@@ -397,4 +298,63 @@ export const showDiscussion = async (req, res) => {
         console.error('Erreur lors du traitement de la demande:', err);
         res.status(500).send('Une erreur est survenue.');
     }
+}
+
+export async function verifyAndCreateMessage(participants, now, message, user_id){
+    let discussionId
+        // Recherche si une discussion entre les ID des utilisateurs sélectionnés existe déjà
+        // La sous requete dans le join permet de récupérer les discussions dont le nombre de participants est égal au nombre de participant qu'il y a dans participants
+        // La requete Join permet d'associer chaque entrée de la table discussion_participants au résultat de la sous requete grâce au dp.discussion_id = d2.discussion_id
+        // Le WHERE permet de filtrer les discussion pour inclure seulement celles où les urser_id sont présent dans la liste
+        // Le group By regroupe les discussion par id
+        // Le having permet d'avoir le nombre de participants spécifié
+        // On récupère l'id de la discussion dont les participants sélectionnés sont les seuls à être présent dedans
+        const [existingDiscussions] = await connection.promise().query(
+                                `SELECT dp.discussion_id
+                                FROM discussion_participants dp
+                                JOIN (
+                                    SELECT discussion_id
+                                    FROM discussion_participants
+                                    GROUP BY discussion_id
+                                    HAVING COUNT(user_id) = ?
+                                ) d2 ON dp.discussion_id = d2.discussion_id
+                                WHERE dp.user_id IN (?)
+                                GROUP BY dp.discussion_id
+                                HAVING COUNT(dp.user_id) = ?`,
+            [participants.length, participants, participants.length]
+        );
+        if (existingDiscussions.length === 0) { // Si la discussion n'existe pas
+
+            const [discussion] = await connection.promise().query('INSERT INTO discussion (created_at) VALUES (?)',
+                [now]);
+            discussionId = discussion.insertId;
+            for (const participantId of participants) {
+                await connection.promise().query(
+                    'INSERT INTO discussion_participants (discussion_id, user_id) VALUES (?, ?)',
+                    [discussionId, participantId]
+                );
+                if(participantId !== user_id){
+                // Création d'une notification
+                await connection.promise().query(`
+                    INSERT INTO notification_messagerie
+                    ( user_id, created_at, is_read, discussion_id)
+                    VALUES(?,?,?,?)`,[participantId, now, 0, discussionId ]
+                    )
+                } else {
+                    await connection.promise().query(`
+                        INSERT INTO notification_messagerie
+                        ( user_id, created_at, is_read, discussion_id)
+                        VALUES(?,?,?,?)`,[participantId, now, 1, discussionId ]
+                        ) 
+                }
+            }
+        } else {
+            discussionId = existingDiscussions[0].discussion_id;
+        }
+
+        // Créer un message id id_discussion sender_id message_text sent_at
+        const [result] = await connection.promise().query('INSERT INTO message ( discussion_id, sender_id, message_text, sent_at) VALUES (?,?,?,?)',
+            [discussionId, user_id, message, now]);
+            return discussionId;
+        
 }

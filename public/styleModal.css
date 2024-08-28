@@ -1,0 +1,25 @@
+input.form-control {
+    outline: none;
+    box-shadow: none !important;
+}
+
+#chatNotif {
+    margin-left: -18px;
+}
+
+#searchInput {
+    padding-left: 32px;
+}
+
+.image-containerTest {
+    width: 75px;
+    height: 75px;
+    position: relative;
+}
+
+.image-containerTest img {
+    border-radius: 50%;
+    border: 1px solid #ccc;
+    padding: 5px;
+    background-color: white;
+}

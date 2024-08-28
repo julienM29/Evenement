@@ -1,3 +1,10 @@
+<style>
+    .select2-container--default .select2-selection--multiple {
+     padding: 4px 10px 10px 10px;
+     border: solid 2px #c0c0c0 ;
+     border-radius: 8px;
+ }
+ </style>
 <div class=" d-flex flex-column spacingContentNavBarre" style="width : 45%;">
     <div class="d-flex mb-1" style="height:440px">
         <div class=" h-100 d-flex flex-column mr-1" style="width : 30%;">
@@ -31,9 +38,12 @@
                 <%= evenement.titre %>
             </div>
             <div class="mb-2 w-100 bg-white rounded border px-2 py-3 fs-5">
-                <span class="fw-bold me-3">Lieu de l'évènement : </span> 
-                <a href="https://www.google.fr/maps/place/<%=evenement.nom_ville %>/" onclick="window.open(this.href); return false;" class="underline"><%= evenement.nom_ville %></a>
-                
+                <span class="fw-bold me-3">Lieu de l'évènement : </span>
+                <a href="https://www.google.fr/maps/place/<%=evenement.nom_ville %>/"
+                    onclick="window.open(this.href); return false;" class="underline">
+                    <%= evenement.nom_ville %>
+                </a>
+
             </div>
             <div class="mb-2 w-100 bg-white rounded border px-2 py-3 d-flex flex-column ">
                 <label class="border-b mb-2 fw-bold fs-5" for="description">Description de
@@ -56,7 +66,7 @@
                         <div class="w-75 d-flex flex-column justify-content-center ">
                             <div class="fw-bold fs-5" id="debutEvenementMois">
                                 <%= evenement.date_debut_evenement.moisNom %>
-                                    <%= evenement.date_final_inscription.annee %>
+                                    <%= evenement.date_debut_evenement.annee %>
                             </div>
                             <div id="debutEvenementHeure">
                                 <%= evenement.date_debut_evenement.heures %>:<%= evenement.date_debut_evenement.minutes
@@ -122,67 +132,80 @@
                             <div class="w-50">
 
                                 <div class="mb-2 px-1 fs-5 fw-bold">
-                                    Places maximum :
+                                    Places disponibles :
                                 </div>
 
                                 <div class="w-75 mx-1 p-1 border d-flex fs-1">
-                                    <%= evenement.nb_participants_max %>
+                                    <%= evenement.nb_participants_max - evenement.nbParticipants%>
                                 </div>
                             </div>
                 </div>
                 <% if (locals.user.id===evenement.organisateur_id) { %>
                     <div class="d-flex justify-content-center align-items-center w-100 bg-white  border-top mt-4">
-                        <button class="w-50 btn btn-primary mt-4 mb-2 fs-4 ">
-                            <a href="/modifier/evenement/<%= evenement.id%>" class="text-decoration-none text-white">
+                            <a href="/modifier/evenement/<%= evenement.id%>" class="mt-4 mb-2 fs-4 btn btn-cool-blues btn-rounded fs-4 fw-bold text-decoration-none ">
                                 Modifier
                                 l'évènement
                             </a>
-                        </button>
-
                     </div>
                     <% } else { %>
                         <div class="w-100 d-flex justify-content-center  border-top mt-4 ">
 
-                            <div class="d-flex justify-content-around w-75 bg-white mt-2">
-                                <% if ( evenement.statut_id !==2 && evenement.statut_id !==4) {%>
-                                    <% if (participation === false && enCours === true && evenement.participation_pendant_evenement == 1) {%>
-                                        <a href="/participation/<%= evenement.id %>"
-                                            class="optionEventForm text-decoration-none mt-2 mb-1 px-3 py-2  rounded-pill border-dashed-inscription  fs-4 fw-bold text-dark d-flex align-items-center">
-                                            S'inscrire
-                                        </a>
-                                        <% } %>
-                                            <% if (participation===true) {%>
-                                                <a href="/desinscription/<%= evenement.id %>"
-                                                    class="optionEventForm text-decoration-none mt-2 mb-1 px-3 py-2  rounded-pill border-dashed-inscription  fs-4 fw-bold text-dark d-flex align-items-center">
-                                                    Se désinscrire
-                                                </a>
-                                                <% } %>
-                                                    <button type="button" id="btnModalMessage"
-                                                        class="optionEventForm text-decoration-none mt-2 mb-1 px-3 rounded-pill border-dashed-inscription  fs-4 fw-bold text-dark d-flex align-items-center"
-                                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                                        Partager
-                                                        <span class="fa-stack"> <i
-                                                                class="fa-solid fa-share-from-square fa-stack-1x"></i>
-                                                        </span>
-                                                    </button>
-                                                    <% } %>
-                                                        <% if ( evenement.statut_id===2 ){%>
-                                                            <div class="d-flex w-100 justify-content-around">
-                                                            <div class="fs-4 fw-bold d-flex align-items-center">L'évènement est terminé.</div>
-                                                            <% if (participation===true) {%>
-                                                                <div class="d-flex justify-content-center" style="width: 43%;">
-                                                                <a href="/evaluations/evenement/<%= evenement.id %>"
-                                                                    class="optionEventForm text-decoration-none mt-2 mb-1 px-3 py-2  rounded-pill border-dashed-inscription  fs-4 fw-bold text-dark d-flex align-items-center">
-                                                                    Évaluer l'évènement
-                                                                </a>
-                                                            </div>
-                                                                <% } %>
-                                                        </div>
-                                                            <% } %>
-                                                                <% if ( evenement.statut_id===5 && enCours===false && participation=== false) {%>
-                                                                    <div>L'évènement est en cours.</div>
+                            <div class="d-flex justify-content-around w-75 bg-white mt-3">
 
-                                                                    <% } %>
+                                <% if ( evenement.statut_id !==2 && evenement.statut_id !==4) {%>
+                                    <% if (participation===false && (enCours==="Valide" || enCours==="Actuel"  &&
+                                        evenement.participation_pendant_evenement==1) ) {%>
+                                        <%if((evenement.nb_participants_max - evenement.nbParticipants) !==0){%>
+                                            <a href="/participation/<%= evenement.id %>"
+                                                class="btn btn-cool-blues btn-rounded fs-4 fw-bold text-decoration-none ">
+                                                S'inscrire
+                                            </a>
+                                            <%} else {%>
+                                                <div
+                                                    class="d-flex justify-content-center align-items-center fs-4 fw-bold text-danger">
+                                                    L'évènement est complet !
+                                                </div>
+                                                <%} %>
+                                                    <% } %>
+                                                        <% if (participation===true && enCours==="Valide" ) {%>
+                                                            <a href="/desinscription/<%= evenement.id %>"
+                                                                class="btn btn-cool-blues btn-rounded fs-4 fw-bold text-decoration-none">
+                                                                Se désinscrire
+                                                            </a>
+                                                            <% } %>
+                                                                <button type="button" id="btnModalMessage"
+                                                                    class="btn btn-cool-blues btn-rounded fs-4 fw-bold text-decoration-none"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#exampleModal">
+                                                                    Partager
+                                                                    <span class="fa-stack"> <i
+                                                                            class="fa-solid fa-share-from-square fa-stack-1x"></i>
+                                                                    </span>
+                                                                </button>
+                                                                <% } %>
+                                                                    <% if ( evenement.statut_id===2 ){%>
+                                                                        <div
+                                                                            class="d-flex w-100 justify-content-around">
+                                                                            <div
+                                                                                class="fs-4 fw-bold d-flex align-items-center">
+                                                                                L'évènement est terminé.</div>
+                                                                            <% if (participation===true) {%>
+                                                                                <div class="d-flex justify-content-center"
+                                                                                    style="width: 45%;">
+                                                                                    <a href="/evaluations/evenement/<%= evenement.id %>"
+                                                                                        class="btn btn-cool-blues btn-rounded fs-4 fw-bold text-decoration-none">
+                                                                                        Évaluer l'évènement
+                                                                                    </a>
+                                                                                </div>
+                                                                                <% } %>
+                                                                        </div>
+                                                                        <% } %>
+                                                                            <% if ( evenement.statut_id===5 &&
+                                                                                enCours===false &&
+                                                                                participation===false) {%>
+                                                                                <div>L'évènement est en cours.</div>
+
+                                                                                <% } %>
                             </div>
 
                         </div>

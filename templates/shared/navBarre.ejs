@@ -26,56 +26,58 @@
                             </li>
                             <% } %>
                 </div>
-                <div class="w-50 d-flex justify-content-around align-items-center">
-                    <% if (locals.user) { %>
-                        <div>
-                            <% if (nbNotifMessageNonLus) { %>
-                                <a href="/messagerie/<%= user.id %>"
-                                    class="lienNotificationMessage text-body aling-items-center">
-                                    <i class="fas fa-message fa-2x"></i>
-                                    <% if (nbNotifMessageNonLus> 9) { %>
-                                        <span class="badge rounded-pill badge-notification bg-danger">9+</span>
-                                        <% } else if (nbNotifMessageNonLus> 0) { %>
-                                            <span class="badge rounded-pill badge-notification bg-danger">
-                                                <%= nbNotifMessageNonLus %>
-                                            </span>
-                                            <% } %>
-                                </a>
-                                <% } else { %>
-                                    <a href="/messagerie/<%= user.id %>" class="lienNotificationMessage text-body">
+                <div class="w-50">
+                    <div class=" d-flex justify-content-around align-items-center" style="width: 60%;">
+                        <% if (locals.user) { %>
+                            <div>
+                                <% if (nbNotifMessageNonLus) { %>
+                                    <a href="/messagerie/<%= user.id %>"
+                                        class="lienNotificationMessage text-body aling-items-center">
                                         <i class="fas fa-message fa-2x"></i>
+                                        <% if (nbNotifMessageNonLus> 9) { %>
+                                            <span class="badge rounded-pill badge-notification bg-danger">9+</span>
+                                            <% } else if (nbNotifMessageNonLus> 0) { %>
+                                                <span class="badge rounded-pill badge-notification bg-danger">
+                                                    <%= nbNotifMessageNonLus %>
+                                                </span>
+                                                <% } %>
                                     </a>
-                                    <% } %>
-                        </div>
-                        <div>
-                            <% if (nbNotifEventNonLus) { %>
-                                <a href="/notification/<%= user.id %>"
-                                    class="lienNotificationMessage text-body aling-items-center">
-                                    <i class="fas fa-envelope fa-2x"></i>
-                                    <% if (nbNotifEventNonLus.nb_notifs> 9) { %>
-                                        <span class="badge rounded-pill badge-notification bg-danger">9+</span>
-                                        <% } else if (nbNotifEventNonLus.nb_notifs> 0) { %>
-                                            <span class="badge rounded-pill badge-notification bg-danger">
-                                                <%= nbNotifEventNonLus.nb_notifs %>
-                                            </span>
-                                            <% } %>
-                                </a>
-                                <% } else { %>
-                                    <a href="" class="lienNotificationMessage text-body">
+                                    <% } else { %>
+                                        <a href="/messagerie/<%= user.id %>" class="lienNotificationMessage text-body">
+                                            <i class="fas fa-message fa-2x"></i>
+                                        </a>
+                                        <% } %>
+                            </div>
+                            <div>
+                                <% if (nbNotifEventNonLus) { %>
+                                    <a href="/notification/<%= user.id %>"
+                                        class="lienNotificationMessage text-body aling-items-center">
                                         <i class="fas fa-envelope fa-2x"></i>
+                                        <% if (nbNotifEventNonLus.nb_notifs> 9) { %>
+                                            <span class="badge rounded-pill badge-notification bg-danger">9+</span>
+                                            <% } else if (nbNotifEventNonLus.nb_notifs> 0) { %>
+                                                <span class="badge rounded-pill badge-notification bg-danger">
+                                                    <%= nbNotifEventNonLus.nb_notifs %>
+                                                </span>
+                                                <% } %>
                                     </a>
-                                    <% } %>
-                        </div>
-                        <div>
-                            <li class="fw-bolder navButton rounded-pill d-flex align-items-center">
-                                <a href="/profil/<%= user.id %>" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                    title="Voir votre profil">
-                                    <img class="rounded-circle border border-2 border-secondary p-1"
-                                        src="/images/<%= user.photo %>" width="65" height="65">
-                                </a>
-                            </li>
-                        </div>
-                        <% } %>
+                                    <% } else { %>
+                                        <a href="" class="lienNotificationMessage text-body">
+                                            <i class="fas fa-envelope fa-2x"></i>
+                                        </a>
+                                        <% } %>
+                            </div>
+                            <div>
+                                <li class="fw-bolder navButton rounded-pill d-flex align-items-center">
+                                    <a href="/profil/<%= user.id %>" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                        title="Voir votre profil">
+                                        <img class="rounded-circle border border-2 border-secondary p-1"
+                                            src="/images/<%= user.photo %>" width="65" height="65">
+                                    </a>
+                                </li>
+                            </div>
+                            <% } %>
+                    </div>
                 </div>
             </div>
         </div>

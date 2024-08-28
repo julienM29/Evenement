@@ -166,28 +166,44 @@
         }
     </style>
     <div class="min-vh-100 w-100 d-flex flex-column align-items-center " style="background-color: rgb(242, 243, 243); margin-left: 14%;">
-        <div class=" d-flex mx-1 spacingContentNavBarre " style="width: 80%;">
-            <div class="fs-4 fw-bold d-flex align-items-center justify-content-end" style="width: 20%;"> Rechercher un évènement </div>
+        <div class=" d-flex mx-1 spacingContentNavBarre " style="width: 90%;">
+            <div class="fs-4 fw-bold d-flex align-items-center justify-content-end" style="width: 20%;"> Rechercher un
+                évènement </div>
             <div class="w-75 d-flex">
-                <div class="d-flex align-items-center justify-content-center w-25" >
+                <div class="d-flex align-items-center justify-content-center " style="width: 20%;">
                     <label class="switch">
                         <input type="checkbox" id="toggleSwitchEvent">
                         <span class="slider round"></span>
                     </label>
                     <div class="ms-2 fs-5 fw-bold text-info" id="textToggleSwitchEvent">À venir</div>
                 </div>
-                <div class="w-75" >
+                <div class="" style="width: 80%;">
                     <div class="container ">
-                        <div class="search border  border-info">
-                            <div class="row ">
-                                <div class="col-md-6">
-                                    <div class="search-1 border-end border-2 "> <i class='bx bx-search-alt'></i> <input
-                                            type="text" placeholder="Nom de l'évènement..."  id="nomEvenement"> </div>
+                        <div class="search border border-info">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="search-3">
+                                        <select class="form-select form-select-solid" id="motsCles" name="motsCles[]"
+                                            multiple="multiple" style="width: 100%" data-hide-search="true">
+                                            <% motsCles.forEach(mot=> { %>
+                                                <option value="<%= mot.id %>">
+                                                    <%= mot.nom %>
+                                                </option>
+                                                <% }); %>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div>
-                                        <div class="search-2"> <i class='bx bxs-map'></i> <input type="text"
-                                                placeholder="Lieu..." id="lieuEvenement"> <button id="searchButton">Search</button> </div>
+                                <div class="col-md-4 d-flex align-items-center">
+                                    <div class="search-1 border-start border-2">
+                                        <i class='bx bx-search-alt'></i>
+                                        <input type="text" placeholder="Nom de l'évènement..." id="nomEvenement">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="search-2 border-start border-2">
+                                        <i class='bx bxs-map'></i>
+                                        <input type="text" placeholder="Lieu..." id="lieuEvenement">
+                                        <button id="searchButton">Search</button>
                                     </div>
                                 </div>
                             </div>
@@ -217,5 +233,11 @@
         // Optionally call the function here or in response to some event
         initSearch();
     });
+    $(document).ready(function () {
+            $('#motsCles').select2({
+               placeholder: "Selectionner des mots clés",
+               allowClear: true
+            });
+         });
     </script>
     <%- include('./shared/footer.ejs')%>

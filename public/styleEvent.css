@@ -194,7 +194,33 @@ body {
     border : 1px solid #6259da;
     background-color: #d5feff;
 }
+.btn-cool-blues {
+    background: #2193b0;
+    background: -webkit-linear-gradient(to right, #6dd5ed, #2193b0);
+    background: linear-gradient(to right, #6dd5ed, #2193b0);
+    color: #fff;
+    border: 3px solid #757575;
+    display: inline-flex;
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    text-align: center;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 35px;
+    height: 50px;
+}
 
+.btn-cool-blues:hover {
+    background: #6dd5ed;
+    background: -webkit-linear-gradient(to right, #2193b0, #6dd5ed);
+    background: linear-gradient(to right, #2193b0, #6dd5ed);
+    color: #000;
+    border-color: #2193b0;
+}
+
+.btn-rounded {
+    border-radius: 35px;
+}
 /************************************* PAGE DE DISCUSSION *****************************/
 .indicationJourDiscussion{
     color: #524646;

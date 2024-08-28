@@ -9,9 +9,10 @@
             font-size: large;
         }
     </style>
-    <div class="min-vh-100 w-100 d-flex flex-column align-items-center" style="background-color: rgb(242, 243, 243); margin-left: 14%">
+    <div class="min-vh-100 w-100 d-flex flex-column align-items-center"
+        style="background-color: rgb(242, 243, 243); margin-left: 14%">
         <div class="d-flex justify-content-center fs-1 fw-bold spacingContentNavBarre"> Mes participations</div>
-        <div class="mt-3 w-75 d-flex justify-content-center ">
+        <div class="mt-3 d-flex justify-content-center " style="width: 80%;">
             <table id="userTable" class="table table-striped table-bordered w-100">
                 <thead>
                     <tr>
@@ -32,7 +33,7 @@
                                 <img src="/images/<%= evaluation.photo %>" alt="" width="110" height="70">
                             </td>
                             <td class="fs-5">
-                                <%= evaluation.titre %>
+                                <a href="/evenement/<%= evaluation.evenement_id %>" class="underline"><%= evaluation.titre %></a>
                             </td>
                             <td class="fs-5">
                                 <%= evaluation.nom_ville %>
@@ -53,23 +54,32 @@
                             <td class="fs-5">
                                 <% if(evaluation.statut_id===2){ %>
                                     Terminé
-                                    <% } else { %>
-                                        En cours
-                                        <% } %>
-                            </td>
-                            <td class="fs-5  <% if(evaluation.statut_id !== 2){  %> text-danger<% } %>">
-                                <% if(evaluation.statut_id !==2){ %>
-                                    Évènement en cours
-                                    <% } else { %>
-                                        
-                                            <a href="/evaluations/evenement/<%= evaluation.evenement_id%>">
-                                                <% if(evaluation.evaluation_count===1){ %> 
-                                                    Évaluation faites
-                                                    <% } else {%>
-                                                    Évaluer l'évènement
-                                            </a>
-                                                <% } %>
+                                    <% } %>
+                                        <% if(evaluation.statut_id===1){ %>
+                                            À venir
+                                            <% } %>
+                                                <% if(evaluation.statut_id===5){ %>
+                                                    En cours
                                                     <% } %>
+                            </td>
+                            <td class="fs-5  <% if(evaluation.statut_id === 5){  %> text-danger<% } %>">
+                                <% if(evaluation.statut_id===5){ %>
+                                    Évènement en cours
+                                    <% } %>
+                                        <% if(evaluation.statut_id===1){ %>
+                                            Évènement à venir
+                                            <% } %>
+                                                <% if(evaluation.statut_id===2){ %>
+
+                                                    <a href="/evaluations/evenement/<%= evaluation.evenement_id%>"
+                                                        class="underline">
+                                                        <% if(evaluation.evaluation_count===1){ %>
+                                                            Évaluation faites
+                                                            <% } else {%>
+                                                                Évaluer l'évènement
+                                                    </a>
+                                                    <% } %>
+                                                        <% } %>
                             </td>
                         </tr>
                         <% }); %>

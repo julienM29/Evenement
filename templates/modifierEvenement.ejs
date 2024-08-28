@@ -4,7 +4,13 @@
    <!-- Inclure le CSS de Flatpickr en Français depuis un CDN -->
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
    <link rel="stylesheet" href="/styleSlider.css">
-
+<style>
+   .select2-container--default .select2-selection--multiple {
+    padding: 4px 10px 10px 10px;
+    border: solid 2px #c0c0c0 ;
+    border-radius: 8px;
+}
+</style>
    <div class="min-vh-100 w-100 d-flex justify-content-center "
       style="background-color: rgb(242, 243, 243); margin-left: 14%;">
       <div class=" d-flex flex-column spacingContentNavBarre" style="width : 45%;">
@@ -14,23 +20,19 @@
                   <div
                      class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-center fs-5 flex-column">
                      <% if(evenement.statut_id==1){%>
-                        <button class="btn btn-primary fs-5 " style="width: 90%;">
-                           <a href="/cancel/<%= evenement.id%>" class="text-decoration-none text-white">
+                           <a href="/cancel/<%= evenement.id%>" class="btn btn-cool-blues btn-rounded mb-2 fw-bold" style="width: 90%;">
                               Annuler
-                              l'évènement</a></button>
+                              l'évènement</a>
                         <% } %>
                            <% if(evenement.statut_id==3){%>
 
-                              <button class=" btn btn-primary fs-5 " style="width: 90%;">
-                                 <a href="/activate/<%= evenement.id%>" class="text-decoration-none text-white">
+                                 <a href="/activate/<%= evenement.id%>" class="btn btn-cool-blues btn-rounded fw-bold" style="width: 90%;">
                                     Réactiver
-                                    l'évènement</a></button>
+                                    l'évènement</a>
                               <% } %>
-
-                                 <button class="btn btn-primary fs-5 " style="width: 90%;">
-                                    <a href="/delete/<%= evenement.id%>" class="text-decoration-none text-white">
+                                    <a href="/delete/<%= evenement.id%>" class="btn btn-cool-blues btn-rounded fw-bold" style="width: 90%;">
                                        Supprimer l'évènement
-                                    </a></button>
+                                    </a>
                   </div>
                   <div
                      class="h-50 bg-white rounded border mr-1 d-flex align-items-center justify-content-center fs-5 flex-column">
@@ -109,8 +111,8 @@
                <div class="w-50 ">
 
                   <div class="mb-2 px-1 fs-5 fw-bold d-flex">
-                     <div>Début de l'évènement :</div>
-                     <div>
+                     <div class="w-75">Début de l'évènement :</div>
+                     <div class="w-25">
                         <input type="text" id="datePickerDebut" class="form-control invisible"
                            value="<%= evenement.date_debut_evenement.annee%>-<%= evenement.date_debut_evenement.mois %>-<%= evenement.date_debut_evenement.jour %>T<%= evenement.date_debut_evenement.heures %>:<%= evenement.date_debut_evenement.minutes %>">
                      </div>
@@ -142,8 +144,8 @@
                <div class="w-50">
 
                   <div class="mb-2 px-1 fs-5 fw-bold d-flex">
-                     <div>Fin de l'évènement :</div>
-                     <div>
+                     <div class="w-75">Fin de l'évènement :</div>
+                     <div class="w-25">
                         <input type="text" id="datePickerFin" class="form-control invisible"
                            value="<%= evenement.date_fin_evenement.annee%>-<%= evenement.date_fin_evenement.mois %>-<%= evenement.date_fin_evenement.jour %>T<%= evenement.date_fin_evenement.heures %>:<%= evenement.date_fin_evenement.minutes %>">
                      </div>
@@ -190,9 +192,9 @@
                         id="date_limite_inscription_div">
 
                         <div class="mb-2 px-1 fs-5 fw-bold d-flex">
-                           <div>Date limite d'inscription :
+                           <div class="w-75">Date limite d'inscription :
                            </div>
-                           <div>
+                           <div class="w-25">
                               <% if(evenement.participation_pendant_evenement==1){ %>
                                  <input type="text" id="datePickerInscription" class="form-control invisible">
                                  <% } else {%>
@@ -252,7 +254,7 @@
 
                </div>
                <div class="d-flex justify-content-center w-100 bg-white  border-top mt-4">
-                  <button class="w-50 mt-3 btn btn-primary mb-3 fs-4 " id="submitButton"> Modifier
+                  <button class=" mt-3 btn btn-cool-blues btn-rounded mb-3 fs-4 fw-bold" id="submitButton"> Modifier
                      l'évènement</button>
                </div>
             </div>

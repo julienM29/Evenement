@@ -3,7 +3,7 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import fs from "node:fs";
 import { pipeline } from "stream/promises"; // Utilisation de pipeline pour la copie du fichier
-import { nbNotifEvenement, nbNotifMessage } from "../discussion.js";
+import { getFormattedDate, nbNotifEvenement, nbNotifMessage, verifyAndCreateMessage } from "../discussion.js";
 import { formatDate } from "./evenement.js";
 import argon2 from "argon2";
 
@@ -17,6 +17,8 @@ export const showProfil = async (req, res) => {
     const nbNotifMessageNonLus = await nbNotifMessage(user_id)
     const nbNotifEventNonLus = await nbNotifEvenement(user_id)
     const profilId = req.params.id; // Récupération de l'id dans l'url
+    if (req.method === 'GET') { // Si on affiche la page
+
     const [results] = await connection.promise().query('SELECT * FROM user WHERE id =? ', [profilId]);
     const userProfil = results[0] // On récupère les résultats SQL dans un tableau donc obligé de passer par une variable tableau
     const [evaluations] = await connection.promise().query(`
@@ -25,17 +27,17 @@ export const showProfil = async (req, res) => {
         inner join evenement event on event.id = eval.evenement_id 
         inner join lieu l on event.lieu_id = l.id
         where user_id = ?
-        `, [user_id])
+        `, [profilId])
     const [evenementsActifs] = await connection.promise().query(`
         SELECT titre, description, photo, date_final_inscription, organisateur_id, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id , l.nom_ville
         FROM evenement e
         inner join lieu l on l.id = e.lieu_id
-        where organisateur_id = ? and statut_id = 1 order by date_debut_evenement ASC;`, [user_id])
+        where organisateur_id = ? and (statut_id = 1 or statut_id = 5) order by date_debut_evenement ASC;`, [profilId])
     const [evenementsFinis] = await connection.promise().query(`
         SELECT titre, description, photo, date_final_inscription, organisateur_id, date_debut_evenement, date_fin_evenement, nb_participants_max, nbParticipants, statut_id, l.nom_ville
         FROM evenement e
         inner join lieu l on l.id = e.lieu_id
-        where organisateur_id = ? and statut_id = 2 order by date_debut_evenement ASC;`, [user_id])
+        where organisateur_id = ? and statut_id = 2 order by date_debut_evenement ASC;`, [profilId])
         const evaluationsAvecDate = await Promise.all(evaluations.map(async evaluation => {
             const dateEvaluation = formatDate(evaluation.date);
             return { 
@@ -71,6 +73,19 @@ export const showProfil = async (req, res) => {
         evenementsActifs: evenementsActifsAvecDate,
         evenementsFinis: evenementsFinisAvecDate
     })
+}
+if (req.method === 'POST') { // Si on affiche la page
+    console.log('post profil !')
+    const now = getFormattedDate()
+    const message = req.body.message
+    let participants = []
+    participants.push(user_id)
+    participants.push(profilId)
+    const result = verifyAndCreateMessage(participants, now, message, user_id)
+    if (result) {
+        res.redirect(`/`)
+    }
+    }
 }
 // Page de modification d'un profil
 export const modifyProfil = async (req, res) => {

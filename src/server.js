@@ -101,6 +101,7 @@ app.get('/notification/:id', showInvitations)
 app.get('/validationNotification/:type/:ref/:event',validNotifEvent)
 // Profil de l'utilisateur
 app.get('/profil/:id', showProfil);
+app.post('/profil/:id', showProfil);
 // Page de modification de profil
 app.get('/modification/profil/:id', modifyProfil)
 app.post('/modification/profil/:id', modifyProfil)

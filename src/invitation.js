@@ -8,19 +8,19 @@ export async function notificationsEvenementNonLus(userId, is_read) {
 
     try {
         const query = `
-            SELECT e.id AS evenement_id, ne.reference_id, e.titre, CONCAT(u.prenom, ' ', u.nom) AS identite, u.photo, ne.type, ne.created_at
-            FROM evenement.notification_evenement ne
-            INNER JOIN evenement.invitation i ON ne.reference_id = i.id
+            SELECT e.id AS evenement_id,  e.titre, CONCAT(u.prenom, ' ', u.nom) AS identite, u.photo, ni.created_at, 'invitation' AS type
+            FROM evenement.notification_invitation ni 
+            INNER JOIN evenement.invitation i ON ni.invitation_id = i.id
             INNER JOIN evenement.user u ON i.user_id_sender = u.id
             INNER JOIN evenement.evenement e ON e.id = i.evenement_id
-            WHERE ne.user_id = ? AND ne.type = 'invitation' AND ne.is_read = ?
+            WHERE ni.user_id = ? AND ni.is_read = ?
 
             UNION ALL
 
-            SELECT e.evenement_id, ne.reference_id, e2.titre, CONCAT(u.prenom, ' ', u.nom) AS identite, u.photo, ne.type, ne.created_at
+            SELECT e.evenement_id, e2.titre, CONCAT(u.prenom, ' ', u.nom) AS identite, u.photo,  ne.created_at,'evaluation' AS type
             FROM evenement.evaluation e
             INNER JOIN evenement.evenement e2 ON e2.id = e.evenement_id
-            INNER JOIN evenement.notification_evenement ne ON ne.reference_id = e.id
+            INNER JOIN evenement.notification_evaluation ne ON ne.evaluation_id = e.id
             INNER JOIN evenement.user u ON u.id = e.user_id
             WHERE e2.organisateur_id = ? AND ne.is_read = ?
 

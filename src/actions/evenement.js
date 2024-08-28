@@ -193,7 +193,6 @@ export const listeEvent = async (req, res) => {
 // Permet d'afficher un évènement et de le modifier si tu es organisateur
 export const showEvent = async (req, res) => {
     const eventId = req.params.id
-    console.log(eventId)
     const user = req.session.get('user')
     const userId = user.id;
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
@@ -260,6 +259,7 @@ export const showMyEvent = async (req, res) => {
     const nbNotifMessageNonLus = await nbNotifMessage(userId)
     const nbNotifEventNonLus = await nbNotifEvenement(userId)
     try {
+        const [motsCles] = await connection.promise().query('SELECT id, nom FROM mots_cles');
         const [evenements] = await connection.promise().query(
             `SELECT evenement.*, 
              GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
@@ -285,7 +285,8 @@ export const showMyEvent = async (req, res) => {
                 user: user,
                 evenements: evenementsAvecDetails,
                 nbNotifMessageNonLus: nbNotifMessageNonLus,
-                nbNotifEventNonLus: nbNotifEventNonLus
+                nbNotifEventNonLus: nbNotifEventNonLus,
+                motsCles: motsCles
             }
         )
     } catch (error) {
@@ -406,7 +407,7 @@ export const modifierEvenement = async (req, res) => {
             `SELECT evenement.*, 
                  GROUP_CONCAT(mots_cles.nom SEPARATOR ',') AS motsCles,
                  user.prenom AS organisateurPrenom, user.nom AS organisateurNom,
-                 l.*
+                 l.id as lieu_id, l.nom_ville as nom_ville, l.adresse as adresse, l.latitude as latitude, l.longitude as longitude
                  FROM evenement 
                  INNER JOIN evenement_mots_cles ON evenement.id = evenement_mots_cles.evenement_id 
                  INNER JOIN mots_cles ON mots_cles.id = evenement_mots_cles.mot_cle_id 
@@ -477,6 +478,7 @@ export const activateEvent = async (req, res) => {
     }
 }
 export const deleteEvent = async (req, res) => {
+    console.log('delete :' + req.params.id)
     try {
         const eventId = req.params.id
         await connection.promise().query('UPDATE evenement SET statut_id =  4  WHERE id = ?',
@@ -526,17 +528,16 @@ export const apiListeEvent = async (req, res) => {
     const statut_id = req.params.actif;
     const user_id = req.params.userId;
     const actif = req.params.actif;
-
+    if(motsCles){   
     // Si motsCles est une chaîne de caractères, convertissez-la en tableau
     if (typeof motsCles === 'string') {
-        motsCles = motsCles.split(',').map(Number);
+            motsCles = motsCles.split(',').map(Number);
+        }
     }
-
     let requete = `
         SELECT evenement.*, l.nom_ville, l.adresse, l.latitude, l.longitude 
         FROM evenement 
         INNER JOIN lieu l ON l.id = evenement.lieu_id`;
-
     let params = [statut_id];
 
     if (motsCles && motsCles.length > 0) {
@@ -587,10 +588,8 @@ export const apiListeEvent = async (req, res) => {
     } else if (actif === "2") {
         requete += " ORDER BY date_debut_evenement DESC";
     }
-
-    console.log('Requête SQL :', requete);
-    console.log('Paramètres :', params);
-
+    console.log('requete : ' + requete)
+    console.log('params : ' + params)
     try {
         const [evenementsSansDates] = await connection.promise().query(requete, params);
         const evenements = await Promise.all(evenementsSansDates.map(async evenement => {
@@ -617,17 +616,18 @@ const updateEventStatut = async (events) => {
 // Fonction pour mettre à jour le statut d'un évènement
 export const verifyDateEvent = async (event) => {
     const now = new Date();
-    let enCours = false
+    let enCours = "Valide"
     const dateFinEvent = event.date_fin_evenement
     const dateDebutEvent = event.date_debut_evenement
     if (now < dateFinEvent && now > dateDebutEvent) {
-        enCours = true
+        enCours = "Actuel"
         await connection.promise().query(`
     UPDATE evenement SET statut_id= 5 WHERE id= ? `, [event.id])
     }
     if (now > dateFinEvent) {
         await connection.promise().query(`
         UPDATE evenement SET statut_id= 2 WHERE id= ? `, [event.id])
+        enCours = "Terminé"
     }
     return enCours
 }

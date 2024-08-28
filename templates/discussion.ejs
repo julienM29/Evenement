@@ -21,11 +21,11 @@
                 <% } %>
                 <% if (message.sender_id === user.id) { %>
                     <div class="d-flex w-100 justify-content-start mb-3">
-                        <div class="me-3 fs-5 align-items-end d-flex">
+                        <div class="me-3 fs-5 d-flex align-items-end">
                             <img src="/images/<%= message.photo %>" width="50" height="50" class="rounded-circle border border-secondary p-1 bg-white ">
                         </div>
                         <div class="me-3 fs-5 d-flex align-items-end">
-                            <div class=" px-3 py-2 messageDiscussionUser"><%= message.message_text %></div>
+                            <div class=" px-3 py-2 messageDiscussionUser"><%= message.message_text%></div>
                         </div>
                         <div class="fs-5 d-flex align-items-end me-3 ">
                             <div class="fw-bold me-1">⸱</div>
@@ -34,7 +34,10 @@
                     </div>
                 <% } else { %>
                     <div class="d-flex w-100 justify-content-end mb-2">
-                        <div class="me-3 fs-5 d-flex align-items-end">
+                        <div class="me-3 fs-5 d-flex <% if (discussion.participants.length > 2) { %> flex-column justify-content-end<% } else { %>align-items-end <% } %>">
+                            <% if (discussion.participants.length > 2) { %>
+                            <div class="d-flex justify-content-end fst-italic"><%= message.prenom %></div>
+                            <% } %>
                             <div class=" px-3 py-2 messageDiscussionAutre"><%= message.message_text %></div>
                         </div>
                         <div class="me-3 fs-5 align-items-end d-flex">
@@ -55,10 +58,10 @@
         
     </div><div class="w-50 d-flex justify-content-center ">
             <div class="w-75 d-flex justify-content-center">
-                <div class="w-100 d-flex justify-content-between align-items-center mt-4">
+                <div class="w-100 d-flex justify-content-between align-items-center mt-2">
                     <form action="" method="post" class="w-100">
-                        <input type="text" name="message" class="px-3 p-2 rounded-pill" style="width: 80%;">
-                        <button type="submit" class="mb-4 px-2 p-2 rounded-pill buttonDiscussion fw-bold fs-5 ms-5" style="width: 12.5%;">Send <i class="fas fa-paper-plane"></i></button>
+                        <input type="text" name="message" class="px-3 p-2 rounded-pill" style="width: 80%; height: 43px;">
+                        <button type="submit" class="mb-4 btn btn-cool-blues btn-rounded fw-bold fs-5 ms-4 mt-3" style="width: 14%;">Envoyer</button>
                     </form>
                 </div>
             </div>

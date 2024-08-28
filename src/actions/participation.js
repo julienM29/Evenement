@@ -34,7 +34,7 @@ export const showMyParticipations = async (req,res)=>{
             inner join evenement e on e.id = p.evenement_id
             inner join lieu l on l.id = e.lieu_id 
             where p.user_id =?
-            order by e.date_debut_evenement ASC
+            order by e.date_debut_evenement DESC
         `,[userId,userId])
     const evaluationsAvecDetails = await Promise.all(evaluations.map(async evaluation => {
             const dateDebutEvenement = formatDate(evaluation.date_debut_evenement);
