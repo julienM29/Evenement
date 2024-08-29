@@ -86,21 +86,25 @@ export const showEvaluations = async (req, res) => {
         })
     }
     if (req.method == 'POST') {
+        console.log('post')
         const commentaire = req.body.commentaire
         const evaluation = req.body.evaluation
-        console.log(evaluation)
-        console.log(commentaire)
         const now = new Date();
         const nowFormatted = formatDate(now)
         if (result.length !== 0) {
+            console.log('update eval')
             await connection.promise().query(
                 'UPDATE evaluation SET evaluation = ?, commentaire = ?, date = ?  WHERE id = ?',
                 [evaluation, commentaire, nowFormatted.dateBDD, result[0].id]
             );
+            console.log('update event notif')
+            console.log(nowFormatted.dateBDD)
+            console.log(result[0].id)
             await connection.promise().query(
-                'UPDATE notification_evenement SET is_read = 0 WHERE id = ?',
-                [result[0].id]
+                'UPDATE evenement.notification_evaluation SET is_read = 0, created_at = ? WHERE evaluation_id = ?',
+                [nowFormatted.dateBDD,result[0].id]
             );
+            console.log('après update event notif')
         } else {
             const [newEvaluation] = await connection.promise().query(
                 'INSERT INTO evaluation (evenement_id, user_id, evaluation, commentaire, date) VALUES (?,?,?,?,?)',
@@ -108,8 +112,8 @@ export const showEvaluations = async (req, res) => {
             );
             let reference = newEvaluation.insertId
             await connection.promise().query(
-                'INSERT INTO notification_evenement (user_id, type, reference_id, created_at) VALUES (?,?,?,?)',
-                [userId, 'evaluation', reference, nowFormatted.dateBDD]
+                'INSERT INTO evenement.notification_evaluation (user_id, evaluation_id, created_at, is_read) VALUES (?,?,?,?)',
+                [userId, reference, nowFormatted.dateBDD,0]
             );
         }
 

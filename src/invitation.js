@@ -4,11 +4,9 @@ import connection from "./database.js";
 import { nbNotifEvenement, nbNotifMessage } from "./discussion.js";
 
 export async function notificationsEvenementNonLus(userId, is_read) {
-    console.log('Fetching unread event notifications');
-
     try {
         const query = `
-            SELECT e.id AS evenement_id,  e.titre, CONCAT(u.prenom, ' ', u.nom) AS identite, u.photo, ni.created_at, 'invitation' AS type
+            SELECT e.id AS evenement_id,  e.titre, CONCAT(u.prenom, ' ', u.nom) AS identite, u.photo, ni.created_at, 'invitation' AS type, ni.invitation_id as reference_id
             FROM evenement.notification_invitation ni 
             INNER JOIN evenement.invitation i ON ni.invitation_id = i.id
             INNER JOIN evenement.user u ON i.user_id_sender = u.id
@@ -17,7 +15,7 @@ export async function notificationsEvenementNonLus(userId, is_read) {
 
             UNION ALL
 
-            SELECT e.evenement_id, e2.titre, CONCAT(u.prenom, ' ', u.nom) AS identite, u.photo,  ne.created_at,'evaluation' AS type
+            SELECT e.evenement_id, e2.titre, CONCAT(u.prenom, ' ', u.nom) AS identite, u.photo,  ne.created_at,'evaluation' AS type, ne.evaluation_id as reference_id
             FROM evenement.evaluation e
             INNER JOIN evenement.evenement e2 ON e2.id = e.evenement_id
             INNER JOIN evenement.notification_evaluation ne ON ne.evaluation_id = e.id
@@ -50,6 +48,7 @@ export async function notificationsEvenementNonLus(userId, is_read) {
     }
 }
 export const showInvitations = async (req, res) => {
+    console.log('coucou')
     const user = req.session.get('user');
     const user_id = user.id;
     const [nbNotifMessageNonLus, nbNotifEventNonLus, notificationsNonLus, notificationsLus] = await Promise.all([
@@ -87,12 +86,10 @@ export const invitationEvent = async (req,res)=>{
             );
             let reference = invitation.insertId
             await connection.promise().query(
-                'INSERT INTO notification_evenement (user_id, type, reference_id, created_at) VALUES (?,?,?,?)',
-                [guestId, 'invitation',reference , nowFormatted.dateBDD]
+                'INSERT INTO evenement.notification_invitation ( user_id, invitation_id, created_at, is_read) VALUES (?,?,?,?)',
+                [guestId, reference , nowFormatted.dateBDD,0]
             );
         }
-        
-        
         res.redirect('/'); // Redirection après la création de l'événement
     } catch (error) {
         console.error('Erreur lors de la suppression de la participation :', error);
@@ -104,18 +101,21 @@ export const validNotifEvent = async (req,res)=>{
     const ref_id = req.params.ref // Référence id
     const event_id = req.params.event // Évènement id
     const type = req.params.type // type de notification 
-    const [validation] = await connection.promise().query(
-        'UPDATE notification_evenement SET is_read = 1 WHERE reference_id = ?', [ref_id]
-    ); 
     if(type === 'invitation'){
         console.log('invit')
-        if(validation){
+        const [notif_invit] = await connection.promise().query(
+            'UPDATE notification_invitation SET is_read = 1 WHERE invitation_id = ?', [ref_id]
+        );
+        if(notif_invit){
             res.redirect(`/evenement/${event_id}`)
         }
     }
     if(type === 'evaluation'){
         console.log('eval')
-        if(validation){
+        const [notif_eval] = await connection.promise().query(
+            'UPDATE notification_evaluation SET is_read = 1 WHERE evaluation_id = ?', [ref_id]
+        );
+        if(notif_eval){
             res.redirect(`/evaluations/evenement/${event_id}`)
         }
     } 
